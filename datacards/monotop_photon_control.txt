@@ -1,0 +1,24 @@
+Control Region Datacard -- monotop photon
+
+imax * number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+
+-------------------------------------------------------------------------------------------------
+
+shapes data_obs    monotop_photon_cr ../combined_model.root  combinedws:monotop_photon_data 
+shapes gjets   	   monotop_photon_cr ../combined_model.root  combinedws:monotop_photonModel_zjets_model 
+shapes *           monotop_photon_cr ../combined_model.root  combinedws:monotop_photon_$PROCESS combinedws:monotop_photon_$PROCESS_$SYSTEMATIC
+-------------------------------------------------------------------------------------------------
+bin 	     monotop_photon_cr
+observation  -1 
+--------------------------------------------------------------------------------------------------------------------------------------------------
+bin             		monotop_photon_cr     
+process      		         gjets            
+process      		         11               
+rate         		         1                
+------------------------------------------
+lumi     	 lnN           -                
+QCD_Norm   lnN           -                
+---------------------------------------------------------------
+# Parametric uncertainties associated to control regions fits

@@ -1,0 +1,29 @@
+Control Region Datacard -- monotop singleelectrontop
+
+imax * number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+
+-------------------------------------------------------------------------------------------------
+
+shapes data_obs    monotop_singleelectrontop_cr ../combined_model.root  combinedws:monotop_singleelectrontop_data 
+shapes ttbar  	   monotop_singleelectrontop_cr ../combined_model.root  combinedws:monotop_singleelectrontopModelTop_ttbar_model 
+shapes wjets  	   monotop_singleelectrontop_cr ../combined_model.root  combinedws:monotop_singleelectrontopModelW_wjets_model 
+shapes *           monotop_singleelectrontop_cr ../combined_model.root  combinedws:monotop_singleelectrontop_$PROCESS combinedws:monotop_singleelectrontop_$PROCESS_$SYSTEMATIC
+-------------------------------------------------------------------------------------------------
+bin 	     monotop_singleelectrontop_cr
+observation  -1 
+--------------------------------------------------------------------------------------------------------------------------------------------------
+bin          		monotop_singleelectrontop_cr   monotop_singleelectrontop_cr  monotop_singleelectrontop_cr   monotop_singleelectrontop_cr  monotop_singleelectrontop_cr  monotop_singleelectrontop_cr
+process      		         wjets                    ttbar		                dibosons		             qcd		                 zll		                 stop
+process      		         10                       2                        4                       3                       5                       1
+rate         		         1                        1                       -1                      -1                       -1                      -1
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+stop_Norm  lnN           -                         -                       -                       -                       -                       1.3
+vv_Norm	 	 lnN	         -			                   -		                   1.3                     -		                   -                       -
+QCD_Norm	 lnN	         -			                   -		                   -                       2.0		                 -                       -
+lumi     	 lnN           -                         -                       1.1                     1.1                    1.1                    1.1       
+lep_SF     lnN           1.01                      1.01                    1.01                    1.01                    1.01                   1.01
+btag      shape          -                         -                       1                       1                      1                        1 
+-------------------------------------------------------------------------------------------------
+# Parametric uncertainties associated to control regions fits
