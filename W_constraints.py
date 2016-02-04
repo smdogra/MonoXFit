@@ -49,7 +49,7 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   _fOut.WriteTObject(WScalesUp_e)  # always write out to the directory 
 
   WScalesDown_e = targetmcDown.Clone(); WScalesDown_e.SetName("wenWCR_weights_%s_btag_Down"%cid)
-  WScalesDown.Divide(controlmcDown_e)
+  WScalesDown_e.Divide(controlmcDown_e)
   _fOut.WriteTObject(WScalesDown_e)  # always write out to the directory 
 
 
