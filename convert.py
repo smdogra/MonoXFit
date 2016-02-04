@@ -25,6 +25,9 @@ def convertToCombineWorkspace(wsin_combine,f_simple_hists,categories,cmb_categor
    varl.SetName(varnameext)
 
    # Keys in the fdir 
+   hData = None
+   bgs = set(['signal_dibosons','signal_qcd','signal_zjets','signal_ttbar','signal_stop','signal_wjets','signal_zll'])
+
    keys_local = fdir.GetListOfKeys() 
    for key in keys_local: 
     obj = key.ReadObj()
@@ -32,12 +35,22 @@ def convertToCombineWorkspace(wsin_combine,f_simple_hists,categories,cmb_categor
     title = obj.GetTitle()
     if title != "base": continue # Forget all of the histos which aren't the observable variable
     name = obj.GetName()
+    if name in bgs:
+	    if hData==None:
+		    hData = obj.Clone()
+		    hData.SetName('hfakedata')
+	    else:
+		    hData.Add(obj)
     if not obj.Integral() > 0 : obj.SetBinContent(1,0.0001) # otherwise Combine will complain!
     print "Creating Data Hist for ", name 
     dhist = ROOT.RooDataHist(cat+"_"+name,"DataSet - %s, %s"%(cat,name),ROOT.RooArgList(varl),obj)
     dhist.Print("v")
     wsin_combine._import(dhist)
 
+   fakename = 'signal_fakedata'
+   fakedatahist = ROOT.RooDataHist(cat+'_'+fakename,'DataSet - %s, %s'%(cat,fakename),ROOT.RooArgList(varl),hData)
+   fakedatahist.Print("v")
+   wsin_combine._import(fakedatahist)
 
    # next Add in the V-jets backgrounds MODELS
    for crd,crn in enumerate(controlregions_def):

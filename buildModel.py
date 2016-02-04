@@ -74,13 +74,13 @@ for cat_id,cat in enumerate(x.categories):
 	  extU = "_%sUp"%syst
 	  extD = "_%sDown"%syst
 	  if fin.Get(sample+extU):
-	    print " Adding systematic variation %s for %s "%(syst,sample)
+#	    print " Adding systematic variation %s for %s "%(syst,sample)
             mb.addSample(sample+extU,entry[0],entry[1]+extU,entry[2],entry[3],1)  # name, region, process, is_mc, is_signal
-	  else: print " No %s Up variation found for %s"%(syst,sample)
+#	  else: print " No %s Up variation found for %s"%(syst,sample)
 	  if fin.Get(sample+extD):
-	    print " Adding systematic variation %s for %s "%(syst,sample)
+#	    print " Adding systematic variation %s for %s "%(syst,sample)
             mb.addSample(sample+extD,entry[0],entry[1]+extD,entry[2],entry[3],1)  # name, region, process, is_mc, is_signal
-	  else: print " No %s Down variation found for %s"%(syst,sample)
+#	  else: print " No %s Down variation found for %s"%(syst,sample)
       except : 
           noSys = True
 	  

@@ -375,7 +375,7 @@ void ModelBuilder::addSample(std::string name, std::string region, std::string p
    TObjArray *branches = (TObjArray*) ((TTree*)fIn->Get(name.c_str()))->GetListOfBranches();
 //   branches->Print();
    TIter next(branches); TBranch *br;
-   while ( (br = (TBranch*)next()) ){
+   while ( (br = (TBranch*)next()) ) {
 	const char *brname = br->GetName();
 	if ( std::strcmp(brname,weightname.c_str())!=0 && std::strcmp(brname,varstring.c_str())!=0 ){
 	  RooRealVar *vartmp = new RooRealVar(brname,brname,0,1); vartmp->removeRange();
