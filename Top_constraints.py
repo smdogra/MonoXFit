@@ -87,15 +87,15 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 
 
   TopScales,TopScalesUp,TopScalesDown = makeTop(cid,_fOut,"topmnTopCR",targetmc,controlmc,targetmcUp,targetmcDown,controlmcUp,controlmcDown)
-  TopScales_e,TopScalesUp_e,TopScalesDown_e = makeTop(cid,_fOut,"topenTopCR",targetmc,controlmc_e,targetmcUp_e,targetmcDown_e,controlmcUp_e,controlmcDown_e)
+  TopScales_e,TopScalesUp_e,TopScalesDown_e = makeTop(cid,_fOut,"topenTopCR",targetmc,controlmc_e,targetmcUp,targetmcDown,controlmcUp_e,controlmcDown_e)
 
   controlmcW = _fin.Get('singlemuonw_ttbar')
   controlmcW_e = _fin.Get('singleelectronw_ttbar')
   controlmcWUp = _fin.Get("singlemuonw_ttbar_btagUp"); controlmcWUp_e = _fin.Get("singleelectronw_ttbar_btagUp")
   controlmcWDown = _fin.Get("singlemuonw_ttbar_btagDown"); controlmcWDown_e = _fin.Get("singleelectronw_ttbar_btagDown")
 
-  WScales,WScalesUp,WScalesDown = makeTop(cid,_fOut,"topmnWCR",targetmc,controlmcW,targetmcWUp,targetmcWDown,controlmcWUp,controlmcWDown)
-  WScales_e,WScalesUp_e,WScalesDown_e = makeTop(cid,_fOut,"topenWCR",targetmc,controlmcW_e,targetmcWUp_e,targetmcWDown_e,controlmcWUp_e,controlmcWDown_e)
+  WScales,WScalesUp,WScalesDown = makeTop(cid,_fOut,"topmnWCR",targetmc,controlmcW,targetmcUp,targetmcDown,controlmcWUp,controlmcWDown)
+  WScales_e,WScalesUp_e,WScalesDown_e = makeTop(cid,_fOut,"topenWCR",targetmc,controlmcW_e,targetmcUp,targetmcDown,controlmcWUp_e,controlmcWDown_e)
 
   '''
   TopScales,TopScalesUp,TopScalesDown = makeTop(_fin,cid,metname,genVpt,hOne,_wspace,_fOut,diag,"topmn","singlemuontop",targetmc,targetmcUp,targetmcDown)
