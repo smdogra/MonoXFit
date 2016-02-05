@@ -31,11 +31,11 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   WScales.Divide(controlmc)
   _fOut.WriteTObject(WScales)  # always write out to the directory 
 
-  WScalesUp = targetmcUp.Clone(); WScalesUp.SetName("wmnWCR_weights_%s_btag_Up"%cid)
+  WScalesUp = targetmcUp.Clone(); WScalesUp.SetName("wmnWCR_weights_%s_btagW_Up"%cid)
   WScalesUp.Divide(controlmcUp)
   _fOut.WriteTObject(WScalesUp)  # always write out to the directory 
 
-  WScalesDown = targetmcDown.Clone(); WScalesDown.SetName("wmnWCR_weights_%s_btag_Down"%cid)
+  WScalesDown = targetmcDown.Clone(); WScalesDown.SetName("wmnWCR_weights_%s_btagW_Down"%cid)
   WScalesDown.Divide(controlmcDown)
   _fOut.WriteTObject(WScalesDown)  # always write out to the directory 
 
@@ -44,11 +44,11 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   WScales_e.Divide(controlmc_e)
   _fOut.WriteTObject(WScales_e)  # always write out to the directory 
 
-  WScalesUp_e = targetmcUp.Clone(); WScalesUp_e.SetName("wenWCR_weights_%s_btag_Up"%cid)
+  WScalesUp_e = targetmcUp.Clone(); WScalesUp_e.SetName("wenWCR_weights_%s_btagW_Up"%cid)
   WScalesUp_e.Divide(controlmcUp_e)
   _fOut.WriteTObject(WScalesUp_e)  # always write out to the directory 
 
-  WScalesDown_e = targetmcDown.Clone(); WScalesDown_e.SetName("wenWCR_weights_%s_btag_Down"%cid)
+  WScalesDown_e = targetmcDown.Clone(); WScalesDown_e.SetName("wenWCR_weights_%s_btagW_Down"%cid)
   WScalesDown_e.Divide(controlmcDown_e)
   _fOut.WriteTObject(WScalesDown_e)  # always write out to the directory 
 
@@ -62,11 +62,11 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   TopScales.Divide(controlmcTop)
   _fOut.WriteTObject(TopScales)
 
-  TopScalesUp = targetmcUp.Clone(); TopScalesUp.SetName("wmnTopCR_weights_%s_btag_Up"%cid)
+  TopScalesUp = targetmcUp.Clone(); TopScalesUp.SetName("wmnTopCR_weights_%s_btagW_Up"%cid)
   TopScalesUp.Divide(controlmcTopUp)
   _fOut.WriteTObject(TopScalesUp)
 
-  TopScalesDown = targetmcDown.Clone(); TopScalesDown.SetName("wmnTopCR_weights_%s_btag_Down"%cid)
+  TopScalesDown = targetmcDown.Clone(); TopScalesDown.SetName("wmnTopCR_weights_%s_btagW_Down"%cid)
   TopScalesDown.Divide(controlmcTopDown)
   _fOut.WriteTObject(TopScalesDown)
 
@@ -75,11 +75,11 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   TopScales_e.Divide(controlmcTop_e)
   _fOut.WriteTObject(TopScales_e)
 
-  TopScalesUp_e = targetmcUp.Clone(); TopScalesUp_e.SetName("wenTopCR_weights_%s_btag_Up"%cid)
+  TopScalesUp_e = targetmcUp.Clone(); TopScalesUp_e.SetName("wenTopCR_weights_%s_btagW_Up"%cid)
   TopScalesUp_e.Divide(controlmcTopUp_e)
   _fOut.WriteTObject(TopScalesUp_e)
 
-  TopScalesDown_e = targetmcDown.Clone(); TopScalesDown_e.SetName("wenTopCR_weights_%s_btag_Down"%cid)
+  TopScalesDown_e = targetmcDown.Clone(); TopScalesDown_e.SetName("wenTopCR_weights_%s_btagW_Down"%cid)
   TopScalesDown_e.Divide(controlmcTopDown_e)
   _fOut.WriteTObject(TopScalesDown_e)
 
@@ -113,10 +113,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   #CRs[0].add_nuisance("SingleMuonEff",0.01)
   #CRs[1].add_nuisance("SingleElEff",0.02)
 
-  CRs[0].add_nuisance_shape("btag",_fOut)
-  CRs[1].add_nuisance_shape("btag",_fOut)
-  CRs[2].add_nuisance_shape("btag",_fOut)
-  CRs[3].add_nuisance_shape("btag",_fOut)
+  CRs[0].add_nuisance_shape("btagW",_fOut)
+  CRs[1].add_nuisance_shape("btagW",_fOut)
+  CRs[2].add_nuisance_shape("btagW",_fOut)
+  CRs[3].add_nuisance_shape("btagW",_fOut)
 
   # Statistical uncertainties too!, one per bin 
   for b in range(targetmc.GetNbinsX()):
