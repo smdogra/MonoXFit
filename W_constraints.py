@@ -20,69 +20,72 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   targetmc     = _fin.Get("signal_wjets")      # define monimal (MC) of which process this config will model
   controlmc    = _fin.Get("singlemuonw_wjets")  # defines in / out acceptance
   controlmc_e  = _fin.Get("singleelectronw_wjets")  # defines in / out acceptance
-  targetmcUp = _fin.Get("signal_wjets_btagUp")
-  targetmcDown = _fin.Get("signal_wjets_btagDown")
-  controlmcUp = _fin.Get("singlemuonw_wjets_btagUp"); controlmcUp_e = _fin.Get("singleelectronw_wjets_btagUp")
-  controlmcDown = _fin.Get("singlemuonw_wjets_btagDown"); controlmcDown_e = _fin.Get("singleelectronw_wjets_btagDown")
+
+  # btag systs
+  targetmcbtagUp = _fin.Get("signal_wjets_btagUp")
+  targetmcbtagDown = _fin.Get("signal_wjets_btagDown")
+  controlmcbtagUp = _fin.Get("singlemuonw_wjets_btagUp"); controlmcbtagUp_e = _fin.Get("singleelectronw_wjets_btagUp")
+  controlmcbtagDown = _fin.Get("singlemuonw_wjets_btagDown"); controlmcbtagDown_e = _fin.Get("singleelectronw_wjets_btagDown")
+
+  # mistag systs
+  targetmcmistagUp = _fin.Get("signal_wjets_mistagUp")
+  targetmcmistagDown = _fin.Get("signal_wjets_mistagDown")
+  controlmcmistagUp = _fin.Get("singlemuonw_wjets_mistagUp"); controlmcmistagUp_e = _fin.Get("singleelectronw_wjets_mistagUp")
+  controlmcmistagDown = _fin.Get("singlemuonw_wjets_mistagDown"); controlmcmistagDown_e = _fin.Get("singleelectronw_wjets_mistagDown")
+
+  # wjethf systs
+  targetmcwjethfUp = _fin.Get("signal_wjets_wjethfUp")
+  targetmcwjethfDown = _fin.Get("signal_wjets_wjethfDown")
+  controlmcwjethfUp = _fin.Get("singlemuonw_wjets_wjethfUp"); controlmcwjethfUp_e = _fin.Get("singleelectronw_wjets_wjethfUp")
+  controlmcwjethfDown = _fin.Get("singlemuonw_wjets_wjethfDown"); controlmcwjethfDown_e = _fin.Get("singleelectronw_wjets_wjethfDown")
 
   # Create the transfer factors and save them (not here you can also create systematic variations of these 
   # transfer factors (named with extention _sysname_Up/Down
-  WScales = targetmc.Clone(); WScales.SetName("wmnWCR_weights_%s"%cid)
-  WScales.Divide(controlmc)
-  _fOut.WriteTObject(WScales)  # always write out to the directory 
+  
+  WScales = targetmc.Clone(); WScales.SetName("wmn_weights_%s"%cid)
+  WScales.Divide(controlmc);  _fOut.WriteTObject(WScales)  # always write out to the directory 
 
-  WScalesUp = targetmcUp.Clone(); WScalesUp.SetName("wmnWCR_weights_%s_btagW_Up"%cid)
-  WScalesUp.Divide(controlmcUp)
-  _fOut.WriteTObject(WScalesUp)  # always write out to the directory 
+  WScales_e = targetmc.Clone(); WScales_e.SetName("wen_weights_%s"%cid)
+  WScales_e.Divide(controlmc_e);  _fOut.WriteTObject(WScales_e)  # always write out to the directory 
 
-  WScalesDown = targetmcDown.Clone(); WScalesDown.SetName("wmnWCR_weights_%s_btagW_Down"%cid)
-  WScalesDown.Divide(controlmcDown)
-  _fOut.WriteTObject(WScalesDown)  # always write out to the directory 
+  ### BTAG ###  
+  WScalesbtagUp = targetmcbtagUp.Clone(); WScalesbtagUp.SetName("wmn_weights_%s_btag_Up"%cid)
+  WScalesbtagUp.Divide(controlmcbtagUp);  _fOut.WriteTObject(WScalesbtagUp)  # always write out to the directory 
 
+  WScalesbtagDown = targetmcbtagDown.Clone(); WScalesbtagDown.SetName("wmn_weights_%s_btag_Down"%cid)
+  WScalesbtagDown.Divide(controlmcbtagDown);  _fOut.WriteTObject(WScalesbtagDown)
 
-  WScales_e = targetmc.Clone(); WScales_e.SetName("wenWCR_weights_%s"%cid)
-  WScales_e.Divide(controlmc_e)
-  _fOut.WriteTObject(WScales_e)  # always write out to the directory 
+  WScalesbtagUp_e = targetmcbtagUp_e.Clone(); WScalesbtagUp_e.SetName("wen_weights_%s_btag_Up"%cid)
+  WScalesbtagUp_e.Divide(controlmcbtagUp_e);  _fOut.WriteTObject(WScalesbtagUp_e)  # always write out to the directory 
 
-  WScalesUp_e = targetmcUp.Clone(); WScalesUp_e.SetName("wenWCR_weights_%s_btagW_Up"%cid)
-  WScalesUp_e.Divide(controlmcUp_e)
-  _fOut.WriteTObject(WScalesUp_e)  # always write out to the directory 
+  WScalesbtagDown_e = targetmcbtagDown_e.Clone(); WScalesbtagDown_e.SetName("wen_weights_%s_btag_Down"%cid)
+  WScalesbtagDown_e.Divide(controlmcbtagDown_e);  _fOut.WriteTObject(WScalesbtagDown_e)  # always write out to the directory 
 
-  WScalesDown_e = targetmcDown.Clone(); WScalesDown_e.SetName("wenWCR_weights_%s_btagW_Down"%cid)
-  WScalesDown_e.Divide(controlmcDown_e)
-  _fOut.WriteTObject(WScalesDown_e)  # always write out to the directory 
+  ### MISTAG ###  
+  WScalesmistagUp = targetmcmistagUp.Clone(); WScalesmistagUp.SetName("wmn_weights_%s_mistag_Up"%cid)
+  WScalesmistagUp.Divide(controlmcmistagUp);  _fOut.WriteTObject(WScalesmistagUp)  # always write out to the directory 
 
+  WScalesmistagDown = targetmcmistagDown.Clone(); WScalesmistagDown.SetName("wmn_weights_%s_mistag_Down"%cid)
+  WScalesmistagDown.Divide(controlmcmistagDown);  _fOut.WriteTObject(WScalesmistagDown)
 
-  controlmcTop = _fin.Get("singlemuontop_wjets")
-  controlmcTop_e = _fin.Get("singleelectrontop_wjets")
-  controlmcTopUp = _fin.Get("singlemuontop_wjets_btagUp"); controlmcTopUp_e = _fin.Get("singleelectrontop_wjets_btagUp")
-  controlmcTopDown = _fin.Get("singlemuontop_wjets_btagDown"); controlmcTopDown_e = _fin.Get("singleelectrontop_wjets_btagDown")
+  WScalesmistagUp_e = targetmcmistagUp_e.Clone(); WScalesmistagUp_e.SetName("wen_weights_%s_mistag_Up"%cid)
+  WScalesmistagUp_e.Divide(controlmcmistagUp_e);  _fOut.WriteTObject(WScalesmistagUp_e)  # always write out to the directory 
 
-  TopScales = targetmc.Clone(); TopScales.SetName("wmnTopCR_weights_%s"%cid)
-  TopScales.Divide(controlmcTop)
-  _fOut.WriteTObject(TopScales)
+  WScalesmistagDown_e = targetmcmistagDown_e.Clone(); WScalesmistagDown_e.SetName("wen_weights_%s_mistag_Down"%cid)
+  WScalesmistagDown_e.Divide(controlmcmistagDown_e);  _fOut.WriteTObject(WScalesmistagDown_e)  # always write out to the directory 
 
-  TopScalesUp = targetmcUp.Clone(); TopScalesUp.SetName("wmnTopCR_weights_%s_btagW_Up"%cid)
-  TopScalesUp.Divide(controlmcTopUp)
-  _fOut.WriteTObject(TopScalesUp)
+  ### HF ###  
+  WScaleswjethfUp = targetmcwjethfUp.Clone(); WScaleswjethfUp.SetName("wmn_weights_%s_wjethf_Up"%cid)
+  WScaleswjethfUp.Divide(controlmcwjethfUp);  _fOut.WriteTObject(WScaleswjethfUp)  # always write out to the directory 
 
-  TopScalesDown = targetmcDown.Clone(); TopScalesDown.SetName("wmnTopCR_weights_%s_btagW_Down"%cid)
-  TopScalesDown.Divide(controlmcTopDown)
-  _fOut.WriteTObject(TopScalesDown)
+  WScaleswjethfDown = targetmcwjethfDown.Clone(); WScaleswjethfDown.SetName("wmn_weights_%s_wjethf_Down"%cid)
+  WScaleswjethfDown.Divide(controlmcwjethfDown);  _fOut.WriteTObject(WScaleswjethfDown)
 
+  WScaleswjethfUp_e = targetmcwjethfUp_e.Clone(); WScaleswjethfUp_e.SetName("wen_weights_%s_wjethf_Up"%cid)
+  WScaleswjethfUp_e.Divide(controlmcwjethfUp_e);  _fOut.WriteTObject(WScaleswjethfUp_e)  # always write out to the directory 
 
-  TopScales_e = targetmc.Clone(); TopScales_e.SetName("wenTopCR_weights_%s"%cid)
-  TopScales_e.Divide(controlmcTop_e)
-  _fOut.WriteTObject(TopScales_e)
-
-  TopScalesUp_e = targetmcUp.Clone(); TopScalesUp_e.SetName("wenTopCR_weights_%s_btagW_Up"%cid)
-  TopScalesUp_e.Divide(controlmcTopUp_e)
-  _fOut.WriteTObject(TopScalesUp_e)
-
-  TopScalesDown_e = targetmcDown.Clone(); TopScalesDown_e.SetName("wenTopCR_weights_%s_btagW_Down"%cid)
-  TopScalesDown_e.Divide(controlmcTopDown_e)
-  _fOut.WriteTObject(TopScalesDown_e)
-
+  WScaleswjethfDown_e = targetmcwjethfDown_e.Clone(); WScaleswjethfDown_e.SetName("wen_weights_%s_wjethf_Down"%cid)
+  WScaleswjethfDown_e.Divide(controlmcwjethfDown_e);  _fOut.WriteTObject(WScaleswjethfDown_e)  # always write out to the directory 
 
   #######################################################################################################
 
@@ -97,10 +100,8 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # TRANSFERFACTORS are what is created above, eg WScales
 
   CRs = [
-   Channel("singlemuonwModelW",_wspace,out_ws,cid+'_'+model,WScales),
-   Channel("singleelectronwModelW",_wspace,out_ws,cid+'_'+model,WScales_e),
-   Channel("singlemuontopModelW",_wspace,out_ws,cid+'_'+model,TopScales),
-   Channel("singleelectrontopModelW",_wspace,out_ws,cid+'_'+model,TopScales_e)
+   Channel("singlemuonwModel",_wspace,out_ws,cid+'_'+model,WScales),
+   Channel("singleelectronwModel",_wspace,out_ws,cid+'_'+model,WScales_e),
   ]
 
 
@@ -113,25 +114,24 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   #CRs[0].add_nuisance("SingleMuonEff",0.01)
   #CRs[1].add_nuisance("SingleElEff",0.02)
 
-  CRs[0].add_nuisance_shape("btagW",_fOut)
-  CRs[1].add_nuisance_shape("btagW",_fOut)
-  CRs[2].add_nuisance_shape("btagW",_fOut)
-  CRs[3].add_nuisance_shape("btagW",_fOut)
-
+  for cr in [0,1]:
+    for uncert in ['btag','mistag','wjethf']:
+      CRs[cr].add_nuisance_shape(uncert,_fOut)
+  
   # Statistical uncertainties too!, one per bin 
   for b in range(targetmc.GetNbinsX()):
     err = WScales.GetBinError(b+1)
     if not WScales.GetBinContent(b+1)>0: continue 
     relerr = err/WScales.GetBinContent(b+1)
     if relerr<0.001: continue
-    byb_u = WScales.Clone(); byb_u.SetName("wmnWCR_weights_%s_%s_stat_error_%s_bin%d_Up"%(cid,cid,"singlemuonwModelWCR",b))
+    byb_u = WScales.Clone(); byb_u.SetName("wmn_weights_%s_%s_stat_error_%s_bin%d_Up"%(cid,cid,"singlemuonwModel",b))
     byb_u.SetBinContent(b+1,WScales.GetBinContent(b+1)+err)
-    byb_d = WScales.Clone(); byb_d.SetName("wmnWCR_weights_%s_%s_stat_error_%s_bin%d_Down"%(cid,cid,"singlemuonwModelWCR",b))
+    byb_d = WScales.Clone(); byb_d.SetName("wmn_weights_%s_%s_stat_error_%s_bin%d_Down"%(cid,cid,"singlemuonwModel",b))
     byb_d.SetBinContent(b+1,WScales.GetBinContent(b+1)-err)
     _fOut.WriteTObject(byb_u)
     _fOut.WriteTObject(byb_d)
     print "Adding an error -- ", byb_u.GetName(),err
-    CRs[0].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"singlemuonwModelWCR",b),_fOut)
+    CRs[0].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"singlemuonwModel",b),_fOut)
 
   # Statistical uncertainties too!, one per bin 
   for b in range(targetmc.GetNbinsX()):
@@ -139,44 +139,14 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
     if not WScales_e.GetBinContent(b+1)>0: continue 
     relerr_e = err_e/WScales_e.GetBinContent(b+1)
     if relerr_e<0.001: continue
-    byb_u_e = WScales_e.Clone(); byb_u_e.SetName("wenWCR_weights_%s_%s_stat_error_%s_bin%d_Up"%(cid,cid,"singleelectronwModelWCR",b))
+    byb_u_e = WScales_e.Clone(); byb_u_e.SetName("wen_weights_%s_%s_stat_error_%s_bin%d_Up"%(cid,cid,"singleelectronwModel",b))
     byb_u_e.SetBinContent(b+1,WScales_e.GetBinContent(b+1)+err_e)
-    byb_d_e = WScales_e.Clone(); byb_d_e.SetName("wenWCR_weights_%s_%s_stat_error_%s_bin%d_Down"%(cid,cid,"singleelectronwModelWCR",b))
+    byb_d_e = WScales_e.Clone(); byb_d_e.SetName("wen_weights_%s_%s_stat_error_%s_bin%d_Down"%(cid,cid,"singleelectronwModel",b))
     byb_d_e.SetBinContent(b+1,WScales_e.GetBinContent(b+1)-err_e)
     _fOut.WriteTObject(byb_u_e)
     _fOut.WriteTObject(byb_d_e)
     print "Adding an error -- ", byb_u_e.GetName(),err_e
-    CRs[1].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"singleelectronwModelWCR",b),_fOut)
-
-  # Statistical uncertainties too!, one per bin 
-  for b in range(targetmc.GetNbinsX()):
-    err = TopScales.GetBinError(b+1)
-    if not TopScales.GetBinContent(b+1)>0: continue 
-    relerr = err/TopScales.GetBinContent(b+1)
-    if relerr<0.001: continue
-    byb_u = TopScales.Clone(); byb_u.SetName("wmnTopCR_weights_%s_%s_stat_error_%s_bin%d_Up"%(cid,cid,"singlemuontopModelWCR",b))
-    byb_u.SetBinContent(b+1,TopScales.GetBinContent(b+1)+err)
-    byb_d = TopScales.Clone(); byb_d.SetName("wmnTopCR_weights_%s_%s_stat_error_%s_bin%d_Down"%(cid,cid,"singlemuontopModelWCR",b))
-    byb_d.SetBinContent(b+1,TopScales.GetBinContent(b+1)-err)
-    _fOut.WriteTObject(byb_u)
-    _fOut.WriteTObject(byb_d)
-    print "Adding an error -- ", byb_u.GetName(),err
-    CRs[2].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"singlemuontopModelWCR",b),_fOut)
-
-  # Statistical uncertainties too!, one per bin 
-  for b in range(targetmc.GetNbinsX()):
-    err = TopScales_e.GetBinError(b+1)
-    if not TopScales_e.GetBinContent(b+1)>0: continue 
-    relerr = err/TopScales_e.GetBinContent(b+1)
-    if relerr<0.001: continue
-    byb_u = TopScales_e.Clone(); byb_u.SetName("wenTopCR_weights_%s_%s_stat_error_%s_bin%d_Up"%(cid,cid,"singleelectrontopModelWCR",b))
-    byb_u.SetBinContent(b+1,TopScales_e.GetBinContent(b+1)+err)
-    byb_d = TopScales_e.Clone(); byb_d.SetName("wenTopCR_weights_%s_%s_stat_error_%s_bin%d_Down"%(cid,cid,"singleelectrontopModelWCR",b))
-    byb_d.SetBinContent(b+1,TopScales_e.GetBinContent(b+1)-err)
-    _fOut.WriteTObject(byb_u)
-    _fOut.WriteTObject(byb_d)
-    print "Adding an error -- ", byb_u.GetName(),err
-    CRs[3].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"singleelectrontopModelWCR",b),_fOut)
+    CRs[1].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"singleelectronwModel",b),_fOut)
 
   #######################################################################################################
 

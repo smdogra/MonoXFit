@@ -6,7 +6,7 @@ out_file_name = 'mono-x.root'
 #bins = range(200,1200,200)
 bins = [250,300,350,400,500,600,1000]
 # will expect samples with sample_sys_Up/Down but will skip if not found 
-systematics=["Met","FP","btag"]
+systematics=["Met","FP","btag","mistag","wjethf","zjethf","gjethf"]
 # Define each of the categories in a dictionary of the following form .. 
 #	'name' : the category name 
 #	'in_file_name' : input ntuple file for this category 
@@ -26,7 +26,8 @@ monotop_category = {
 	    'name':"monotop"
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/../BaconAnalyzer/MJSelection/skim/monojet-combo-electron.root"  # Without recoil corrections
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/monojet-combo-electron.root_recoil"
-       ,'in_file_name':"files/monotop-boosted-combo-weight.root"
+       #,'in_file_name':"files/monotop-boosted-combo-weight.root"
+       ,'in_file_name':"files/monotop-boosted-combo-feb9.root"
 	   ,"cutstring":"met>250 && met<1000"
 	   ,"varstring":["met",250,1000]
 	   ,"weightname":"weight"
