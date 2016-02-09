@@ -87,7 +87,6 @@ ewk_monotop_bin2 param 0.0 1
 ewk_monotop_bin3 param 0.0 1
 ewk_monotop_bin4 param 0.0 1
 ewk_monotop_bin5 param 0.0 1
-btag param 0.0 1
 btagW param 0.0 1
 monotop_stat_error_singlemuonwModelWCR_bin0 param 0.0 1
 monotop_stat_error_singlemuonwModelWCR_bin1 param 0.0 1
@@ -113,6 +112,7 @@ monotop_stat_error_singleelectrontopModelWCR_bin2 param 0.0 1
 monotop_stat_error_singleelectrontopModelWCR_bin3 param 0.0 1
 monotop_stat_error_singleelectrontopModelWCR_bin4 param 0.0 1
 monotop_stat_error_singleelectrontopModelWCR_bin5 param 0.0 1
+btag param 0.0 1
 monotop_stat_error_singlemuontopModelTopCR_bin0 param 0.0 1
 monotop_stat_error_singlemuontopModelTopCR_bin1 param 0.0 1
 monotop_stat_error_singlemuontopModelTopCR_bin2 param 0.0 1

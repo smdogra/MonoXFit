@@ -326,7 +326,9 @@ if options.plotfile:
     leg.AddEntry(gr_fit_s,"S+B fit"   ,"PL")
     leg.Draw()
     fout.WriteTObject(canvas_nuis)
-    canvas_nuis.SaveAs("~/www/figs/monotop/fits/pulls.pdf") 
+    canvas_nuis.SaveAs("~/www/figs/monotop/fits_wcr/pulls.pdf") 
+    canvas_nuis.SaveAs("~/www/figs/monotop/fits_wcr/pulls.png") 
+    canvas_nuis.SaveAs("~/www/figs/monotop/fits_wcr/pulls.C") 
     
     canvas_pferrs = ROOT.TCanvas("post_fit_errs", "post_fit_errs", 900, 600)
     for b in range(1,hist_fit_e_s.GetNbinsX()+1): 
