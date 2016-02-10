@@ -10,14 +10,14 @@ new_dic = defaultdict(dict)
 
 def plotPreFitPostFit(region):
   global blind
-  channel = {"singlemuonw":"8", 
-              "singlemuontop":"7",
-              "dielectron":"1",
-              "dimuon":"2",
-              "photon":"3", 
-              "signal":"4", 
-              "singleelectrontop":"5", 
-              "singleelectronw":"6"}
+  channel = {"singlemuonw":"wmn", 
+              "singlemuontop":"tmn",
+              "dielectron":"zee",
+              "dimuon":"zmm",
+              "photon":"pho", 
+              "signal":"sig", 
+              "singleelectrontop":"ten", 
+              "singleelectronw":"wen"}
   mainbkg = {"singlemuonw":"wjets", "dimuon":"zll", "photon":"gjets", "signal":"ttbar", "singleelectronw":"wjets", "dielectron":"zll", "singlemuontop":"ttbar","singleelectrontop":"ttbar"}
 
   basedir = getenv('CMSSW_BASE') + '/src/MonoX-2/'
@@ -34,8 +34,8 @@ def plotPreFitPostFit(region):
     blind = True
   #print region, 'data yield:',h_data.Integral()
   
-  h_postfit_sig = f_mlfit.Get("shapes_fit_b/ch"+channel['signal']+"/total_background")
-  h_prefit_sig = f_mlfit.Get("shapes_prefit/ch"+channel['signal']+"/total_background")
+  h_postfit_sig = f_mlfit.Get("shapes_fit_b/"+channel['signal']+"/total_background")
+  h_prefit_sig = f_mlfit.Get("shapes_prefit/"+channel['signal']+"/total_background")
   
   b_width = [50,50,50,100,100,400]
 
@@ -69,7 +69,7 @@ def plotPreFitPostFit(region):
 
   # Pre-Fit
   h_prefit = {}
-  h_prefit['total'] = f_mlfit.Get("shapes_prefit/ch"+channel[region]+"/total")
+  h_prefit['total'] = f_mlfit.Get("shapes_prefit/"+channel[region]+"/total")
   for i in range(1,h_prefit['total'].GetNbinsX()+2):
     binLowE.append(h_prefit['total'].GetBinLowEdge(i))
 
@@ -78,7 +78,7 @@ def plotPreFitPostFit(region):
   h_stack_prefit = THStack("h_stack_prefit","h_stack_prefit")    
 
   for process in processes:
-    h_prefit[process] = f_mlfit.Get("shapes_prefit/ch"+channel[region]+"/"+process)
+    h_prefit[process] = f_mlfit.Get("shapes_prefit/"+channel[region]+"/"+process)
     if (not h_prefit[process]): continue
     if (str(h_prefit[process].Integral())=="nan"): continue
     for i in range(1,h_prefit[process].GetNbinsX()+1):
@@ -94,15 +94,15 @@ def plotPreFitPostFit(region):
 
   # Post-Fit
   h_postfit = {}
-  #h_postfit['total'] = f_mlfit.Get("shapes_fit_s/ch"+channel[region]+"/total")
-  h_postfit['total'] = f_mlfit.Get("shapes_fit_b/ch"+channel[region]+"/total")
+  #h_postfit['total'] = f_mlfit.Get("shapes_fit_s/"+channel[region]+"/total")
+  h_postfit['total'] = f_mlfit.Get("shapes_fit_b/"+channel[region]+"/total")
   h_all_postfit = TH1F("h_all_postfit","h_all_postfit",len(binLowE)-1,array('d',binLowE))    
   h_other_postfit = TH1F("h_other_postfit","h_other_postfit",len(binLowE)-1,array('d',binLowE))    
   h_stack_postfit = THStack("h_stack_postfit","h_stack_postfit")    
   
 
-  #h_postfit['totalv2'] = f_mlfit.Get("shapes_fit_s/ch"+channel[region]+"/total_background")
-  h_postfit['totalv2'] = f_mlfit.Get("shapes_fit_b/ch"+channel[region]+"/total_background")
+  #h_postfit['totalv2'] = f_mlfit.Get("shapes_fit_s/"+channel[region]+"/total_background")
+  h_postfit['totalv2'] = f_mlfit.Get("shapes_fit_b/"+channel[region]+"/total_background")
 
   for i in range(1, h_postfit['totalv2'].GetNbinsX()+1):
     error = h_postfit['totalv2'].GetBinError(i)
@@ -112,7 +112,7 @@ def plotPreFitPostFit(region):
   for process in processes:
     print process
     #h_postfit[process] = f_mlfit.Get("shapes_fit_s/ch"+channel[region]+"/"+process)
-    h_postfit[process] = f_mlfit.Get("shapes_fit_b/ch"+channel[region]+"/"+process)
+    h_postfit[process] = f_mlfit.Get("shapes_fit_b/"+channel[region]+"/"+process)
     if (not h_postfit[process]): continue
     if (str(h_postfit[process].Integral())=="nan"): continue
     for i in range(1,h_postfit[process].GetNbinsX()+1):
@@ -365,8 +365,8 @@ def plotPreFitPostFit(region):
   #  dummy2.SetMaximum(1.2)
   #  dummy2.SetMinimum(0.8)
 
-  dummy2.SetMaximum(1.8)                                                                                                                                                        
-  dummy2.SetMinimum(0.2) 
+  dummy2.SetMaximum(2.0)                                                                                                                                                        
+  dummy2.SetMinimum(0) 
   dummy2.Draw("hist")
 
   ratiosys.SetFillColor(kGray) #SetFillColor(ROOT.kYellow)

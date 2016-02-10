@@ -4,7 +4,8 @@ out_file_name = 'mono-x.root'
 
 # can define any thing useful here which may be common to several categories, eg binning in MET 
 #bins = range(200,1200,200)
-bins = [250,300,350,400,500,600,1000]
+bins = [250,300,350,400,500,1000]
+#bins = [250,300,350,400,500,600,1000]
 # will expect samples with sample_sys_Up/Down but will skip if not found 
 systematics=["Met","FP","btag","mistag","wjethf","zjethf","gjethf"]
 # Define each of the categories in a dictionary of the following form .. 

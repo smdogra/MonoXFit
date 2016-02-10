@@ -15,11 +15,11 @@ def makeTop(cid,_fOut,newName,targetmc,controlmc,systs=None):
   if not(systs==None):
     for uncert in ['btag']:
       TopScalesUp = systs['targetmc%sUp'%(uncert)].Clone(); TopScalesUp.SetName(newName+"_weights_%s_%s_Up"%(cid,uncert))
-      TopScalesup.Divide(systs['controlmc%sUp'%(uncert)])
+      TopScalesUp.Divide(systs['controlmc%sUp'%(uncert)])
       _fOut.WriteTObject(TopScalesUp)
 
       TopScalesDown = systs['targetmc%sDown'%(uncert)].Clone(); TopScalesDown.SetName(newName+"_weights_%s_%s_Down"%(cid,uncert))
-      TopScalesup.Divide(systs['controlmc%sDown'%(uncert)])
+      TopScalesDown.Divide(systs['controlmc%sDown'%(uncert)])
       _fOut.WriteTObject(TopScalesDown)
 
   return TopScales
@@ -73,7 +73,7 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   controlmc_e  = _fin.Get("singleelectrontop_ttbar")
  
 
-  systs = {}
+  systs = {}; systs_e = {}
 
   # btag systs
   systs['targetmcbtagUp'] = _fin.Get("signal_ttbar_btagUp"); systs_e['targetmcbtagUp'] = systs['targetmcbtagUp']

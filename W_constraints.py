@@ -55,10 +55,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   WScalesbtagDown = targetmcbtagDown.Clone(); WScalesbtagDown.SetName("wmn_weights_%s_btag_Down"%cid)
   WScalesbtagDown.Divide(controlmcbtagDown);  _fOut.WriteTObject(WScalesbtagDown)
 
-  WScalesbtagUp_e = targetmcbtagUp_e.Clone(); WScalesbtagUp_e.SetName("wen_weights_%s_btag_Up"%cid)
+  WScalesbtagUp_e = targetmcbtagUp.Clone(); WScalesbtagUp_e.SetName("wen_weights_%s_btag_Up"%cid)
   WScalesbtagUp_e.Divide(controlmcbtagUp_e);  _fOut.WriteTObject(WScalesbtagUp_e)  # always write out to the directory 
 
-  WScalesbtagDown_e = targetmcbtagDown_e.Clone(); WScalesbtagDown_e.SetName("wen_weights_%s_btag_Down"%cid)
+  WScalesbtagDown_e = targetmcbtagDown.Clone(); WScalesbtagDown_e.SetName("wen_weights_%s_btag_Down"%cid)
   WScalesbtagDown_e.Divide(controlmcbtagDown_e);  _fOut.WriteTObject(WScalesbtagDown_e)  # always write out to the directory 
 
   ### MISTAG ###  
@@ -68,10 +68,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   WScalesmistagDown = targetmcmistagDown.Clone(); WScalesmistagDown.SetName("wmn_weights_%s_mistag_Down"%cid)
   WScalesmistagDown.Divide(controlmcmistagDown);  _fOut.WriteTObject(WScalesmistagDown)
 
-  WScalesmistagUp_e = targetmcmistagUp_e.Clone(); WScalesmistagUp_e.SetName("wen_weights_%s_mistag_Up"%cid)
+  WScalesmistagUp_e = targetmcmistagUp.Clone(); WScalesmistagUp_e.SetName("wen_weights_%s_mistag_Up"%cid)
   WScalesmistagUp_e.Divide(controlmcmistagUp_e);  _fOut.WriteTObject(WScalesmistagUp_e)  # always write out to the directory 
 
-  WScalesmistagDown_e = targetmcmistagDown_e.Clone(); WScalesmistagDown_e.SetName("wen_weights_%s_mistag_Down"%cid)
+  WScalesmistagDown_e = targetmcmistagDown.Clone(); WScalesmistagDown_e.SetName("wen_weights_%s_mistag_Down"%cid)
   WScalesmistagDown_e.Divide(controlmcmistagDown_e);  _fOut.WriteTObject(WScalesmistagDown_e)  # always write out to the directory 
 
   ### HF ###  
@@ -81,10 +81,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   WScaleswjethfDown = targetmcwjethfDown.Clone(); WScaleswjethfDown.SetName("wmn_weights_%s_wjethf_Down"%cid)
   WScaleswjethfDown.Divide(controlmcwjethfDown);  _fOut.WriteTObject(WScaleswjethfDown)
 
-  WScaleswjethfUp_e = targetmcwjethfUp_e.Clone(); WScaleswjethfUp_e.SetName("wen_weights_%s_wjethf_Up"%cid)
+  WScaleswjethfUp_e = targetmcwjethfUp.Clone(); WScaleswjethfUp_e.SetName("wen_weights_%s_wjethf_Up"%cid)
   WScaleswjethfUp_e.Divide(controlmcwjethfUp_e);  _fOut.WriteTObject(WScaleswjethfUp_e)  # always write out to the directory 
 
-  WScaleswjethfDown_e = targetmcwjethfDown_e.Clone(); WScaleswjethfDown_e.SetName("wen_weights_%s_wjethf_Down"%cid)
+  WScaleswjethfDown_e = targetmcwjethfDown.Clone(); WScaleswjethfDown_e.SetName("wen_weights_%s_wjethf_Down"%cid)
   WScaleswjethfDown_e.Divide(controlmcwjethfDown_e);  _fOut.WriteTObject(WScaleswjethfDown_e)  # always write out to the directory 
 
   #######################################################################################################

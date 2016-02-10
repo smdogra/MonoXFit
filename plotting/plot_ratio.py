@@ -34,26 +34,26 @@ def plot_ratio(process):
 
     if (process=='singleelectronw'):
         dirname = "W_constraints_category_monotop" 
-        base    = "wenWCR_weights_monotop"
+        base    = "wen_weights_monotop"
         label   = "R_{W(e#nu)}"
         addsys  = sqrt(0.05*0.05 + 0.01*0.01 + 0.03*0.03)
 
     if (process=='singlemuonw'):
         dirname = "W_constraints_category_monotop" 
-        base    = "wmnWCR_weights_monotop"
+        base    = "wmn_weights_monotop"
         label   = "R_{W(#mu#nu)}"
         addsys  = sqrt(0.03*0.03 + 0.01*0.01)
         #addsys  = 0 
 
     if (process=='singleelectrontop'):
         dirname = "Top_constraints_category_monotop" 
-        base    = "topenTopCR_weights_monotop"
+        base    = "topen_weights_monotop"
         label   = "R_{t#bar{t}(e#nub)}"
         addsys  = sqrt(0.05*0.05 + 0.01*0.01 + 0.03*0.03)
 
     if (process=='singlemuontop'):
         dirname = "Top_constraints_category_monotop" 
-        base    = "topmnTopCR_weights_monotop"
+        base    = "topmn_weights_monotop"
         label   = "R_{t#bar{t}(#mu#nub)}"
         addsys  = sqrt(0.03*0.03 + 0.01*0.01)
 

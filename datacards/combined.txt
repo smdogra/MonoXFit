@@ -23,10 +23,10 @@ shapes data_obs  ten       ../combined_model.root combinedws:monotop_singleelect
 shapes ttbar     ten       ../combined_model.root combinedws:monotop_singleelectrontopModel_ttbar_model
 shapes *         wen       ../combined_model.root combinedws:monotop_singleelectronw_$PROCESS combinedws:monotop_singleelectronw_$PROCESS_$SYSTEMATIC
 shapes data_obs  wen       ../combined_model.root combinedws:monotop_singleelectronw_data
-shapes ttbar     wen       ../combined_model.root combinedws:monotop_singleelectronwModel_ttbar_model
+shapes wjets     wen       ../combined_model.root combinedws:monotop_singleelectronwModel_wjets_model
 shapes *         tmn       ../combined_model.root combinedws:monotop_singlemuontop_$PROCESS combinedws:monotop_singlemuontop_$PROCESS_$SYSTEMATIC
 shapes data_obs  tmn       ../combined_model.root combinedws:monotop_singlemuontop_data
-shapes wjets     tmn       ../combined_model.root combinedws:monotop_singlemuontopModel_wjets_model
+shapes ttbar     tmn       ../combined_model.root combinedws:monotop_singlemuontopModel_ttbar_model
 shapes *         wmn       ../combined_model.root combinedws:monotop_singlemuonw_$PROCESS combinedws:monotop_singlemuonw_$PROCESS_$SYSTEMATIC
 shapes data_obs  wmn       ../combined_model.root combinedws:monotop_singlemuonw_data
 shapes wjets     wmn       ../combined_model.root combinedws:monotop_singlemuonwModel_wjets_model
@@ -55,9 +55,9 @@ met                     lnN       1.04      1.04      1.04      1.04      1.04  
 sf_ele                  lnN       1.02      1.02      1.02      1.02      1.02           -         -         -         -         -              -         -              -         -         -         -         -         -         -              1.01      1.01      1.01      1.01      1.01      1.01           1.01      1.01      1.01      1.01      1.01      1.01           -         -         -         -         -         -              -         -         -         -         -         -       
 sf_mu                   lnN       -         -         -         -         -              1.02      1.02      1.02      1.02      1.02           -         -              -         -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              1.01      1.01      1.01      1.01      1.01      1.01           1.01      1.01      1.01      1.01      1.01      1.01    
 lumi                    lnN       -         1.046     1.046     1.046     1.046          -         1.046     1.046     1.046     1.046          -         1.046          1.046     1.046     1.046     -         1.046     -         -              1.046     1.046     1.046     1.046     1.046     -              1.046     1.046     1.046     -         1.046     1.046          1.046     1.046     1.046     1.046     1.046     -              1.046     1.046     1.046     -         1.046     1.046     
-zjethf                shape       -         -         -         -         -              -         -         -         -         -              -         -              -         -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -
-wjethf                shape       -         -         -         -         -              -         -         -         -         -              -         -              -         -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -
-gjethf                shape       -         -         -         -         -              -         -         -         -         -              -         -              -         -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -
+#zjethf                shape       -         -         -         -         -              -         -         -         -         -              -         -              -         -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -
+#wjethf                shape       -         -         -         -         -              -         -         -         -         -              -         -              -         -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -
+#gjethf                shape       -         -         -         -         -              -         -         -         -         -              -         -              -         -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -              -         -         -         -         -         -
 sjbtag                  lnN       -         -         -         -         -              -         -         -         -         -              -         -              1.08      1.08      1.08      1.08      1.08      1.08      1.08           1.08      1.08      1.08      1.08      1.08      1.08           0.92      0.92      0.92      0.92      0.92      0.92           1.08      1.08      1.08      1.08      1.08      1.08           0.92      0.92      0.92      0.92      0.92      0.92          
 topTagSF                lnN       1.2       1.2       1.2       1.2       1.2            1.2       1.2       1.2       1.2       1.2            1.2       1.2            1.2       1.2       1.2       1.2       1.2       1.2       1.2            1.2       1.2       1.2       1.2       1.2       1.2            1.2       1.2       1.2       1.2       1.2       1.2            1.2       1.2       1.2       1.2       1.2       1.2            1.2       1.2       1.2       1.2       1.2       -
 -----
@@ -83,60 +83,39 @@ renscale param 0.0 1
 facscale param 0.0 1
 pdf param 0.0 1
 PhotonEff param 0.0 1
+gjethf param 0.0 1
+zjethf param 0.0 1
 ewk_monotop_bin0 param 0.0 1
 ewk_monotop_bin1 param 0.0 1
 ewk_monotop_bin2 param 0.0 1
 ewk_monotop_bin3 param 0.0 1
 ewk_monotop_bin4 param 0.0 1
 ewk_monotop_bin5 param 0.0 1
-btagW param 0.0 1
-monotop_stat_error_singlemuonwModelWCR_bin0 param 0.0 1
-monotop_stat_error_singlemuonwModelWCR_bin1 param 0.0 1
-monotop_stat_error_singlemuonwModelWCR_bin2 param 0.0 1
-monotop_stat_error_singlemuonwModelWCR_bin3 param 0.0 1
-monotop_stat_error_singlemuonwModelWCR_bin4 param 0.0 1
-monotop_stat_error_singlemuonwModelWCR_bin5 param 0.0 1
-monotop_stat_error_singleelectronwModelWCR_bin0 param 0.0 1
-monotop_stat_error_singleelectronwModelWCR_bin1 param 0.0 1
-monotop_stat_error_singleelectronwModelWCR_bin2 param 0.0 1
-monotop_stat_error_singleelectronwModelWCR_bin3 param 0.0 1
-monotop_stat_error_singleelectronwModelWCR_bin4 param 0.0 1
-monotop_stat_error_singleelectronwModelWCR_bin5 param 0.0 1
-monotop_stat_error_singlemuontopModelWCR_bin0 param 0.0 1
-monotop_stat_error_singlemuontopModelWCR_bin1 param 0.0 1
-monotop_stat_error_singlemuontopModelWCR_bin2 param 0.0 1
-monotop_stat_error_singlemuontopModelWCR_bin3 param 0.0 1
-monotop_stat_error_singlemuontopModelWCR_bin4 param 0.0 1
-monotop_stat_error_singlemuontopModelWCR_bin5 param 0.0 1
-monotop_stat_error_singleelectrontopModelWCR_bin0 param 0.0 1
-monotop_stat_error_singleelectrontopModelWCR_bin1 param 0.0 1
-monotop_stat_error_singleelectrontopModelWCR_bin2 param 0.0 1
-monotop_stat_error_singleelectrontopModelWCR_bin3 param 0.0 1
-monotop_stat_error_singleelectrontopModelWCR_bin4 param 0.0 1
-monotop_stat_error_singleelectrontopModelWCR_bin5 param 0.0 1
 btag param 0.0 1
-monotop_stat_error_singlemuontopModelTopCR_bin0 param 0.0 1
-monotop_stat_error_singlemuontopModelTopCR_bin1 param 0.0 1
-monotop_stat_error_singlemuontopModelTopCR_bin2 param 0.0 1
-monotop_stat_error_singlemuontopModelTopCR_bin3 param 0.0 1
-monotop_stat_error_singlemuontopModelTopCR_bin4 param 0.0 1
-monotop_stat_error_singlemuontopModelTopCR_bin5 param 0.0 1
-monotop_stat_error_singleelectrontopModelTopCR_bin0 param 0.0 1
-monotop_stat_error_singleelectrontopModelTopCR_bin1 param 0.0 1
-monotop_stat_error_singleelectrontopModelTopCR_bin2 param 0.0 1
-monotop_stat_error_singleelectrontopModelTopCR_bin3 param 0.0 1
-monotop_stat_error_singleelectrontopModelTopCR_bin4 param 0.0 1
-monotop_stat_error_singleelectrontopModelTopCR_bin5 param 0.0 1
-monotop_stat_error_singlemuonwModelTopCR_bin0 param 0.0 1
-monotop_stat_error_singlemuonwModelTopCR_bin1 param 0.0 1
-monotop_stat_error_singlemuonwModelTopCR_bin2 param 0.0 1
-monotop_stat_error_singlemuonwModelTopCR_bin3 param 0.0 1
-monotop_stat_error_singlemuonwModelTopCR_bin4 param 0.0 1
-monotop_stat_error_singlemuonwModelTopCR_bin5 param 0.0 1
-monotop_stat_error_singleelectronwModelTopCR_bin0 param 0.0 1
-monotop_stat_error_singleelectronwModelTopCR_bin1 param 0.0 1
-monotop_stat_error_singleelectronwModelTopCR_bin2 param 0.0 1
-monotop_stat_error_singleelectronwModelTopCR_bin3 param 0.0 1
-monotop_stat_error_singleelectronwModelTopCR_bin4 param 0.0 1
-monotop_stat_error_singleelectronwModelTopCR_bin5 param 0.0 1
+mistag param 0.0 1
+wjethf param 0.0 1
+monotop_stat_error_singlemuonwModel_bin0 param 0.0 1
+monotop_stat_error_singlemuonwModel_bin1 param 0.0 1
+monotop_stat_error_singlemuonwModel_bin2 param 0.0 1
+monotop_stat_error_singlemuonwModel_bin3 param 0.0 1
+monotop_stat_error_singlemuonwModel_bin4 param 0.0 1
+monotop_stat_error_singlemuonwModel_bin5 param 0.0 1
+monotop_stat_error_singleelectronwModel_bin0 param 0.0 1
+monotop_stat_error_singleelectronwModel_bin1 param 0.0 1
+monotop_stat_error_singleelectronwModel_bin2 param 0.0 1
+monotop_stat_error_singleelectronwModel_bin3 param 0.0 1
+monotop_stat_error_singleelectronwModel_bin4 param 0.0 1
+monotop_stat_error_singleelectronwModel_bin5 param 0.0 1
+monotop_stat_error_singlemuontopModelCR_bin0 param 0.0 1
+monotop_stat_error_singlemuontopModelCR_bin1 param 0.0 1
+monotop_stat_error_singlemuontopModelCR_bin2 param 0.0 1
+monotop_stat_error_singlemuontopModelCR_bin3 param 0.0 1
+monotop_stat_error_singlemuontopModelCR_bin4 param 0.0 1
+monotop_stat_error_singlemuontopModelCR_bin5 param 0.0 1
+monotop_stat_error_singleelectrontopModelCR_bin0 param 0.0 1
+monotop_stat_error_singleelectrontopModelCR_bin1 param 0.0 1
+monotop_stat_error_singleelectrontopModelCR_bin2 param 0.0 1
+monotop_stat_error_singleelectrontopModelCR_bin3 param 0.0 1
+monotop_stat_error_singleelectrontopModelCR_bin4 param 0.0 1
+monotop_stat_error_singleelectrontopModelCR_bin5 param 0.0 1
 

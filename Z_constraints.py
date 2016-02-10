@@ -26,8 +26,8 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 
   targetmcUp = _fin.Get("signal_zjets_zjethfUp")
   targetmcDown = _fin.Get("signal_zjets_zjethfDown")
-  controlmcUp = _fin.Get("doublemuon_zll_zjethfUp"); controlmcUp_e = _fin.Get("doubleelectron_zll_zjethfUp")
-  controlmcDown = _fin.Get("doublemuon_zll_zjethfDown"); controlmcDown_e = _fin.Get("doubleelectron_zll_zjethfDown")
+  controlmcUp = _fin.Get("dimuon_zll_zjethfUp"); controlmcUp_e = _fin.Get("dielectron_zll_zjethfUp")
+  controlmcDown = _fin.Get("dimuon_zll_zjethfDown"); controlmcDown_e = _fin.Get("dielectron_zll_zjethfDown")
 
   # Create the transfer factors and save them (not here you can also create systematic variations of these 
   # transfer factors (named with extention _sysname_Up/Down
@@ -40,16 +40,16 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   _fOut.WriteTObject(ZeeScales)  # always write out to the directory 
 
   ### HF ###
-  ZmmScalesUp = targetmcUp.Clone(); ZmmScalesUp.Setname("zmm_weights_%s_zjethf_Up"%(cid))
+  ZmmScalesUp = targetmcUp.Clone(); ZmmScalesUp.SetName("zmm_weights_%s_zjethf_Up"%(cid))
   ZmmScalesUp.Divide(controlmcUp); _fOut.WriteTObject(ZmmScalesUp)
 
-  ZmmScalesDown = targetmcDown.Clone(); ZmmScalesDown.Setname("zmm_weights_%s_zjethf_Down"%(cid))
+  ZmmScalesDown = targetmcDown.Clone(); ZmmScalesDown.SetName("zmm_weights_%s_zjethf_Down"%(cid))
   ZmmScalesDown.Divide(controlmcDown); _fOut.WriteTObject(ZmmScalesDown)
 
-  ZeeScalesUp = targetmcUp.Clone(); ZeeScalesUp.Setname("zee_weights_%s_zjethf_Up"%(cid))
+  ZeeScalesUp = targetmcUp.Clone(); ZeeScalesUp.SetName("zee_weights_%s_zjethf_Up"%(cid))
   ZeeScalesUp.Divide(controlmcUp_e); _fOut.WriteTObject(ZeeScalesUp)
 
-  ZeeScalesDown = targetmcDown.Clone(); ZeeScalesDown.Setname("zee_weights_%s_zjethf_Down"%(cid))
+  ZeeScalesDown = targetmcDown.Clone(); ZeeScalesDown.SetName("zee_weights_%s_zjethf_Down"%(cid))
   ZeeScalesDown.Divide(controlmcDown_e); _fOut.WriteTObject(ZeeScalesDown)
 
 
@@ -138,6 +138,8 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   CRs[0].add_nuisance_shape("facscale",_fOut) 
   CRs[0].add_nuisance_shape("pdf",_fOut) 
   CRs[0].add_nuisance("PhotonEff",0.02) 
+  CRs[0].add_nuisance_shape("gjethf",_fOut)
+  CRs[1].add_nuisance_shape("zjethf",_fOut)
   #CRs[1].add_nuisance("DimuonEff",0.02)
   #CRs[2].add_nuisance("DielEff",0.04)
   
@@ -234,10 +236,10 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   _fOut.WriteTObject(PhotonScales)
   
   ### HF ###
-  PhotonsUp = target.Clone(); PhotonsUp.SetName('photon_weights_%s_gjethfUp'%nam)
+  PhotonsUp = target.Clone(); PhotonsUp.SetName('photon_weights_%s_gjethf_Up'%nam)
   PhotonsUp.Divide(controlmc_photonUp); _fOut.WriteTObject(PhotonsUp)
 
-  PhotonsDown = target.Clone(); PhotonsDown.SetName('photon_weights_%s_gjethfDown'%nam)
+  PhotonsDown = target.Clone(); PhotonsDown.SetName('photon_weights_%s_gjethf_Down'%nam)
   PhotonsDown.Divide(controlmc_photonDown); _fOut.WriteTObject(PhotonsDown)
   ### HF ###
 
