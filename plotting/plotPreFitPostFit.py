@@ -18,9 +18,9 @@ def plotPreFitPostFit(region):
               "signal":"sig", 
               "singleelectrontop":"ten", 
               "singleelectronw":"wen"}
-  mainbkg = {"singlemuonw":"wjets", "dimuon":"zll", "photon":"gjets", "signal":"ttbar", "singleelectronw":"wjets", "dielectron":"zll", "singlemuontop":"ttbar","singleelectrontop":"ttbar"}
+  mainbkg = {"singlemuonw":"wjets", "dimuon":"zll", "photon":"gjets", "signal":None, "singleelectronw":"wjets", "dielectron":"zll", "singlemuontop":"ttbar","singleelectrontop":"ttbar"}
 
-  basedir = getenv('CMSSW_BASE') + '/src/MonoX-2/'
+  basedir = getenv('CMSSW_BASE') + '/src/MonoX/'
 
   f_mlfit = TFile(basedir+'/datacards/mlfit.root','READ')
 
@@ -385,9 +385,11 @@ def plotPreFitPostFit(region):
     g_ratio_pre.Draw("epsame")
     g_ratio_post.Draw("epsame")
 
-  c.SaveAs("/afs/cern.ch/user/s/snarayan/www/figs/monotop/fits_wcr/new_bin_prefit_postfit_"+region+".pdf")
-  c.SaveAs("/afs/cern.ch/user/s/snarayan/www/figs/monotop/fits_wcr/new_bin_prefit_postfit_"+region+".png")
-  c.SaveAs("/afs/cern.ch/user/s/snarayan/www/figs/monotop/fits_wcr/new_bin_prefit_postfit_"+region+".C")
+  plotDir = '~/public_html/figs/monotop/fits_wcr/'
+
+  c.SaveAs(plotDir+"new_bin_prefit_postfit_"+region+".pdf")
+  c.SaveAs(plotDir+"new_bin_prefit_postfit_"+region+".png")
+  c.SaveAs(plotDir+"new_bin_prefit_postfit_"+region+".C")
 
   #c.SaveAs("test.pdf")
 

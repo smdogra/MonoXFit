@@ -11,7 +11,7 @@ def plot_ratio(process):
     highest = {}
     lowest = {}
 
-    baseDir = getenv('CMSSW_BASE')+'/src/MonoX-2/'
+    baseDir = getenv('CMSSW_BASE')+'/src/MonoX/'
     f = TFile(baseDir + 'combined_model.root','READ')
         
     if (process=='dimuon'):
@@ -72,7 +72,6 @@ def plot_ratio(process):
     for key in gDirectory.GetListOfKeys():
         if ('TH1' in key.GetClassName()):
             if (process in key.GetName()) or (base in key.GetName()):
-                print key.GetName()
                 if ('Up' in key.GetName()):
                     up = f.Get(dirname+"/"+key.GetName())
                     for b in range(ratio.GetNbinsX()+1):
@@ -164,14 +163,12 @@ def plot_ratio(process):
     
     gPad.RedrawAxis()
 
-    #c.SaveAs("/afs/cern.ch/user/z/zdemirag/www/Monojet/moriond/rfactor_"+process+".pdf")
-    #c.SaveAs("/afs/cern.ch/user/z/zdemirag/www/Monojet/moriond/rfactor_"+process+".png")
-    #c.SaveAs("/afs/cern.ch/user/z/zdemirag/www/Monojet/moriond/rfactor_"+process+".C")
-    #c.SaveAs("rfactor_"+process+".root")
 
-    c.SaveAs("/afs/cern.ch/user/s/snarayan/www/figs/monotop/fits_wcr/rfactor_"+process+".pdf")
-    c.SaveAs("/afs/cern.ch/user/s/snarayan/www/figs/monotop/fits_wcr/rfactor_"+process+".png")
-    c.SaveAs("/afs/cern.ch/user/s/snarayan/www/figs/monotop/fits_wcr/rfactor_"+process+".C")
+    plotDir = '~/public_html/figs/monotop/fits_wcr/'
+
+    c.SaveAs(plotDir+"rfactor_"+process+".pdf")
+    c.SaveAs(plotDir+"rfactor_"+process+".png")
+    c.SaveAs(plotDir+"rfactor_"+process+".C")
 
     #c.SaveAs("rfactor_"+process+".root")
 

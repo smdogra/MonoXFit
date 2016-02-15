@@ -23,6 +23,32 @@ systematics=["Met","FP","btag","mistag","wjethf","zjethf","gjethf"]
 
 #  OPTIONAL --> 'extra_cuts': additional cuts maybe specific to this control region (eg ptphoton cuts) if this key is missing, the code will not complain   
  
+ALLMETSAMPLES = [
+                    #Di Electron Control Region                                                                                                                                                           
+                    "Wjets_di_electron_control","WW_di_electron_control","WZ_di_electron_control","ZZ_di_electron_control",
+                    "ttbar_di_electron_control","SingleTop_di_electron_control","ZllLO_di_electron_control",
+                    #Di Muon Control Region                                                                                                                                                       
+                    "Wjets_di_muon_control","WW_di_muon_control","WZ_di_muon_control","ZZ_di_muon_control",
+                    "ttbar_di_muon_control","SingleTop_di_muon_control","ZllLO_di_muon_control",
+                    #Single Muon W Control Region                                                                                                                                                          
+                    "Wjets_single_muon_w_control","WW_single_muon_w_control","WZ_single_muon_w_control","ZZ_single_muon_w_control","ttbar_single_muon_w_control",
+                    "SingleTop_single_muon_w_control","QCD_single_muon_w_control","ZllLO_single_muon_w_control",
+                    #Single Muon Top Control Region                                                                                                                                                  
+                    "Wjets_single_muon_top_control","WW_single_muon_top_control","WZ_single_muon_top_control","ZZ_single_muon_top_control","ttbar_single_muon_top_control",
+                    "SingleTop_single_muon_top_control","QCD_single_muon_top_control","ZllLO_single_muon_top_control",
+                    #Single Electron W Control Region                                                                                                                                                   
+                    "Wjets_single_electron_w_control","WW_single_electron_w_control","WZ_single_electron_w_control","ZZ_single_electron_w_control",
+                    "ttbar_single_electron_w_control",
+                    "SingleTop_single_electron_w_control","QCD_single_electron_w_control","ZllLO_single_electron_w_control",
+                    #Single Electron Top Control Region                                                                                                                                                  
+                    "Wjets_single_electron_top_control","WW_single_electron_top_control","WZ_single_electron_top_control","ZZ_single_electron_top_control",
+                    "ttbar_single_electron_top_control",
+                    "SingleTop_single_electron_top_control","QCD_single_electron_top_control","ZllLO_single_electron_top_control",
+                    #Photon Control Region                                                                                                                                                                 
+                    "Photon_photon_control","QCD_photon_control",
+                    #Signal Region                                                                                                                                                                        
+                    "Wjets_signal","ZllLO_signal","WW_signal","WZ_signal","ZZ_signal","ttbar_signal","SingleTop_signal","QCD_signal","ZnunuLO_signal"
+                ] 
 monotop_category = {
 	    'name':"monotop"
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/../BaconAnalyzer/MJSelection/skim/monojet-combo-electron.root"  # Without recoil corrections
@@ -135,5 +161,7 @@ monotop_category = {
 		  ,"QCD_single_electron_w_control"       :['singleelectronw','qcd',1,0]
 		  ,"data_single_electron_w_control"      :['singleelectronw','data',0,0]
 	   	},
+      "metsamples":ALLMETSAMPLES[:]
+
 }
 categories = [monotop_category]

@@ -28,10 +28,10 @@ def contains(s1,s2):
 def symmetrize(nominal,up,down,invert=False):
   nbins = nominal.GetNbinsX()
   for iB in xrange(1,nbins+1):
-    shift = abs(up.GetBinContent(iB)-down.GetBinContent(iB))*0.5
+    shift = (up.GetBinContent(iB)-down.GetBinContent(iB))*0.5
     #print iB,shift,up.GetBinContent(iB), down.GetBinContent(iB)
     nominalVal = nominal.GetBinContent(iB)
-    if invert:
+    if invert and False:
       # for something like W CR, to keep things anticorrelated
       up.SetBinContent(iB,nominalVal-shift)
       down.SetBinContent(iB,nominalVal+shift)
@@ -77,9 +77,9 @@ for name,syst in shapes.iteritems():
   nominal = fIn.Get(syst.nominal)
   up = fIn.Get(syst.up)
   down = fIn.Get(syst.down)
-  symmetrize(nominal,up,down,contains(syst.nominal,['singlemuonw','singleelectronw']))
   smooth(up,nominal)
   smooth(down,nominal)
+  symmetrize(nominal,up,down,contains(syst.nominal,['singlemuonw','singleelectronw']))
   fIn.WriteTObject(nominal)
   fIn.WriteTObject(up)
   fIn.WriteTObject(down)
