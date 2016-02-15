@@ -140,6 +140,7 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   CRs[0].add_nuisance("PhotonEff",0.02) 
   CRs[0].add_nuisance_shape("gjethf",_fOut)
   CRs[1].add_nuisance_shape("zjethf",_fOut)
+  CRs[2].add_nuisance_shape("zjethf",_fOut)
   #CRs[1].add_nuisance("DimuonEff",0.02)
   #CRs[2].add_nuisance("DielEff",0.04)
   

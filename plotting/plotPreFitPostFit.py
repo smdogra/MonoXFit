@@ -37,7 +37,7 @@ def plotPreFitPostFit(region):
   h_postfit_sig = f_mlfit.Get("shapes_fit_b/"+channel['signal']+"/total_background")
   h_prefit_sig = f_mlfit.Get("shapes_prefit/"+channel['signal']+"/total_background")
   
-  b_width = [50,50,50,100,100,400]
+  b_width = [50,50,50,100,500]
 
   #for hbin in range(0,h_data.GetNbinsX()+1):
   #  print "HELLO",hbin+1, h_data.GetBinContent(hbin+1), b_width[hbin]*h_postfit_sig.GetBinContent(hbin+1),h_postfit_sig.GetBinError(hbin+1)*b_width[hbin], b_width[hbin]*h_prefit_sig.GetBinContent(hbin+1)
@@ -221,7 +221,7 @@ def plotPreFitPostFit(region):
   latex2.SetTextSize(0.5*c.GetTopMargin())
   latex2.SetTextFont(42)
   latex2.SetTextAlign(31) # align right
-  latex2.DrawLatex(0.9, 0.94,"2.1 fb^{-1} (13 TeV)")
+  latex2.DrawLatex(0.9, 0.94,"2.24 fb^{-1} (13 TeV)")
   latex2.SetTextSize(0.6*c.GetTopMargin())
   latex2.SetTextFont(62)
   latex2.SetTextAlign(11) # align right

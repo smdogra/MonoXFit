@@ -28,7 +28,7 @@ monotop_category = {
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/../BaconAnalyzer/MJSelection/skim/monojet-combo-electron.root"  # Without recoil corrections
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/monojet-combo-electron.root_recoil"
        #,'in_file_name':"files/monotop-boosted-combo-weight.root"
-       ,'in_file_name':"files/monotop-boosted-combo-feb9.root"
+       ,'in_file_name':"files/monotop-boosted-combo-feb11.root"
 	   ,"cutstring":"met>250 && met<1000"
 	   ,"varstring":["met",250,1000]
 	   ,"weightname":"weight"
