@@ -33,11 +33,13 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   controlmcmistagUp = _fin.Get("singlemuonw_wjets_mistagUp"); controlmcmistagUp_e = _fin.Get("singleelectronw_wjets_mistagUp")
   controlmcmistagDown = _fin.Get("singlemuonw_wjets_mistagDown"); controlmcmistagDown_e = _fin.Get("singleelectronw_wjets_mistagDown")
 
+  '''
   # wjethf systs
   targetmcwjethfUp = _fin.Get("signal_wjets_wjethfUp")
   targetmcwjethfDown = _fin.Get("signal_wjets_wjethfDown")
   controlmcwjethfUp = _fin.Get("singlemuonw_wjets_wjethfUp"); controlmcwjethfUp_e = _fin.Get("singleelectronw_wjets_wjethfUp")
   controlmcwjethfDown = _fin.Get("singlemuonw_wjets_wjethfDown"); controlmcwjethfDown_e = _fin.Get("singleelectronw_wjets_wjethfDown")
+  '''
 
   # Create the transfer factors and save them (not here you can also create systematic variations of these 
   # transfer factors (named with extention _sysname_Up/Down
@@ -74,6 +76,7 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   WScalesmistagDown_e = targetmcmistagDown.Clone(); WScalesmistagDown_e.SetName("wen_weights_%s_mistag_Down"%cid)
   WScalesmistagDown_e.Divide(controlmcmistagDown_e);  _fOut.WriteTObject(WScalesmistagDown_e)  # always write out to the directory 
 
+  '''
   ### HF ###  
   WScaleswjethfUp = targetmcwjethfUp.Clone(); WScaleswjethfUp.SetName("wmn_weights_%s_wjethf_Up"%cid)
   WScaleswjethfUp.Divide(controlmcwjethfUp);  _fOut.WriteTObject(WScaleswjethfUp)  # always write out to the directory 
@@ -86,6 +89,7 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 
   WScaleswjethfDown_e = targetmcwjethfDown.Clone(); WScaleswjethfDown_e.SetName("wen_weights_%s_wjethf_Down"%cid)
   WScaleswjethfDown_e.Divide(controlmcwjethfDown_e);  _fOut.WriteTObject(WScaleswjethfDown_e)  # always write out to the directory 
+  '''
 
   #######################################################################################################
 
@@ -115,7 +119,7 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   #CRs[1].add_nuisance("SingleElEff",0.02)
 
   for cr in [0,1]:
-    for uncert in ['btag','mistag','wjethf']:
+    for uncert in ['btag','mistag']:
       CRs[cr].add_nuisance_shape(uncert,_fOut)
   
   # Statistical uncertainties too!, one per bin 

@@ -25,6 +25,7 @@ def contains(s1,s2):
         return True
     return False
 
+
 def symmetrize(nominal,up,down,invert=False):
   nbins = nominal.GetNbinsX()
   for iB in xrange(1,nbins+1):
@@ -60,6 +61,7 @@ def smooth(var,nominal,N=1):
 baseIn = root.TFile.Open('mono-x.root','UPDATE')
 fIn = baseIn.Get('category_monotop')
 #fOut = root.TFile.Open('smoothed.root','RECREATE')
+#systNames = ['zjets_zjethf','gjets_gjethf','wjets_wjethf']
 systNames = ['zjethf','gjethf','wjethf']
 shapes = {}
 
@@ -73,12 +75,13 @@ for iK in xrange(nKeys):
       shapes[newSyst.up] = newSyst
 
 for name,syst in shapes.iteritems():
-#  print name
+  print name
   nominal = fIn.Get(syst.nominal)
   up = fIn.Get(syst.up)
   down = fIn.Get(syst.down)
-  smooth(up,nominal)
-  smooth(down,nominal)
+  for i in xrange(1):
+    smooth(up,nominal)
+    smooth(down,nominal)
   symmetrize(nominal,up,down,contains(syst.nominal,['singlemuonw','singleelectronw']))
   fIn.WriteTObject(nominal)
   fIn.WriteTObject(up)
