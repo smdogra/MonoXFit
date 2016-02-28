@@ -45,6 +45,8 @@ def smooth(var,nominal,N=1):
   hist.Divide(nominal)
   nbins = hist.GetNbinsX()
   vals = array('f',[0 for i in xrange(nbins)])
+#  for iB in xrange(1,nbins+1):
+#    print hist.GetBinContent(iB)
   for iB in xrange(1,nbins+1):
     if iB<=N or nbins-iB<N:
       continue
@@ -52,17 +54,19 @@ def smooth(var,nominal,N=1):
     for jB in xrange(iB-N,iB+N+1):
       tmpsum += hist.GetBinContent(jB)
     tmpsum /= (2*N+1)
+#    print hist.GetBinContent(iB-1),hist.GetBinContent(iB),hist.GetBinContent(iB+1),tmpsum
     vals[iB-1] = tmpsum
   for iB in xrange(1,nbins+1):
     if iB<=N or nbins-iB<N:
       continue
     var.SetBinContent(iB,vals[iB-1]*nominal.GetBinContent(iB))
 
-baseIn = root.TFile.Open('mono-x.root','UPDATE')
+baseIn = root.TFile.Open('mono-x-smoothed.root','UPDATE')
 fIn = baseIn.Get('category_monotop')
 #fOut = root.TFile.Open('smoothed.root','RECREATE')
 #systNames = ['zjets_zjethf','gjets_gjethf','wjets_wjethf']
-systNames = ['zjethf','gjethf','wjethf']
+systNames = ['wjets_btag','wjets_mistag','ttbar_btag','ttbar_mistag']
+#systNames = ['zjethf','gjethf','wjethf','btag','mistag']
 shapes = {}
 
 keys = fIn.GetListOfKeys()
