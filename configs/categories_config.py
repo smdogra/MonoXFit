@@ -29,7 +29,7 @@ monotop_category = {
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/../BaconAnalyzer/MJSelection/skim/monojet-combo-electron.root"  # Without recoil corrections
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/monojet-combo-electron.root_recoil"
        #,'in_file_name':"files/monotop-boosted-combo-weight.root"
-       ,'in_file_name':"files/monotop-boosted-combo-feb16.root"
+       ,'in_file_name':"files/monotop-boosted-combo-feb28.root"
 	   ,"cutstring":"met>250 && met<1000"
 	   ,"varstring":["met",250,1000]
 	   ,"weightname":"weight"
@@ -55,12 +55,18 @@ monotop_category = {
 		  ,"data_signal"	           :['signal','data',0,0]
 
 		  # some signals 
-		  ,"Mres1100_Mchi100_signal"		   :['signal','Mres1100_Mchi100',1,1]
-		  ,"Mres1300_Mchi100_signal"		   :['signal','Mres1300_Mchi100',1,1]
-		  ,"Mres900_Mchi100_signal"		   :['signal','Mres900_Mchi100',1,1]
-		  ,"Mchi300_signal"		   :['signal','Mchi300',1,1]
-          ,"Mchi500_signal"		   :['signal','Mchi500',1,1]
-          ,"Mchi900_signal"		   :['signal','Mchi900',1,1]
+		  ,"Mres-900_Mchi-100_signal"		   :['signal','Mres900_Mchi100',1,1]
+		  ,"Mres-1100_Mchi-100_signal"		   :['signal','Mres1100_Mchi100',1,1]
+		  ,"Mres-1300_Mchi-100_signal"		   :['signal','Mres1300_Mchi100',1,1]
+		  ,"Mres-1500_Mchi-100_signal"		   :['signal','Mres1500_Mchi100',1,1]
+		  ,"Mres-1900_Mchi-100_signal"		   :['signal','Mres1900_Mchi100',1,1]
+		  ,"Mchi-300_signal"		   :['signal','Mchi300',1,1]
+      ,"Mchi-500_signal"		   :['signal','Mchi500',1,1]
+      ,"Mchi-700_signal"		   :['signal','Mchi700',1,1]
+      ,"Mchi-900_signal"		   :['signal','Mchi900',1,1]
+      ,"Mchi-1100_signal"		   :['signal','Mchi1100',1,1]
+      ,"Mchi-1300_signal"		   :['signal','Mchi1300',1,1]
+      ,"Mchi-1500_signal"		   :['signal','Mchi1500',1,1]
 
 		  #,"A_2000_150_g025_signal"		   :['signal','axialvector_2000150',1,1]
 		  #,"A_2000_100_g025_signal"		   :['signal','axialvector_2000100',1,1]

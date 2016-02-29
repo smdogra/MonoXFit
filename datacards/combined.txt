@@ -13,14 +13,20 @@ shapes *         pho       ../combined_model.root combinedws:monotop_photon_$PRO
 shapes data_obs  pho       ../combined_model.root combinedws:monotop_photon_data
 shapes gjets     pho       ../combined_model.root combinedws:monotop_photonModel_zjets_model
 shapes *         sig       ../combined_model.root combinedws:monotop_signal_$PROCESS combinedws:monotop_signal_$PROCESS_$SYSTEMATIC
-shapes data_obs  sig       ../combined_model.root combinedws:monotop_signal_fakedata
-#shapes data_obs  sig       ../combined_model.root combinedws:monotop_signal_data
+#shapes data_obs  sig       ../combined_model.root combinedws:monotop_signal_fakedata
+shapes data_obs  sig       ../combined_model.root combinedws:monotop_signal_data
 #shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mres900_Mchi100 combinedws:monotop_signal_Mres900_Mchi100_$SYSTEMATIC
 #shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mres1100_Mchi100 combinedws:monotop_signal_Mres1100_Mchi100_$SYSTEMATIC
 #shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mres1300_Mchi100 combinedws:monotop_signal_Mres1300_Mchi100_$SYSTEMATIC
+#shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mres1500_Mchi100 combinedws:monotop_signal_Mres1500_Mchi100_$SYSTEMATIC
+#shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mres1900_Mchi100 combinedws:monotop_signal_Mres1900_Mchi100_$SYSTEMATIC
 #shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mchi300 combinedws:monotop_signal_Mchi300_$SYSTEMATIC
 #shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mchi500 combinedws:monotop_signal_Mchi500_$SYSTEMATIC
-shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mchi900 combinedws:monotop_signal_Mchi900_$SYSTEMATIC
+#shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mchi700 combinedws:monotop_signal_Mchi700_$SYSTEMATIC
+#shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mchi900 combinedws:monotop_signal_Mchi900_$SYSTEMATIC
+shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mchi1100 combinedws:monotop_signal_Mchi1100_$SYSTEMATIC
+#shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mchi1300 combinedws:monotop_signal_Mchi1300_$SYSTEMATIC
+#shapes signal    sig       ../combined_model.root combinedws:monotop_signal_Mchi1500 combinedws:monotop_signal_Mchi1500_$SYSTEMATIC
 shapes ttbar     sig       ../combined_model.root combinedws:monotop_signal_ttbar_model
 shapes wjets     sig       ../combined_model.root combinedws:monotop_signal_wjets_model
 shapes zvv       sig       ../combined_model.root combinedws:monotop_signal_zjets_model

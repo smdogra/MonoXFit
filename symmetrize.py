@@ -83,10 +83,10 @@ for name,syst in shapes.iteritems():
   nominal = fIn.Get(syst.nominal)
   up = fIn.Get(syst.up)
   down = fIn.Get(syst.down)
-  for i in xrange(1):
-    smooth(up,nominal)
-    smooth(down,nominal)
-  symmetrize(nominal,up,down,contains(syst.nominal,['singlemuonw','singleelectronw']))
+#  for i in xrange(1):
+#    smooth(up,nominal)
+#    smooth(down,nominal)
+#  symmetrize(nominal,up,down,contains(syst.nominal,['singlemuonw','singleelectronw']))
   fIn.WriteTObject(nominal)
   fIn.WriteTObject(up)
   fIn.WriteTObject(down)

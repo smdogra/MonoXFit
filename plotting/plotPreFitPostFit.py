@@ -175,7 +175,7 @@ def plotPreFitPostFit(region):
   dummy.GetXaxis().SetLabelSize(0)
   #dummy.SetMaximum(5*dummy.GetMaximum())
   dummy.SetMaximum(dummy.GetMaximum())
-  dummy.SetMinimum(0.002)
+  dummy.SetMinimum(0.001)
   dummy.GetYaxis().SetTitleOffset(1.15)
   dummy.Draw()
   
