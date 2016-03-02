@@ -4,6 +4,9 @@ import ROOT as root
 from array import array
 from re import sub
 
+def writeOut(fout,tobject):
+  fOut.WriteTObject(tobject,tobject.GetName(),'Overwrite')
+
 class Syst(object):
   def __init__(self,updownname):
     ll = updownname.split('_')
@@ -48,25 +51,32 @@ def smooth(var,nominal,N=1):
 #  for iB in xrange(1,nbins+1):
 #    print hist.GetBinContent(iB)
   for iB in xrange(1,nbins+1):
-    if iB<=N or nbins-iB<N:
-      continue
-    tmpsum=0.
+#    if iB<=N or nbins-iB<N:
+#      continue
+    tmpsum = []
     for jB in xrange(iB-N,iB+N+1):
-      tmpsum += hist.GetBinContent(jB)
-    tmpsum /= (2*N+1)
+      if jB < 1: jB=1
+      if jB > nbins: jB=nbins
+      tmpsum.append(hist.GetBinContent(jB))
+    tmpsum.sort()
+#    print "after:", tmpsum
 #    print hist.GetBinContent(iB-1),hist.GetBinContent(iB),hist.GetBinContent(iB+1),tmpsum
-    vals[iB-1] = tmpsum
+    vals[iB-1] = tmpsum[N]
+#    if vals[iB-1] == 1: vals[iB-1] = vals[iB-2]
   for iB in xrange(1,nbins+1):
-    if iB<=N or nbins-iB<N:
-      continue
+#    if iB<=N or nbins-iB<N:
+#      continue
+#    print vals[iB-1]
     var.SetBinContent(iB,vals[iB-1]*nominal.GetBinContent(iB))
 
 baseIn = root.TFile.Open('mono-x-smoothed.root','UPDATE')
 fIn = baseIn.Get('category_monotop')
-#fOut = root.TFile.Open('smoothed.root','RECREATE')
+fOut = root.TFile.Open('smoothed.root','RECREATE')
 #systNames = ['zjets_zjethf','gjets_gjethf','wjets_wjethf']
-systNames = ['wjets_btag','wjets_mistag','ttbar_btag','ttbar_mistag']
+systNames = ['ttbar_btag','ttbar_mistag','signal_zjets_btag','signal_zjets_mistag']
+#systNames = ['wjets_btag']
 #systNames = ['zjethf','gjethf','wjethf','btag','mistag']
+#systNames = ['btag','mistag']  
 shapes = {}
 
 keys = fIn.GetListOfKeys()
@@ -83,13 +93,13 @@ for name,syst in shapes.iteritems():
   nominal = fIn.Get(syst.nominal)
   up = fIn.Get(syst.up)
   down = fIn.Get(syst.down)
-#  for i in xrange(1):
-#    smooth(up,nominal)
-#    smooth(down,nominal)
-#  symmetrize(nominal,up,down,contains(syst.nominal,['singlemuonw','singleelectronw']))
-  fIn.WriteTObject(nominal)
-  fIn.WriteTObject(up)
-  fIn.WriteTObject(down)
+  for i in xrange(1):
+    smooth(up,nominal)
+    smooth(down,nominal)
+  symmetrize(nominal,up,down,contains(syst.nominal,['singlemuonw','singleelectronw','signal']))
+  writeOut(fIn,nominal)
+  writeOut(fIn,up)
+  writeOut(fIn,down)
 #  fOut.WriteTObject(nominal)
 #  fOut.WriteTObject(up)
 #  fOut.WriteTObject(down)

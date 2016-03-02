@@ -327,7 +327,7 @@ if options.plotfile:
     leg.Draw()
     fout.WriteTObject(canvas_nuis)
     
-    plotsDir = '~/public_html/figs/monotop/fits_smoothed/'
+    plotsDir = '~/public_html/figs/monotop/fits_wcr/'
 
     canvas_nuis.SaveAs(plotsDir+"pulls.pdf") 
     canvas_nuis.SaveAs(plotsDir+"pulls.png") 

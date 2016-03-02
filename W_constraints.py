@@ -122,9 +122,9 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
     CRs[cr].add_nuisance("SFSubJetBMistag",0.07)
     CRs[cr].add_nuisance("SFSubJetBtag",0.07)
 
-  for cr in [0,1]:
-    for uncert in ['btag','mistag']:
-      CRs[cr].add_nuisance_shape(uncert,_fOut)
+  # for cr in [0,1]:
+  #   for uncert in ['btag','mistag']:
+  #     CRs[cr].add_nuisance_shape(uncert,_fOut)
   
   # Statistical uncertainties too!, one per bin 
   for b in range(targetmc.GetNbinsX()):

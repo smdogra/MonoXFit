@@ -13,7 +13,14 @@ def plot_ratio(process):
 
     baseDir = getenv('CMSSW_BASE')+'/src/MonoX/'
     f = TFile(baseDir + 'combined_model.root','READ')
-        
+
+    if 'electron' in process:
+      extralabel = 'Electrons'
+    elif 'muon' in process:
+      extralabel = 'Muons'
+    elif 'photon' in process:
+      extralabel = 'Photons'
+
     if (process=='dimuon'):
         dirname = "Z_constraints_category_monotop"
         base    = "zmm_weights_monotop"
@@ -147,6 +154,7 @@ def plot_ratio(process):
     latex2.SetNDC()
     latex2.SetTextSize(0.035)
     latex2.SetTextAlign(31) # align right
+    latex2.DrawLatex(0.3, 0.95, extralabel);
     latex2.DrawLatex(0.87, 0.95, "2.26 fb^{-1} (13 TeV)");
 #    latex2.DrawLatex(0.87, 0.95, "2.1 pb^{-1} (13 TeV)");
 

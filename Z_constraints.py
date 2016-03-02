@@ -20,6 +20,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   gvptname   = "genVpt"    # Weights are in generator pT
 
   target             = _fin.Get("signal_zjets")      # define monimal (MC) of which process this config will model
+  target_btagUp      = _fin.Get("signal_zjets_btagUp")
+  target_btagDown      = _fin.Get("signal_zjets_btagDown")
+  target_mistagUp      = _fin.Get("signal_zjets_mistagUp")
+  target_mistagDown      = _fin.Get("signal_zjets_mistagDown")
   controlmc          = _fin.Get("dimuon_zll")           # defines Zmm MC of which process will be controlled by
   controlmc_photon   = _fin.Get("photon_gjets")       # defines Gjets MC of which process will be controlled by
   controlmc_e        = _fin.Get("dielectron_zll")           # defines Zmm MC of which process will be controlled by
@@ -41,13 +45,40 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   ZeeScales.Divide(controlmc_e)
   _fOut.WriteTObject(ZeeScales)  # always write out to the directory 
 
+  ### btag ###
+  ZmmScales_btagUp = target_btagUp.Clone(); ZmmScales_btagUp.SetName("zmm_weights_%s_btag_Up"%cid)
+  ZmmScales_btagUp.Divide(controlmc); _fOut.WriteTObject(ZmmScales_btagUp)
+  
+  ZmmScales_btagDown = target_btagDown.Clone(); ZmmScales_btagDown.SetName("zmm_weights_%s_btag_Down"%cid)
+  ZmmScales_btagDown.Divide(controlmc); _fOut.WriteTObject(ZmmScales_btagDown)
+
+  ZmmScales_mistagUp = target_mistagUp.Clone(); ZmmScales_mistagUp.SetName("zmm_weights_%s_mistag_Up"%cid)
+  ZmmScales_mistagUp.Divide(controlmc); _fOut.WriteTObject(ZmmScales_mistagUp)
+  
+  ZmmScales_mistagDown = target_mistagDown.Clone(); ZmmScales_mistagDown.SetName("zmm_weights_%s_mistag_Down"%cid)
+  ZmmScales_mistagDown.Divide(controlmc); _fOut.WriteTObject(ZmmScales_mistagDown)
+
+  ZeeScales_btagUp = target_btagUp.Clone(); ZeeScales_btagUp.SetName("zee_weights_%s_btag_Up"%cid)
+  ZeeScales_btagUp.Divide(controlmc_e); _fOut.WriteTObject(ZeeScales_btagUp)
+  
+  ZeeScales_btagDown = target_btagDown.Clone(); ZeeScales_btagDown.SetName("zee_weights_%s_btag_Down"%cid)
+  ZeeScales_btagDown.Divide(controlmc_e); _fOut.WriteTObject(ZeeScales_btagDown)
+
+  ZeeScales_mistagUp = target_mistagUp.Clone(); ZeeScales_mistagUp.SetName("zee_weights_%s_mistag_Up"%cid)
+  ZeeScales_mistagUp.Divide(controlmc_e); _fOut.WriteTObject(ZeeScales_mistagUp)
+  
+  ZeeScales_mistagDown = target_mistagDown.Clone(); ZeeScales_mistagDown.SetName("zee_weights_%s_mistag_Down"%cid)
+  ZeeScales_mistagDown.Divide(controlmc_e); _fOut.WriteTObject(ZeeScales_mistagDown)
+
+  ### done btag ###
+
   ### HF ###
   '''
-  ZmmScalesUp = targetmcUp.Clone(); ZmmScalesUp.SetName("zmm_weights_%s_zjethf_Up"%(cid))
-  ZmmScalesUp.Divide(controlmc); _fOut.WriteTObject(ZmmScalesUp)
+  ZeeScalesUp = targetmcUp.Clone(); ZeeScalesUp.SetName("zee_weights_%s_zjethf_Up"%(cid))
+  ZeeScalesUp.Divide(controlmc); _fOut.WriteTObject(ZeeScalesUp)
 
-  ZmmScalesDown = targetmcDown.Clone(); ZmmScalesDown.SetName("zmm_weights_%s_zjethf_Down"%(cid))
-  ZmmScalesDown.Divide(controlmc); _fOut.WriteTObject(ZmmScalesDown)
+  ZeeScalesDown = targetmcDown.Clone(); ZeeScalesDown.SetName("zee_weights_%s_zjethf_Down"%(cid))
+  ZeeScalesDown.Divide(controlmc); _fOut.WriteTObject(ZeeScalesDown)
 
   ZeeScalesUp = targetmcUp.Clone(); ZeeScalesUp.SetName("zee_weights_%s_zjethf_Up"%(cid))
   ZeeScalesUp.Divide(controlmc_e); _fOut.WriteTObject(ZeeScalesUp)
@@ -144,6 +175,8 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   for cr in [0,1,2]:
     CRs[cr].add_nuisance("SFSubJetBMistag",0.04)
     CRs[cr].add_nuisance("SFSubJetBtag",0.04)
+    CRs[cr].add_nuisance_shape('btag',_fOut)
+    CRs[cr].add_nuisance_shape('mistag',_fOut)
 #  CRs[0].add_nuisance_shape("gjethf",_fOut)
 #  CRs[1].add_nuisance_shape("zjethf",_fOut)
 #  CRs[2].add_nuisance_shape("zjethf",_fOut)
@@ -169,6 +202,11 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   gvptname   = "genVpt"    # Weights are in generator pT
 
   target             = _fin.Get("signal_zjets")      # define monimal (MC) of which process this config will model
+  target_btagUp      = _fin.Get("signal_zjets_btagUp")
+  target_btagDown      = _fin.Get("signal_zjets_btagDown")
+  target_mistagUp      = _fin.Get("signal_zjets_mistagUp")
+  target_mistagDown      = _fin.Get("signal_zjets_mistagDown")
+  
   controlmc          = _fin.Get("dimuon_zll")           # defines Zmm MC of which process will be controlled by
   controlmc_photon   = _fin.Get("photon_gjets")       # defines Gjets MC of which process will be controlled by
  
@@ -194,11 +232,25 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
 
   _fOut.WriteTObject( PhotonSpectrum )
   _fOut.WriteTObject( ZvvSpectrum )
-
+  
   #################################################################################################################
 
   Pho = controlmc_photon.Clone(); Pho.SetName("photon_weights_denom_%s"%nam)
   Zvv = target.Clone(); Zvv.SetName("photon_weights_nom_%s"%nam)
+
+  ### btag ###
+  PhoScales_btagUp = target_btagUp.Clone(); PhoScales_btagUp.SetName("photon_weights_%s_btag_Up"%nam)
+  PhoScales_btagUp.Divide(Pho); _fOut.WriteTObject(PhoScales_btagUp)
+  
+  PhoScales_btagDown = target_btagDown.Clone(); PhoScales_btagDown.SetName("photon_weights_%s_btag_Down"%nam)
+  PhoScales_btagDown.Divide(Pho); _fOut.WriteTObject(PhoScales_btagDown)
+
+  PhoScales_mistagUp = target_mistagUp.Clone(); PhoScales_mistagUp.SetName("photon_weights_%s_mistag_Up"%nam)
+  PhoScales_mistagUp.Divide(Pho); _fOut.WriteTObject(PhoScales_mistagUp)
+  
+  PhoScales_mistagDown = target_mistagDown.Clone(); PhoScales_mistagDown.SetName("photon_weights_%s_mistag_Down"%nam)
+  PhoScales_mistagDown.Divide(Pho); _fOut.WriteTObject(PhoScales_mistagDown)
+  ### done btag ###
 
   ratio_ren_scale_up = Zvv.Clone();  ratio_ren_scale_up.SetName("photon_weights_%s_renscale_Up"%nam);
   for b in range(ratio_ren_scale_up.GetNbinsX()): ratio_ren_scale_up.SetBinContent(b+1,0)  
