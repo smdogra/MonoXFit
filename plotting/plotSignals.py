@@ -2,15 +2,17 @@
 
 import ROOT as root
 
-fIn = root.TFile.Open('../mono-x.root')
+fIn = root.TFile.Open('../mono-x-smoothed.root')
 fdir = fIn.Get('category_monotop')
 signals = [
-           ('Mchi900' ,'M_{V}=900 GeV',2),
-           ('Mchi500' ,'M_{V}=500 GeV',1),
-           ('Mchi300' ,'M_{V}=300 GeV',0),
-           ('Mres1300_Mchi100' ,'M_{S}=1.3 TeV, M_{#chi}=100 GeV',2),
-           ('Mres1100_Mchi100' ,'M_{S}=1.1 TeV, M_{#chi}=100 GeV',1),
+#           ('Mchi900' ,'M_{V}=900 GeV',2),
+#           ('Mchi500' ,'M_{V}=500 GeV',1),
+           ('Mchi300' ,'M_{V}=300 GeV',2),
+           ('Mchi1500' ,'M_{V}=1.5 TeV',3),
+#           ('Mres1300_Mchi100' ,'M_{S}=1.3 TeV, M_{#chi}=100 GeV',2),
+#           ('Mres1100_Mchi100' ,'M_{S}=1.1 TeV, M_{#chi}=100 GeV',1),
            ('Mres900_Mchi100' ,'M_{S}=0.9 TeV, M_{#chi}=100 GeV',0),
+           ('Mres1900_Mchi100' ,'M_{S}=1.8 TeV, M_{#chi}=100 GeV',1),
            ]
 
 signals.reverse()
@@ -23,12 +25,13 @@ leg = root.TLegend(.55,.7,.98,.98)
 leg.SetFillStyle(0)
 leg.SetBorderSize(0)
 binwidths = [50,50,50,100,100,400]
-colors = [root.kRed, root.kBlue, root.kBlack]
+colors = [root.kRed, root.kBlue, root.kBlack, root.kGreen]
 drawn=False
 for sig in signals:
   k = sig[0]
   label = sig[1]
   num = sig[2]
+  print k
   hsig = fdir.Get('signal_'+k)
   hsig.SetLineColor(colors[num])
   hsig.SetLineWidth(2)
@@ -49,9 +52,9 @@ for sig in signals:
   leg.AddEntry(hsig,label,'l')
 
 leg.Draw()
-c.SaveAs('~/www/figs/monotop/fits/signals.png')
-c.SaveAs('~/www/figs/monotop/fits/signals.pdf')
-c.SaveAs('~/www/figs/monotop/fits/signals.C')
+c.SaveAs('~/public_html/figs/monotop/fits/signals_comp.png')
+c.SaveAs('~/public_html/figs/monotop/fits/signals_comp.pdf')
+c.SaveAs('~/public_html/figs/monotop/fits/signals_comp.C')
 
 
 

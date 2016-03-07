@@ -13,8 +13,10 @@ def plotPreFitPostFit(region):
     extralabel = 'Electrons'
   elif 'muon' in region:
     extralabel = 'Muons'
-  else:
+  elif 'photon' in region:
     extralabel = 'Photons'
+  else:
+    extralabel = 'Signal'
   global blind
   channel = {"singlemuonw":"wmn", 
               "singlemuontop":"tmn",
@@ -34,10 +36,13 @@ def plotPreFitPostFit(region):
   f_data.cd("category_monotop")
   h_data = None
   blind = False 
+  h_data = gDirectory.Get(region+"_data")
+  '''
   if not region=="signal":
     h_data = gDirectory.Get(region+"_data")
   else:
     blind = True
+  '''
   #print region, 'data yield:',h_data.Integral()
   
   h_postfit_sig = f_mlfit.Get("shapes_fit_b/"+channel['signal']+"/total_background")
@@ -54,7 +59,8 @@ def plotPreFitPostFit(region):
       'qcd',
       'ttbar',
       'stop',
-      'dibosons'
+      'dibosons',
+      'zvv',
       'zjets',
       'zll',
       'wjets'
@@ -66,6 +72,7 @@ def plotPreFitPostFit(region):
       'qcd':kBlue+6,
       'ttbar':kRed,
       'zjets':kAzure,
+      'zvv':kAzure,
       'zll':kYellow,
       'wjets':kOrange,
       'stop':kPink
@@ -85,13 +92,14 @@ def plotPreFitPostFit(region):
 
   for process in processes:
     h_prefit[process] = f_mlfit.Get("shapes_prefit/"+channel[region]+"/"+process)
+    print "shapes_prefit/"+channel[region]+"/"+process, h_prefit[process]
     if (not h_prefit[process]): continue
     if (str(h_prefit[process].Integral())=="nan"): continue
     for i in range(1,h_prefit[process].GetNbinsX()+1):
       content = h_prefit[process].GetBinContent(i)
       width = h_prefit[process].GetBinLowEdge(i+1)-h_prefit[process].GetBinLowEdge(i)
       h_prefit[process].SetBinContent(i,content*width)
-    #print "Pre-Fit",process,h_prefit[process].Integral()
+    print "Pre-Fit",process,h_prefit[process].Integral()
     h_prefit[process].SetLineColor(colors[process])
     h_prefit[process].SetFillColor(colors[process])
     h_all_prefit.Add(h_prefit[process])
@@ -113,10 +121,10 @@ def plotPreFitPostFit(region):
   for i in range(1, h_postfit['totalv2'].GetNbinsX()+1):
     error = h_postfit['totalv2'].GetBinError(i)
     content = h_postfit['totalv2'].GetBinContent(i)
-    print 'TOTAL',i, content, error, error/content*100
+    #print 'TOTAL',i, content, error, error/content*100
 
   for process in processes:
-    print process
+    #print process
     #h_postfit[process] = f_mlfit.Get("shapes_fit_s/ch"+channel[region]+"/"+process)
     h_postfit[process] = f_mlfit.Get("shapes_fit_b/"+channel[region]+"/"+process)
     if (not h_postfit[process]): continue
@@ -127,8 +135,8 @@ def plotPreFitPostFit(region):
       width = h_postfit[process].GetBinLowEdge(i+1)-h_postfit[process].GetBinLowEdge(i)
       h_postfit[process].SetBinContent(i,content*width)
       #new_dic[process][i] = content
-      #print "Post-Fit",i,process,content,
-      print "$"+str(round(content,2))+"$" , " & ",
+      #print "Post-Fit",i,process,content
+      #print "$"+str(round(content,2))+"$" , " & ",
 
     h_postfit[process].SetLineColor(colors[process])
     h_postfit[process].SetFillColor(colors[process])
@@ -406,7 +414,7 @@ def plotPreFitPostFit(region):
   #del h_prefit
 
 
-
+'''
 plotPreFitPostFit("singlemuonw")
 plotPreFitPostFit("singlemuontop")
 plotPreFitPostFit("dimuon")
@@ -414,5 +422,6 @@ plotPreFitPostFit("photon")
 plotPreFitPostFit("singleelectronw")
 plotPreFitPostFit("singleelectrontop")
 plotPreFitPostFit("dielectron")
+'''
 
-#plotPreFitPostFit("signal") ### fitting to real data now!
+plotPreFitPostFit("signal") ### fitting to real data now!
