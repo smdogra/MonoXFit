@@ -1,6 +1,8 @@
-from ROOT import TCanvas, TGraph, TGraphAsymmErrors, TLegend
+from ROOT import TCanvas, TGraph, TGraphAsymmErrors, TLegend, TLatex
 from array import array
 from sys import argv
+from tdrStyle import *
+setTDRStyle()
 
 def parseLine(l):
   if 'Observed' in l:
@@ -52,15 +54,15 @@ def makePlot(finname,foutname,plottitle='',masstitle=''):
   graph2Sigma = TGraphAsymmErrors(N,xarray,cent,zeros,zeros,down2Sigma,up2Sigma)
   c = TCanvas('c','c',700,600)
   c.SetLeftMargin(.15)
-  graph2Sigma.SetTitle(plottitle)
   graph2Sigma.GetXaxis().SetTitle(masstitle+'Mass [GeV]')
-  graph2Sigma.GetYaxis().SetTitle('Expected limit [pb]')
+  graph2Sigma.GetYaxis().SetTitle('Upper limit [pb]')
   graph2Sigma.GetYaxis().SetTitleOffset(1.5)
   graph2Sigma.SetLineColor(3)
   graph1Sigma.SetLineColor(5)
   graph2Sigma.SetFillColor(3)
   graph1Sigma.SetFillColor(5)
   graph2Sigma.SetMinimum(0)
+  graph2Sigma.SetMaximum(1.5*max(points[97.5]))
   graphCent.SetLineStyle(2)
   graphObs.SetLineColor(1)
   graphObs.SetLineWidth(2)
@@ -80,8 +82,21 @@ def makePlot(finname,foutname,plottitle='',masstitle=''):
   graphCent.Draw('same L')
   graphObs.Draw('same L')
   leg.Draw()
+  label = TLatex()
+  label.SetNDC()
+  label.SetTextFont(62)
+  label.SetTextAlign(11)
+  label.DrawLatex(0.19,0.85,"CMS")
+  label.SetTextFont(52)
+  label.DrawLatex(0.28,0.85,"Preliminary")
+  label.SetTextFont(42)
+  label.DrawLatex(0.19,0.75,plottitle)
+  label.SetTextSize(0.5*c.GetTopMargin())
+  label.SetTextFont(42)
+  label.SetTextAlign(31) # align right
+  label.DrawLatex(0.9, 0.94,"2.26 fb^{-1} (13 TeV)")
   c.SaveAs(foutname+'.pdf')
   c.SaveAs(foutname+'.png')
 
-makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_wcr/fcnc_obs_limits','Flavor-changing neutral current','DM ')
+makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_wcr/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','DM ')
 makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_wcr/resonant_obs_limits','Resonant production','Mediator ')
