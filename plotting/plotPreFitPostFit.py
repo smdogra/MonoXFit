@@ -16,7 +16,7 @@ def plotPreFitPostFit(region):
   elif 'photon' in region:
     extralabel = 'Photons'
   else:
-    extralabel = 'Signal'
+    extralabel = 'Signal region'
   global blind
   channel = {"singlemuonw":"wmn", 
               "singlemuontop":"tmn",
@@ -92,14 +92,14 @@ def plotPreFitPostFit(region):
 
   for process in processes:
     h_prefit[process] = f_mlfit.Get("shapes_prefit/"+channel[region]+"/"+process)
-    print "shapes_prefit/"+channel[region]+"/"+process, h_prefit[process]
+    #print "shapes_prefit/"+channel[region]+"/"+process, h_prefit[process]
     if (not h_prefit[process]): continue
     if (str(h_prefit[process].Integral())=="nan"): continue
     for i in range(1,h_prefit[process].GetNbinsX()+1):
       content = h_prefit[process].GetBinContent(i)
       width = h_prefit[process].GetBinLowEdge(i+1)-h_prefit[process].GetBinLowEdge(i)
       h_prefit[process].SetBinContent(i,content*width)
-    print "Pre-Fit",process,h_prefit[process].Integral()
+    #print "Pre-Fit",process,h_prefit[process].Integral()
     h_prefit[process].SetLineColor(colors[process])
     h_prefit[process].SetFillColor(colors[process])
     h_all_prefit.Add(h_prefit[process])
@@ -220,11 +220,11 @@ def plotPreFitPostFit(region):
   if not blind:
     legend.AddEntry(h_data,"Data ("+region+")","elp")
   legend.AddEntry(h_all_postfit, "Expected (post-fit)", "l") 
-  if blind:
+  legend.AddEntry(h_all_prefit, "Expected (pre-fit)", "l")
+  if region=='signal':
     legend.AddEntry(h_other_prefit, "Backgrounds", "f")
   else:
     legend.AddEntry(h_other_prefit, "Non-dominant backgrounds", "f")
-  legend.AddEntry(h_all_prefit, "Expected (pre-fit)", "l")
   legend.SetShadowColor(0);
   legend.SetFillColor(0);
   legend.SetLineColor(0);
@@ -234,8 +234,8 @@ def plotPreFitPostFit(region):
   latex2.SetNDC()
   latex2.SetTextSize(0.5*c.GetTopMargin())
   latex2.SetTextFont(42)
+  latex2.DrawLatex(0.12, 0.94,extralabel)
   latex2.SetTextAlign(31) # align right
-  latex2.DrawLatex(0.3, 0.94,extralabel)
   latex2.DrawLatex(0.9, 0.94,"2.26 fb^{-1} (13 TeV)")
   latex2.SetTextSize(0.6*c.GetTopMargin())
   latex2.SetTextFont(62)
@@ -414,7 +414,6 @@ def plotPreFitPostFit(region):
   #del h_prefit
 
 
-'''
 plotPreFitPostFit("singlemuonw")
 plotPreFitPostFit("singlemuontop")
 plotPreFitPostFit("dimuon")
@@ -422,6 +421,5 @@ plotPreFitPostFit("photon")
 plotPreFitPostFit("singleelectronw")
 plotPreFitPostFit("singleelectrontop")
 plotPreFitPostFit("dielectron")
-'''
 
 plotPreFitPostFit("signal") ### fitting to real data now!

@@ -43,27 +43,25 @@ def plot_ratio(process):
         dirname = "W_constraints_category_monotop" 
         base    = "wen_weights_monotop"
         label   = "R_{W(e#nu)}"
-        addsys  = sqrt(0.05*0.05 + 0.01*0.01 + 0.03*0.03)
+        addsys  = sqrt(0.02*0.02 + 0.01*0.01)
 
     if (process=='singlemuonw'):
         dirname = "W_constraints_category_monotop" 
         base    = "wmn_weights_monotop"
         label   = "R_{W(#mu#nu)}"
-        addsys  = sqrt(0.03*0.03 + 0.01*0.01)
-        #addsys  = 0 
+        addsys  = sqrt(0.01*0.01)
 
     if (process=='singleelectrontop'):
         dirname = "Top_constraints_category_monotop" 
         base    = "topen_weights_monotop"
         label   = "R_{t#bar{t}(e#nub)}"
-        addsys  = sqrt(0.05*0.05 + 0.01*0.01 + 0.03*0.03)
+        addsys  = sqrt(0.02*0.02 + 0.01*0.01)
 
     if (process=='singlemuontop'):
         dirname = "Top_constraints_category_monotop" 
         base    = "topmn_weights_monotop"
         label   = "R_{t#bar{t}(#mu#nub)}"
-        addsys  = sqrt(0.03*0.03 + 0.01*0.01)
-
+        addsys  = sqrt(0.01*0.01)
 
     ratio = f.Get(dirname+"/"+base)
     up_final = ratio.Clone("ratio")
@@ -115,7 +113,8 @@ def plot_ratio(process):
         err1 = abs(up_final.GetBinContent(b) -  ratio.GetBinContent(b))
         #uncertband.SetBinError(b,max(err1,err2))
         #uncertband.SetBinError(b,err1)
-        uncertband.SetBinError(b,up_final.GetBinContent(b) + addsys)
+        uncertband.SetBinError(b,up_final.GetBinContent(b) + ratio.GetBinContent(b)*addsys)
+#        print b,up_final.GetBinContent(b),ratio.GetBinContent(b),addsys
         #print "Uncert",b,ratio.GetBinContent(b),down_final.GetBinContent(b),up_final.GetBinContent(b), max(err1,err2)
 
     #uncertband.SetFillStyle(3144);
@@ -131,6 +130,7 @@ def plot_ratio(process):
     uncertband.GetXaxis().SetTitleSize(0.4*c.GetBottomMargin())
     uncertband.SetMaximum(1.5*ratio.GetMaximum())
     uncertband.SetMinimum(0.5*ratio.GetMinimum())
+#    uncertband.SetMinimum(0)
     uncertband.GetYaxis().SetTitleOffset(1.15)
 
     ratio.SetMarkerStyle(20)
