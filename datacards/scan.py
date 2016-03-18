@@ -20,5 +20,5 @@ def run(modelClass,modelsList,runObserved=True):
   system('sh run.sh > '+logfile)
     
 
-run('fcnc',['Mchi300','Mchi500','Mchi700','Mchi900','Mchi1300','Mchi1500'],True)
-run('resonant',['Mres%i_Mchi100'%(x) for x in [900,1100,1300,1500,1900]],True)
+run('fcnc',['Mchi300','Mchi500','Mchi700','Mchi900','Mchi1100','Mchi1300','Mchi1500'],True)
+run('resonant',['Mres%i_Mchi100'%(x) for x in [900,1100,1300,1500,1700,1900,2100]],True)

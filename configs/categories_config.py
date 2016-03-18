@@ -29,7 +29,7 @@ monotop_category = {
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/../BaconAnalyzer/MJSelection/skim/monojet-combo-electron.root"  # Without recoil corrections
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/monojet-combo-electron.root_recoil"
        #,'in_file_name':"files/monotop-boosted-combo-weight.root"
-       ,'in_file_name':"files/monotop-boosted-combo-feb28.root"
+       ,'in_file_name':"files/monotop-boosted-combo-mar9.root"
 	   ,"cutstring":"met>250 && met<1000"
 	   ,"varstring":["met",250,1000]
 	   ,"weightname":"weight"
@@ -59,7 +59,9 @@ monotop_category = {
 		  ,"Mres-1100_Mchi-100_signal"		   :['signal','Mres1100_Mchi100',1,1]
 		  ,"Mres-1300_Mchi-100_signal"		   :['signal','Mres1300_Mchi100',1,1]
 		  ,"Mres-1500_Mchi-100_signal"		   :['signal','Mres1500_Mchi100',1,1]
+		  ,"Mres-1700_Mchi-100_signal"		   :['signal','Mres1700_Mchi100',1,1]
 		  ,"Mres-1900_Mchi-100_signal"		   :['signal','Mres1900_Mchi100',1,1]
+		  ,"Mres-2100_Mchi-100_signal"		   :['signal','Mres2100_Mchi100',1,1]
 		  ,"Mchi-300_signal"		   :['signal','Mchi300',1,1]
       ,"Mchi-500_signal"		   :['signal','Mchi500',1,1]
       ,"Mchi-700_signal"		   :['signal','Mchi700',1,1]
