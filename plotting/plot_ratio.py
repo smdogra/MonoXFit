@@ -155,12 +155,14 @@ def plot_ratio(process):
     latex2.SetTextSize(0.035)
     latex2.SetTextAlign(31) # align right
     latex2.DrawLatex(0.3, 0.95, extralabel);
-    latex2.DrawLatex(0.87, 0.95, "2.26 fb^{-1} (13 TeV)");
+    latex2.DrawLatex(0.87, 0.95, "2.32 fb^{-1} (13 TeV)");
 #    latex2.DrawLatex(0.87, 0.95, "2.1 pb^{-1} (13 TeV)");
 
     latex3 = TLatex()
     latex3.SetNDC()
     latex3.SetTextSize(0.75*c.GetTopMargin())
+    latex3.DrawLatex(0.19,0.85,"Work In Progress")
+    '''
     latex3.SetTextFont(62)
     latex3.SetTextAlign(11) # align right
     latex3.DrawLatex(0.22, 0.85, "CMS");
@@ -168,11 +170,12 @@ def plot_ratio(process):
     latex3.SetTextFont(52)
     latex3.SetTextAlign(11)
     latex3.DrawLatex(0.20, 0.8, "Preliminary");
+    '''
     
     gPad.RedrawAxis()
 
 
-    plotDir = '~/public_html/figs/monotop/fits_wcr/'
+    plotDir = '~/public_html/figs/monotop/fits_wip/'
 
     c.SaveAs(plotDir+"rfactor_"+process+".pdf")
     c.SaveAs(plotDir+"rfactor_"+process+".png")

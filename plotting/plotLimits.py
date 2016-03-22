@@ -30,38 +30,33 @@ def parseLine(l):
     return 'Observed',float(l.split('<')[1])
   return float(l.split()[1].strip(':%')),float(l.split('<')[1])
 
-def makePlot(finname,foutname,plottitle='',masstitle=''):
+def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   xsecs = resonantXsecs if 'resonant' in finname else fcncXsecs
-  if 'resonant' in finname:
-    print 'RESONANT'
-  else:
-    print 'FCNC'
   points = {}
   cls = [2.5, 16, 50, 84, 97.5,'Observed']
   xaxis = []
   for cl in cls:
     points[cl] = []
-  xsec=-1
+  xsec=1
   for l in open(finname):
     try:
       if l.strip()[0]=='#':
         continue
       if 'MASS' in l:
-        xsec = xsecs[int(l.split()[1])]
-        print ''
-        stdout.write('$%6s$ & $%7.3g$'%(l.split()[1],xsec))
+        if scale:
+          xsec = xsecs[int(l.split()[1])] 
+#        print ''
+#        stdout.write('$%6s$ & $%7.3g$'%(l.split()[1],xsec))
         #stdout.write('$ %6s $ & $ %7.3 $'%(l.split()[1],xsec))
         xaxis.append(float(l.split()[1]))
       else:
         cl,val = parseLine(l)
         points[cl].append(val/xsec)
-        if cl==50 or cl=='Observed':
-          stdout.write(' & $%10.4g$'%(val/xsec))
-          if val==xsec:
-            print val,xsec
+#        if cl==50 or cl=='Observed':
+#          stdout.write(' & $%10.4g$'%(val/xsec))
     except:
       pass
-  print ''
+#  print ''
   
   N = len(xaxis)
   up1Sigma=[]; up2Sigma=[]
@@ -92,7 +87,10 @@ def makePlot(finname,foutname,plottitle='',masstitle=''):
   c.SetLogy()
   c.SetLeftMargin(.15)
   graph2Sigma.GetXaxis().SetTitle(masstitle+' [GeV]')
-  graph2Sigma.GetYaxis().SetTitle('Upper limit [#sigma/#sigma_{theo.}]')
+  if scale:
+    graph2Sigma.GetYaxis().SetTitle('Upper limit [#sigma/#sigma_{theory}]')  
+  else:
+    graph2Sigma.GetYaxis().SetTitle("Upper limit [#sigma] [pb]")  
 #  graph2Sigma.GetYaxis().SetTitleOffset(1.5)
   graph2Sigma.SetLineColor(5)
   graph1Sigma.SetLineColor(3)
@@ -100,9 +98,10 @@ def makePlot(finname,foutname,plottitle='',masstitle=''):
   graph1Sigma.SetFillColor(3)
   graph2Sigma.SetMinimum(0.5*min(points[2.5]))
   graph2Sigma.SetMaximum(5*max(points[97.5]))
+  graphCent.SetLineWidth(2)
   graphCent.SetLineStyle(2)
   graphObs.SetLineColor(1)
-  graphObs.SetLineWidth(2)
+  graphObs.SetLineWidth(3)
   graph1Sigma.SetLineStyle(0)
   graph2Sigma.SetLineStyle(0)
  
@@ -121,19 +120,24 @@ def makePlot(finname,foutname,plottitle='',masstitle=''):
   leg.Draw()
   label = TLatex()
   label.SetNDC()
+  label.DrawLatex(0.19,0.85,"Work In Progress")
+  '''
   label.SetTextFont(62)
   label.SetTextAlign(11)
   label.DrawLatex(0.19,0.85,"CMS")
   label.SetTextFont(52)
   label.DrawLatex(0.28,0.85,"Preliminary")
+  '''
   label.SetTextFont(42)
   label.DrawLatex(0.19,0.75,plottitle)
   label.SetTextSize(0.5*c.GetTopMargin())
   label.SetTextFont(42)
   label.SetTextAlign(31) # align right
-  label.DrawLatex(0.9, 0.94,"2.26 fb^{-1} (13 TeV)")
+  label.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
   c.SaveAs(foutname+'.pdf')
   c.SaveAs(foutname+'.png')
 
-makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_wcr/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}')
-makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_wcr/resonant_obs_limits','Resonant production','M_{S}')
+makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_wip/fcnc_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
+makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_wip/resonant_obs_limits_xsec','Resonant production','M_{S}')
+makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_wip/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
+makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_wip/resonant_obs_limits','Resonant production','M_{S}',True)
