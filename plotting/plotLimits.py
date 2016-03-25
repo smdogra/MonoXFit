@@ -45,18 +45,17 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
       if 'MASS' in l:
         if scale:
           xsec = xsecs[int(l.split()[1])] 
-#        print ''
-#        stdout.write('$%6s$ & $%7.3g$'%(l.split()[1],xsec))
-        #stdout.write('$ %6s $ & $ %7.3 $'%(l.split()[1],xsec))
+        print ''
+        stdout.write('$%6s$ & $%7.3g$'%(l.split()[1],xsec/(0.667)))
         xaxis.append(float(l.split()[1]))
       else:
         cl,val = parseLine(l)
         points[cl].append(val/xsec)
-#        if cl==50 or cl=='Observed':
-#          stdout.write(' & $%10.4g$'%(val/xsec))
+        if cl==50 or cl=='Observed':
+          stdout.write(' & $%10.4g$'%(val/xsec))
     except:
       pass
-#  print ''
+  print ''
   
   N = len(xaxis)
   up1Sigma=[]; up2Sigma=[]
@@ -79,6 +78,7 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   #print cent
   #print down2Sigma
   zeros = array('f',[0 for i in xrange(N)])
+  print N, xarray,cent
   graphCent = TGraph(N,xarray,cent)
   graphObs = TGraph(N,xarray,obs)
   graph1Sigma = TGraphAsymmErrors(N,xarray,cent,zeros,zeros,down1Sigma,up1Sigma)
@@ -120,6 +120,7 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   leg.Draw()
   label = TLatex()
   label.SetNDC()
+  '''
   label.DrawLatex(0.19,0.85,"Work In Progress")
   '''
   label.SetTextFont(62)
@@ -127,17 +128,17 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   label.DrawLatex(0.19,0.85,"CMS")
   label.SetTextFont(52)
   label.DrawLatex(0.28,0.85,"Preliminary")
-  '''
   label.SetTextFont(42)
   label.DrawLatex(0.19,0.75,plottitle)
   label.SetTextSize(0.5*c.GetTopMargin())
   label.SetTextFont(42)
   label.SetTextAlign(31) # align right
-  label.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
+  label.DrawLatex(0.9, 0.94,"2.26 fb^{-1} (13 TeV)")
+  #label.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
   c.SaveAs(foutname+'.pdf')
   c.SaveAs(foutname+'.png')
 
-makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_wip/fcnc_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
-makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_wip/resonant_obs_limits_xsec','Resonant production','M_{S}')
-makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_wip/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
-makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_wip/resonant_obs_limits','Resonant production','M_{S}',True)
+makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_wcr/fcnc_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
+makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_wcr/resonant_obs_limits_xsec','Resonant production','M_{S}')
+makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_wcr/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
+makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_wcr/resonant_obs_limits','Resonant production','M_{S}',True)
