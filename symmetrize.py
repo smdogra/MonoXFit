@@ -5,7 +5,7 @@ from array import array
 from re import sub
 
 def writeOut(fout,tobject):
-  fOut.WriteTObject(tobject,tobject.GetName(),'Overwrite')
+  fout.WriteTObject(tobject,tobject.GetName(),'Overwrite')
 
 class Syst(object):
   def __init__(self,updownname):
@@ -69,9 +69,9 @@ def smooth(var,nominal,N=1):
 #    print vals[iB-1]
     var.SetBinContent(iB,vals[iB-1]*nominal.GetBinContent(iB))
 
-baseIn = root.TFile.Open('mono-x-smoothed.root','UPDATE')
+baseIn = root.TFile.Open('mono-x.root','UPDATE')
 fIn = baseIn.Get('category_monotop')
-fOut = root.TFile.Open('smoothed.root','RECREATE')
+#fOut = root.TFile.Open('mono-x-smoothed.root','RECREATE')
 #systNames = ['zjets_zjethf','gjets_gjethf','wjets_wjethf']
 systNames = ['ttbar_btag','ttbar_mistag','signal_zjets_btag','signal_zjets_mistag']
 #systNames = ['wjets_btag']

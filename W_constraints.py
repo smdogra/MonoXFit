@@ -118,9 +118,9 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   #CRs[0].add_nuisance("SingleMuonEff",0.01)
   #CRs[1].add_nuisance("SingleElEff",0.02)
 
-  for cr in [0,1]:
-    CRs[cr].add_nuisance("SFSubJetBMistag",0.07)
-    CRs[cr].add_nuisance("SFSubJetBtag",0.07)
+#  for cr in [0,1]:
+#    CRs[cr].add_nuisance("SFSubJetBMistag",0.28)
+#    CRs[cr].add_nuisance("SFSubJetBtag",0.18)
 
   # for cr in [0,1]:
   #   for uncert in ['btag','mistag']:

@@ -1,4 +1,5 @@
 import ROOT
+from math import sqrt
 ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
 
 def convertToCombineWorkspace(wsin_combine,f_simple_hists,categories,cmb_categories,controlregions_def):
@@ -26,7 +27,9 @@ def convertToCombineWorkspace(wsin_combine,f_simple_hists,categories,cmb_categor
 
    # Keys in the fdir 
    hData = None
+   hDataZee = None
    bgs = set(['signal_dibosons','signal_qcd','signal_zjets','signal_ttbar','signal_stop','signal_wjets','signal_zll'])
+   zeebgs = set(['dielectron_dibosons','dielectron_qcd','dielectron_zjets','dielectron_ttbar','dielectron_stop','dielectron_wjets','dielectron_zll'])
 
    keys_local = fdir.GetListOfKeys() 
    for key in keys_local: 
@@ -41,16 +44,35 @@ def convertToCombineWorkspace(wsin_combine,f_simple_hists,categories,cmb_categor
 		    hData.SetName('hfakedata')
 	    else:
 		    hData.Add(obj)
+    if name in zeebgs:
+	    if hDataZee==None:
+		    hDataZee = obj.Clone()
+		    hDataZee.SetName('hfakedatazee')
+	    else:
+		    hDataZee.Add(obj)
     if not obj.Integral() > 0 : obj.SetBinContent(1,0.0001) # otherwise Combine will complain!
     print "Creating Data Hist for ", name 
     dhist = ROOT.RooDataHist(cat+"_"+name,"DataSet - %s, %s"%(cat,name),ROOT.RooArgList(varl),obj)
     dhist.Print("v")
     wsin_combine._import(dhist)
 
+   for iB in xrange(1,hData.GetNbinsX()+1):
+     hData.SetBinError(iB,sqrt(hData.GetBinContent(iB)))
+     hDataZee.SetBinError(iB,sqrt(hDataZee.GetBinContent(iB)))
+
    fakename = 'signal_fakedata'
    fakedatahist = ROOT.RooDataHist(cat+'_'+fakename,'DataSet - %s, %s'%(cat,fakename),ROOT.RooArgList(varl),hData)
    fakedatahist.Print("v")
    wsin_combine._import(fakedatahist)
+
+   fZee = ROOT.TFile('zee_fake.root','RECREATE')
+   fZee.WriteTObject(hDataZee,'dielectron_fakedata',"OVERWRITE");
+   fZee.Close()
+
+   fakezeename = 'dielectron_fakedata'
+   fakezeedatahist = ROOT.RooDataHist(cat+'_'+fakezeename,'DataSet - %s, %s'%(cat,fakezeename),ROOT.RooArgList(varl),hDataZee)
+   fakezeedatahist.Print("v")
+   wsin_combine._import(fakezeedatahist)
 
    # next Add in the V-jets backgrounds MODELS
    for crd,crn in enumerate(controlregions_def):

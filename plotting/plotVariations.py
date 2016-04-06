@@ -68,7 +68,7 @@ def plotUndividedVariations(process,variation,label,varLabel):
   latex2.SetTextSize(0.5*c.GetTopMargin())
   latex2.SetTextFont(42)
   latex2.SetTextAlign(31) # align right
-  latex2.DrawLatex(0.9, 0.94,"2.26 fb^{-1} (13 TeV)")
+  latex2.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
   latex2.SetTextSize(0.6*c.GetTopMargin())
   latex2.SetTextFont(62)
   latex2.SetTextAlign(11) # align right
@@ -146,7 +146,7 @@ def plotVariations(process,variation,label,varLabel):
   latex2.SetTextSize(0.5*c.GetTopMargin())
   latex2.SetTextFont(42)
   latex2.SetTextAlign(31) # align right
-  latex2.DrawLatex(0.9, 0.94,"2.26 fb^{-1} (13 TeV)")
+  latex2.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
   latex2.SetTextSize(0.6*c.GetTopMargin())
   latex2.SetTextFont(62)
   latex2.SetTextAlign(11) # align right

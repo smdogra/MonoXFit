@@ -236,7 +236,7 @@ def plotPreFitPostFit(region):
   latex2.SetTextFont(42)
   latex2.DrawLatex(0.12, 0.94,extralabel)
   latex2.SetTextAlign(31) # align right
-  latex2.DrawLatex(0.9, 0.94,"2.26 fb^{-1} (13 TeV)")
+  latex2.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
   latex2.SetTextSize(0.6*c.GetTopMargin())
   latex2.SetTextFont(62)
   latex2.SetTextAlign(11) # align right
@@ -400,7 +400,7 @@ def plotPreFitPostFit(region):
     g_ratio_pre.Draw("epsame")
     g_ratio_post.Draw("epsame")
 
-  plotDir = '~/public_html/figs/monotop/fits_wcr/'
+  plotDir = '~/public_html/figs/monotop/fits_thq/'
 
   c.SaveAs(plotDir+"new_bin_prefit_postfit_"+region+".pdf")
   c.SaveAs(plotDir+"new_bin_prefit_postfit_"+region+".png")

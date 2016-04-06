@@ -29,7 +29,8 @@ monotop_category = {
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/../BaconAnalyzer/MJSelection/skim/monojet-combo-electron.root"  # Without recoil corrections
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/monojet-combo-electron.root_recoil"
        #,'in_file_name':"files/monotop-boosted-combo-weight.root"
-       ,'in_file_name':"files/monotop-boosted-combo-mar9.root"
+#       ,'in_file_name':"files/monotop-boosted-combo-mar28.root"
+       ,'in_file_name':"files/monotop-boosted-thq.root"
 	   ,"cutstring":"met>250 && met<1000"
 	   ,"varstring":["met",250,1000]
 	   ,"weightname":"weight"
@@ -69,6 +70,7 @@ monotop_category = {
       ,"Mchi-1100_signal"		   :['signal','Mchi1100',1,1]
       ,"Mchi-1300_signal"		   :['signal','Mchi1300',1,1]
       ,"Mchi-1500_signal"		   :['signal','Mchi1500',1,1]
+      ,"tHq_signal"            :['signal','tHq_signal',1,1]
 
 		  #,"A_2000_150_g025_signal"		   :['signal','axialvector_2000150',1,1]
 		  #,"A_2000_100_g025_signal"		   :['signal','axialvector_2000100',1,1]
