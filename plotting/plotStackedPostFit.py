@@ -368,7 +368,7 @@ def plotPreFitPostFit(region):
     g_ratio_pre.Draw("epsame")
     g_ratio_post.Draw("epsame")
 
-  plotDir = '~/public_html/figs/monotop/fits_thq/'
+  plotDir = '~/public_html/figs/monotop/fits_final/'
 
   c.SaveAs(plotDir+"stackedPostfit_"+region+".pdf")
   c.SaveAs(plotDir+"stackedPostfit_"+region+".png")

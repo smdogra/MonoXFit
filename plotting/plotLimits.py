@@ -138,7 +138,7 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   c.SaveAs(foutname+'.pdf')
   c.SaveAs(foutname+'.png')
 
-makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_thq/fcnc_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
-makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_thq/resonant_obs_limits_xsec','Resonant production','M_{S}')
-makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_thq/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
-makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_thq/resonant_obs_limits','Resonant production','M_{S}',True)
+makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_final/fcnc_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
+makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_final/resonant_obs_limits_xsec','Resonant production','M_{S}')
+makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_final/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
+makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_final/resonant_obs_limits','Resonant production','M_{S}',True)
