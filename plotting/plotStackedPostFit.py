@@ -37,6 +37,16 @@ def plotPreFitPostFit(region):
   h_data = None
   blind = False 
   h_data = gDirectory.Get(region+"_data")
+  if region=='signal':
+    h_res = gDirectory.Get('signal_Mres1100_Mchi100'); h_res.SetLineColor(kGreen+3)
+    h_fcnc = gDirectory.Get('signal_Mchi900'); h_fcnc.SetLineColor(kViolet+9)
+    h_res.Scale(3.91)
+    h_fcnc.Scale(0.78)
+    for h in [h_res,h_fcnc]:
+      h.Scale(1,"width")
+      h.SetLineWidth(2)
+      h.SetLineStyle(2)
+
   '''
   if not region=="signal":
     h_data = gDirectory.Get(region+"_data")
@@ -49,17 +59,42 @@ def plotPreFitPostFit(region):
   
   b_width = [50,50,50,100,500]
 
-  processes = [
+  processesNormal = [
+      'qcd',
+      'dibosons',
+      'stop',
+      'wjets',
+      'ttbar',
+      'zvv',
+      'zll',
+      'gjets',
+  ]
+
+  processesNoW = [
       'qcd',
       'dibosons',
       'stop',
       'ttbar',
       'zvv',
-#      'zjets',
       'zll',
       'gjets',
-      'wjets'
   ]
+
+  processesW = [
+      'qcd',
+      'dibosons',
+      'zll',
+      'stop',
+      'ttbar',
+      'wjets',
+  ]
+
+  if region=='singlemuonw' or region=='singleelectronw':
+    processes = processesW
+  elif region=='dimuon' or region=='dielectron' or ('single' in region):
+    processes = processesNoW
+  else:
+    processes = processesNormal
   
   processNames = {'gjets':'#gamma+jets',
                   'qcd':'QCD',
@@ -186,12 +221,16 @@ def plotPreFitPostFit(region):
     h_data.Scale(1,"width")
     h_data.Draw("epsame")
 
-  legend = TLegend(.55,.55,.90,.90)
+  if region=='signal':
+    h_res.Draw('hist same')
+    h_fcnc.Draw('hist same')
+
+  legend = TLegend(.55,.55,.95,.90)
   #legend.SetTextSize(0.04)
   if not blind:
     legend.AddEntry(h_data,"Data ("+region+")","elp")
-  legend.AddEntry(h_all_prefit, "Expected (pre-fit)", "l")
-  legend.AddEntry(h_all_postfit, "Expected (post-fit)", "l") 
+  legend.AddEntry(h_all_prefit, "SM backgrounds (pre-fit)", "l")
+  legend.AddEntry(h_all_postfit, "SM backgrounds (post-fit)", "l") 
   for process in processes:
     try:
       hist = h_postfit[process]
@@ -200,8 +239,13 @@ def plotPreFitPostFit(region):
       legend.AddEntry(hist,processNames[process],"f")
     except KeyError:
       pass
+  if region=='signal':
+    legend.AddEntry(h_res,'Resonant M_{S}=1.1 TeV','l')
+    legend.AddEntry(h_fcnc,'FCNC M_{V}=0.9 TeV','l')
   legend.SetShadowColor(0);
   legend.SetFillColor(0);
+  legend.SetFillStyle(0)
+  legend.SetBorderSize(0)
   legend.SetLineColor(0);
   legend.Draw("same")
 
@@ -213,12 +257,6 @@ def plotPreFitPostFit(region):
   latex2.SetTextAlign(31) # align right
   latex2.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
   #latex2.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
-  '''
-  latex2.SetTextSize(0.6*c.GetTopMargin())
-  latex2.SetTextAlign(11)
-  latex2.SetTextFont(62)
-  latex2.DrawLatex(0.19,0.85,"Work In Progress")
-  '''
   latex2.SetTextFont(62)
   latex2.SetTextAlign(11) # align right
   latex2.DrawLatex(0.19, 0.85, "CMS")
@@ -348,8 +386,8 @@ def plotPreFitPostFit(region):
   dummy2.GetYaxis().SetTitleSize(0.04)
   dummy2.GetYaxis().SetTitleOffset(1.5)
 
-  dummy2.SetMaximum(2.0)                                                                                                                                                        
-  dummy2.SetMinimum(0) 
+  dummy2.SetMaximum(3.0)
+  dummy2.SetMinimum(0)
   dummy2.Draw("hist")
 
   ratiosys.SetFillColor(kGray) #SetFillColor(ROOT.kYellow)
@@ -367,6 +405,17 @@ def plotPreFitPostFit(region):
   if not blind:
     g_ratio_pre.Draw("epsame")
     g_ratio_post.Draw("epsame")
+    legend2 = TLegend(.65,.25,.8,.29)
+    legend3 = TLegend(.8,.25,.95,.29)
+    legend2.AddEntry(g_ratio_pre,"pre-fit","elp")
+    legend3.AddEntry(g_ratio_post,"post-fit","elp")
+    for l in [legend2,legend3]:
+      l.SetShadowColor(0);
+      l.SetFillColor(0);
+      l.SetFillStyle(0)
+      l.SetBorderSize(0)
+      l.SetLineColor(0);
+      l.Draw()
 
   plotDir = '~/public_html/figs/monotop/fits_final/'
 

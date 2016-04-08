@@ -4,6 +4,8 @@ from sys import argv,stdout
 from tdrStyle import *
 setTDRStyle()
 
+VERBOSE=False
+
 resonantXsecs = {
   1100 : 3.91,
   900 : 9.37,
@@ -45,17 +47,19 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
       if 'MASS' in l:
         if scale:
           xsec = xsecs[int(l.split()[1])] 
-        print ''
-        stdout.write('$%6s$ & $%7.3g$'%(l.split()[1],xsec/(0.667)))
+        if VERBOSE:
+          print ''
+          stdout.write('$%6s$ & $%7.3g$'%(l.split()[1],xsec/(0.667)))
         xaxis.append(float(l.split()[1]))
       else:
         cl,val = parseLine(l)
         points[cl].append(val/xsec)
-        if cl==50 or cl=='Observed':
+        if VERBOSE and (cl==50 or cl=='Observed'):
           stdout.write(' & $%10.4g$'%(val/xsec))
     except:
       pass
-  print ''
+  if VERBOSE:
+    print ''
   
   N = len(xaxis)
   up1Sigma=[]; up2Sigma=[]
@@ -73,12 +77,15 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   cent = array('f',points[50])
   obs = array('f',points['Observed'])
   xarray = array('f',xaxis)
- 
-  #print up2Sigma
-  #print cent
-  #print down2Sigma
+
+  xsecarray = array('f',[xsecs[xx] for xx in xaxis])
+  xsecarrayLow = array('f',[0.0625*xsecs[xx] for xx in xaxis])
+  onearray = array('f',[1 for xx in xaxis])
+  graphXsec = TGraph(N,xarray,xsecarray)
+  graphXsecLow = TGraph(N,xarray,xsecarrayLow)
+  graphOne = TGraph(N,xarray,onearray)
+
   zeros = array('f',[0 for i in xrange(N)])
-  print N, xarray,cent
   graphCent = TGraph(N,xarray,cent)
   graphObs = TGraph(N,xarray,obs)
   graph1Sigma = TGraphAsymmErrors(N,xarray,cent,zeros,zeros,down1Sigma,up1Sigma)
@@ -91,13 +98,15 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
     graph2Sigma.GetYaxis().SetTitle('Upper limit [#sigma/#sigma_{theory}]')  
   else:
     graph2Sigma.GetYaxis().SetTitle("Upper limit [#sigma] [pb]")  
-#  graph2Sigma.GetYaxis().SetTitleOffset(1.5)
   graph2Sigma.SetLineColor(5)
   graph1Sigma.SetLineColor(3)
   graph2Sigma.SetFillColor(5)
   graph1Sigma.SetFillColor(3)
   graph2Sigma.SetMinimum(0.5*min(points[2.5]))
-  graph2Sigma.SetMaximum(5*max(points[97.5]))
+  if scale:
+    graph2Sigma.SetMaximum(5*max(max(points[97.5]),4))
+  else:
+    graph2Sigma.SetMaximum(5*max(points[97.5]))
   graphCent.SetLineWidth(2)
   graphCent.SetLineStyle(2)
   graphObs.SetLineColor(1)
@@ -105,7 +114,7 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   graph1Sigma.SetLineStyle(0)
   graph2Sigma.SetLineStyle(0)
  
-  leg = TLegend(0.7,0.7,0.9,0.9)
+  leg = TLegend(0.55,0.7,0.9,0.9)
   leg.AddEntry(graphCent,'Expected','L')
   leg.AddEntry(graphObs,'Observed','L')
   leg.AddEntry(graph1Sigma,'1 #sigma','F')
@@ -117,28 +126,46 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   graph1Sigma.Draw('3 same')
   graphCent.Draw('same L')
   graphObs.Draw('same L')
+  if scale:
+    graphOne.SetLineColor(2)
+    graphOne.SetLineWidth(2)
+    graphOne.SetLineStyle(2)
+    graphOne.Draw('same L')
+  else:
+    graphXsec.SetLineColor(2)
+    graphXsecLow.SetLineColor(4)
+    subscript = 'SR' if 'Resonant' in plottitle else 'FC'
+    leg.AddEntry(graphXsec,'theory a_{%s}=b_{%s}=0.1'%(subscript,subscript),'l')
+#    leg.AddEntry(graphXsecLow,'theory a_{%s}=b_{%s}=0.025'%(subscript,subscript),'l')
+    for g in [graphXsec]:
+      g.SetLineWidth(2)
+      g.SetLineStyle(2)
+      g.Draw('same L')
   leg.Draw()
   label = TLatex()
   label.SetNDC()
-  '''
-  label.DrawLatex(0.19,0.85,"Work In Progress")
-  '''
   label.SetTextFont(62)
   label.SetTextAlign(11)
   label.DrawLatex(0.19,0.85,"CMS")
   label.SetTextFont(52)
   label.DrawLatex(0.28,0.85,"Preliminary")
   label.SetTextFont(42)
-  label.DrawLatex(0.19,0.75,plottitle)
+  label.SetTextSize(0.6*c.GetTopMargin())
+  label.DrawLatex(0.19,0.77,plottitle)
+  if scale:
+    if 'Resonant' in plottitle:
+      label.DrawLatex(0.19,0.7,"a_{SR} = b_{SR} = 0.1")
+    else:
+      label.DrawLatex(0.19,0.7,"a_{FC} = b_{FC} = 0.1")
   label.SetTextSize(0.5*c.GetTopMargin())
   label.SetTextFont(42)
   label.SetTextAlign(31) # align right
   label.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
-  #label.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
   c.SaveAs(foutname+'.pdf')
   c.SaveAs(foutname+'.png')
 
 makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_final/fcnc_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
-makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_final/resonant_obs_limits_xsec','Resonant production','M_{S}')
+makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_final/resonant_obs_limits_xsec','#splitline{Resonant}{production}','M_{S}')
 makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_final/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
-makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_final/resonant_obs_limits','Resonant production','M_{S}',True)
+#makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_final/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
+makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_final/resonant_obs_limits','#splitline{Resonant}{production}','M_{S}',True)
