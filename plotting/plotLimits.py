@@ -104,9 +104,9 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   graph1Sigma.SetFillColor(3)
   graph2Sigma.SetMinimum(0.5*min(points[2.5]))
   if scale:
-    graph2Sigma.SetMaximum(5*max(max(points[97.5]),4))
+    graph2Sigma.SetMaximum(10*max(max(points[97.5]),max(xsecarray),4))
   else:
-    graph2Sigma.SetMaximum(5*max(points[97.5]))
+    graph2Sigma.SetMaximum(10*max(max(points[97.5]),max(xsecarray)))
   graphCent.SetLineWidth(2)
   graphCent.SetLineStyle(2)
   graphObs.SetLineColor(1)
