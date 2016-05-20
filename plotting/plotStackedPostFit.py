@@ -99,7 +99,7 @@ def plotPreFitPostFit(region):
   processNames = {'gjets':'#gamma+jets',
                   'qcd':'QCD',
                   'ttbar':'t#bar{t}',
-                  'stop':'Single t',
+                  'stop':'Single top',
                   'dibosons':'VV',
                   'zvv':'Z#rightarrow#nu#nu',
                   'zll':'Z#rightarrowll',
