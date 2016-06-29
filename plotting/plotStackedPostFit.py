@@ -9,14 +9,6 @@ setTDRStyle()
 new_dic = defaultdict(dict)
 
 def plotPreFitPostFit(region):
-  if 'electron' in region:
-    extralabel = 'Electrons'
-  elif 'muon' in region:
-    extralabel = 'Muons'
-  elif 'photon' in region:
-    extralabel = 'Photons'
-  else:
-    extralabel = 'Signal region'
   global blind
   channel = {"singlemuonw":"wmn", 
               "singlemuontop":"tmn",
@@ -26,6 +18,16 @@ def plotPreFitPostFit(region):
               "signal":"sig", 
               "singleelectrontop":"ten", 
               "singleelectronw":"wen"}
+  extralabels = {"singlemuonw":"Single muon W CR", 
+              "singlemuontop":"Single muon t#bar{t} CR",
+              "dielectron":"Dielectron CR",
+              "dimuon":"Dimuon CR",
+              "photon":"Photon CR", 
+              "signal":"Signal region", 
+              "singleelectrontop":"Single electron t#bar{t} CR", 
+              "singleelectronw":"Single electron W CR"}
+
+  extralabel = extralabels[region]
   mainbkg = {"singlemuonw":"wjets", "dimuon":"zll", "photon":"gjets", "signal":None, "singleelectronw":"wjets", "dielectron":"zll", "singlemuontop":"ttbar","singleelectrontop":"ttbar"}
 
   basedir = getenv('CMSSW_BASE') + '/src/MonoX/'
@@ -38,11 +40,12 @@ def plotPreFitPostFit(region):
   blind = False 
   h_data = gDirectory.Get(region+"_data")
   if region=='signal':
-    h_res = gDirectory.Get('signal_Mres1100_Mchi100'); h_res.SetLineColor(kGreen+3)
+#    h_res = gDirectory.Get('signal_Mres1100_Mchi100'); h_res.SetLineColor(kGreen+3)
     h_fcnc = gDirectory.Get('signal_Mchi900'); h_fcnc.SetLineColor(kViolet+9)
-    h_res.Scale(3.91)
+#    h_res.Scale(3.91)
     h_fcnc.Scale(0.78)
-    for h in [h_res,h_fcnc]:
+#    for h in [h_res,h_fcnc]:
+    for h in [h_fcnc]:
       h.Scale(1,"width")
       h.SetLineWidth(2)
       h.SetLineStyle(2)
@@ -70,7 +73,7 @@ def plotPreFitPostFit(region):
       'gjets',
   ]
 
-  processesNoW = [
+  processesZ = [
       'qcd',
       'dibosons',
       'stop',
@@ -78,6 +81,16 @@ def plotPreFitPostFit(region):
       'zvv',
       'zll',
       'gjets',
+  ]
+
+  processesT = [
+      'zvv',
+      'zll',
+      'gjets',
+      'qcd',
+      'dibosons',
+      'stop',
+      'ttbar',
   ]
 
   processesW = [
@@ -91,8 +104,10 @@ def plotPreFitPostFit(region):
 
   if region=='singlemuonw' or region=='singleelectronw':
     processes = processesW
-  elif region=='dimuon' or region=='dielectron' or ('single' in region):
-    processes = processesNoW
+  elif region=='dimuon' or region=='dielectron':
+    processes = processesZ
+  elif 'top' in region:
+    processes = processesT
   else:
     processes = processesNormal
   
@@ -222,13 +237,13 @@ def plotPreFitPostFit(region):
     h_data.Draw("epsame")
 
   if region=='signal':
-    h_res.Draw('hist same')
+#    h_res.Draw('hist same')
     h_fcnc.Draw('hist same')
 
   legend = TLegend(.55,.55,.95,.90)
   #legend.SetTextSize(0.04)
   if not blind:
-    legend.AddEntry(h_data,"Data ("+region+")","elp")
+    legend.AddEntry(h_data,"Data","elp")
   legend.AddEntry(h_all_prefit, "SM backgrounds (pre-fit)", "l")
   legend.AddEntry(h_all_postfit, "SM backgrounds (post-fit)", "l") 
   for process in processes:
@@ -240,7 +255,7 @@ def plotPreFitPostFit(region):
     except KeyError:
       pass
   if region=='signal':
-    legend.AddEntry(h_res,'Resonant M_{S}=1.1 TeV','l')
+#    legend.AddEntry(h_res,'Resonant M_{#phi}=1.1 TeV','l')
     legend.AddEntry(h_fcnc,'FCNC M_{V}=0.9 TeV','l')
   legend.SetShadowColor(0);
   legend.SetFillColor(0);
@@ -255,7 +270,7 @@ def plotPreFitPostFit(region):
   latex2.SetTextFont(42)
   latex2.DrawLatex(0.12, 0.94,extralabel)
   latex2.SetTextAlign(31) # align right
-  latex2.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
+  latex2.DrawLatex(0.9, 0.94,"2.3 fb^{-1} (13 TeV)")
   #latex2.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
   latex2.SetTextFont(62)
   latex2.SetTextAlign(11) # align right
@@ -386,7 +401,7 @@ def plotPreFitPostFit(region):
   dummy2.GetYaxis().SetTitleSize(0.04)
   dummy2.GetYaxis().SetTitleOffset(1.5)
 
-  dummy2.SetMaximum(3.0)
+  dummy2.SetMaximum(2.0)
   dummy2.SetMinimum(0)
   dummy2.Draw("hist")
 

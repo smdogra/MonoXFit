@@ -26,12 +26,20 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   targetmcbtagDown = _fin.Get("signal_wjets_btagDown")
   controlmcbtagUp = _fin.Get("singlemuonw_wjets_btagUp"); controlmcbtagUp_e = _fin.Get("singleelectronw_wjets_btagUp")
   controlmcbtagDown = _fin.Get("singlemuonw_wjets_btagDown"); controlmcbtagDown_e = _fin.Get("singleelectronw_wjets_btagDown")
+  targetmcsjbtagUp = _fin.Get("signal_wjets_sjbtagUp")
+  targetmcsjbtagDown = _fin.Get("signal_wjets_sjbtagDown")
+  controlmcsjbtagUp = _fin.Get("singlemuonw_wjets_sjbtagUp"); controlmcsjbtagUp_e = _fin.Get("singleelectronw_wjets_sjbtagUp")
+  controlmcsjbtagDown = _fin.Get("singlemuonw_wjets_sjbtagDown"); controlmcsjbtagDown_e = _fin.Get("singleelectronw_wjets_sjbtagDown")
 
   # mistag systs
   targetmcmistagUp = _fin.Get("signal_wjets_mistagUp")
   targetmcmistagDown = _fin.Get("signal_wjets_mistagDown")
   controlmcmistagUp = _fin.Get("singlemuonw_wjets_mistagUp"); controlmcmistagUp_e = _fin.Get("singleelectronw_wjets_mistagUp")
   controlmcmistagDown = _fin.Get("singlemuonw_wjets_mistagDown"); controlmcmistagDown_e = _fin.Get("singleelectronw_wjets_mistagDown")
+  targetmcsjmistagUp = _fin.Get("signal_wjets_sjmistagUp")
+  targetmcsjmistagDown = _fin.Get("signal_wjets_sjmistagDown")
+  controlmcsjmistagUp = _fin.Get("singlemuonw_wjets_sjmistagUp"); controlmcsjmistagUp_e = _fin.Get("singleelectronw_wjets_sjmistagUp")
+  controlmcsjmistagDown = _fin.Get("singlemuonw_wjets_sjmistagDown"); controlmcsjmistagDown_e = _fin.Get("singleelectronw_wjets_sjmistagDown")
 
   '''
   # wjethf systs
@@ -63,6 +71,18 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   WScalesbtagDown_e = targetmcbtagDown.Clone(); WScalesbtagDown_e.SetName("wen_weights_%s_btag_Down"%cid)
   WScalesbtagDown_e.Divide(controlmcbtagDown_e);  _fOut.WriteTObject(WScalesbtagDown_e)  # always write out to the directory 
 
+  WScalessjbtagUp = targetmcsjbtagUp.Clone(); WScalessjbtagUp.SetName("wmn_weights_%s_sjbtag_Up"%cid)
+  WScalessjbtagUp.Divide(controlmcsjbtagUp);  _fOut.WriteTObject(WScalessjbtagUp)  # always write out to the directory 
+
+  WScalessjbtagDown = targetmcsjbtagDown.Clone(); WScalessjbtagDown.SetName("wmn_weights_%s_sjbtag_Down"%cid)
+  WScalessjbtagDown.Divide(controlmcsjbtagDown);  _fOut.WriteTObject(WScalessjbtagDown)
+
+  WScalessjbtagUp_e = targetmcsjbtagUp.Clone(); WScalessjbtagUp_e.SetName("wen_weights_%s_sjbtag_Up"%cid)
+  WScalessjbtagUp_e.Divide(controlmcsjbtagUp_e);  _fOut.WriteTObject(WScalessjbtagUp_e)  # always write out to the directory 
+
+  WScalessjbtagDown_e = targetmcsjbtagDown.Clone(); WScalessjbtagDown_e.SetName("wen_weights_%s_sjbtag_Down"%cid)
+  WScalessjbtagDown_e.Divide(controlmcsjbtagDown_e);  _fOut.WriteTObject(WScalessjbtagDown_e)  # always write out to the directory 
+
   ### MISTAG ###  
   WScalesmistagUp = targetmcmistagUp.Clone(); WScalesmistagUp.SetName("wmn_weights_%s_mistag_Up"%cid)
   WScalesmistagUp.Divide(controlmcmistagUp);  _fOut.WriteTObject(WScalesmistagUp)  # always write out to the directory 
@@ -75,6 +95,18 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 
   WScalesmistagDown_e = targetmcmistagDown.Clone(); WScalesmistagDown_e.SetName("wen_weights_%s_mistag_Down"%cid)
   WScalesmistagDown_e.Divide(controlmcmistagDown_e);  _fOut.WriteTObject(WScalesmistagDown_e)  # always write out to the directory 
+
+  WScalessjmistagUp = targetmcsjmistagUp.Clone(); WScalessjmistagUp.SetName("wmn_weights_%s_sjmistag_Up"%cid)
+  WScalessjmistagUp.Divide(controlmcsjmistagUp);  _fOut.WriteTObject(WScalessjmistagUp)  # always write out to the directory 
+
+  WScalessjmistagDown = targetmcsjmistagDown.Clone(); WScalessjmistagDown.SetName("wmn_weights_%s_sjmistag_Down"%cid)
+  WScalessjmistagDown.Divide(controlmcsjmistagDown);  _fOut.WriteTObject(WScalessjmistagDown)
+
+  WScalessjmistagUp_e = targetmcsjmistagUp.Clone(); WScalessjmistagUp_e.SetName("wen_weights_%s_sjmistag_Up"%cid)
+  WScalessjmistagUp_e.Divide(controlmcsjmistagUp_e);  _fOut.WriteTObject(WScalessjmistagUp_e)  # always write out to the directory 
+
+  WScalessjmistagDown_e = targetmcsjmistagDown.Clone(); WScalessjmistagDown_e.SetName("wen_weights_%s_sjmistag_Down"%cid)
+  WScalessjmistagDown_e.Divide(controlmcsjmistagDown_e);  _fOut.WriteTObject(WScalessjmistagDown_e)  # always write out to the directory 
 
   '''
   ### HF ###  
@@ -122,9 +154,9 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 #    CRs[cr].add_nuisance("SFSubJetBMistag",0.28)
 #    CRs[cr].add_nuisance("SFSubJetBtag",0.18)
 
-  # for cr in [0,1]:
-  #   for uncert in ['btag','mistag']:
-  #     CRs[cr].add_nuisance_shape(uncert,_fOut)
+  for cr in [0,1]:
+    for uncert in ['btag','mistag','sjbtag','sjmistag']:
+      CRs[cr].add_nuisance_shape(uncert,_fOut)
   
   # Statistical uncertainties too!, one per bin 
   for b in range(targetmc.GetNbinsX()):

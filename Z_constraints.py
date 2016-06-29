@@ -22,8 +22,12 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   target             = _fin.Get("signal_zjets")      # define monimal (MC) of which process this config will model
   target_btagUp      = _fin.Get("signal_zjets_btagUp")
   target_btagDown      = _fin.Get("signal_zjets_btagDown")
+  target_sjbtagUp      = _fin.Get("signal_zjets_sjbtagUp")
+  target_sjbtagDown      = _fin.Get("signal_zjets_sjbtagDown")
   target_mistagUp      = _fin.Get("signal_zjets_mistagUp")
   target_mistagDown      = _fin.Get("signal_zjets_mistagDown")
+  target_sjmistagUp      = _fin.Get("signal_zjets_sjmistagUp")
+  target_sjmistagDown      = _fin.Get("signal_zjets_sjmistagDown")
   controlmc          = _fin.Get("dimuon_zll")           # defines Zmm MC of which process will be controlled by
   controlmc_photon   = _fin.Get("photon_gjets")       # defines Gjets MC of which process will be controlled by
   controlmc_e        = _fin.Get("dielectron_zll")           # defines Zmm MC of which process will be controlled by
@@ -69,6 +73,30 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   
   ZeeScales_mistagDown = target_mistagDown.Clone(); ZeeScales_mistagDown.SetName("zee_weights_%s_mistag_Down"%cid)
   ZeeScales_mistagDown.Divide(controlmc_e); _fOut.WriteTObject(ZeeScales_mistagDown)
+
+  ZmmScales_sjbtagUp = target_sjbtagUp.Clone(); ZmmScales_sjbtagUp.SetName("zmm_weights_%s_sjbtag_Up"%cid)
+  ZmmScales_sjbtagUp.Divide(controlmc); _fOut.WriteTObject(ZmmScales_sjbtagUp)
+  
+  ZmmScales_sjbtagDown = target_sjbtagDown.Clone(); ZmmScales_sjbtagDown.SetName("zmm_weights_%s_sjbtag_Down"%cid)
+  ZmmScales_sjbtagDown.Divide(controlmc); _fOut.WriteTObject(ZmmScales_sjbtagDown)
+
+  ZmmScales_sjmistagUp = target_sjmistagUp.Clone(); ZmmScales_sjmistagUp.SetName("zmm_weights_%s_sjmistag_Up"%cid)
+  ZmmScales_sjmistagUp.Divide(controlmc); _fOut.WriteTObject(ZmmScales_sjmistagUp)
+  
+  ZmmScales_sjmistagDown = target_sjmistagDown.Clone(); ZmmScales_sjmistagDown.SetName("zmm_weights_%s_sjmistag_Down"%cid)
+  ZmmScales_sjmistagDown.Divide(controlmc); _fOut.WriteTObject(ZmmScales_sjmistagDown)
+
+  ZeeScales_sjbtagUp = target_sjbtagUp.Clone(); ZeeScales_sjbtagUp.SetName("zee_weights_%s_sjbtag_Up"%cid)
+  ZeeScales_sjbtagUp.Divide(controlmc_e); _fOut.WriteTObject(ZeeScales_sjbtagUp)
+  
+  ZeeScales_sjbtagDown = target_sjbtagDown.Clone(); ZeeScales_sjbtagDown.SetName("zee_weights_%s_sjbtag_Down"%cid)
+  ZeeScales_sjbtagDown.Divide(controlmc_e); _fOut.WriteTObject(ZeeScales_sjbtagDown)
+
+  ZeeScales_sjmistagUp = target_sjmistagUp.Clone(); ZeeScales_sjmistagUp.SetName("zee_weights_%s_sjmistag_Up"%cid)
+  ZeeScales_sjmistagUp.Divide(controlmc_e); _fOut.WriteTObject(ZeeScales_sjmistagUp)
+  
+  ZeeScales_sjmistagDown = target_sjmistagDown.Clone(); ZeeScales_sjmistagDown.SetName("zee_weights_%s_sjmistag_Down"%cid)
+  ZeeScales_sjmistagDown.Divide(controlmc_e); _fOut.WriteTObject(ZeeScales_sjmistagDown)
 
   ### done btag ###
 
@@ -177,6 +205,8 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 #    CRs[cr].add_nuisance("SFSubJetBtag",0.09)
     CRs[cr].add_nuisance_shape('btag',_fOut)
     CRs[cr].add_nuisance_shape('mistag',_fOut)
+    CRs[cr].add_nuisance_shape('sjbtag',_fOut)
+    CRs[cr].add_nuisance_shape('sjmistag',_fOut)
 #  CRs[0].add_nuisance_shape("gjethf",_fOut)
 #  CRs[1].add_nuisance_shape("zjethf",_fOut)
 #  CRs[2].add_nuisance_shape("zjethf",_fOut)
@@ -206,6 +236,10 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   target_btagDown      = _fin.Get("signal_zjets_btagDown")
   target_mistagUp      = _fin.Get("signal_zjets_mistagUp")
   target_mistagDown      = _fin.Get("signal_zjets_mistagDown")
+  target_sjbtagUp      = _fin.Get("signal_zjets_sjbtagUp")
+  target_sjbtagDown      = _fin.Get("signal_zjets_sjbtagDown")
+  target_sjmistagUp      = _fin.Get("signal_zjets_sjmistagUp")
+  target_sjmistagDown      = _fin.Get("signal_zjets_sjmistagDown")
   
   controlmc          = _fin.Get("dimuon_zll")           # defines Zmm MC of which process will be controlled by
   controlmc_photon   = _fin.Get("photon_gjets")       # defines Gjets MC of which process will be controlled by
@@ -250,6 +284,19 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   
   PhoScales_mistagDown = target_mistagDown.Clone(); PhoScales_mistagDown.SetName("photon_weights_%s_mistag_Down"%nam)
   PhoScales_mistagDown.Divide(Pho); _fOut.WriteTObject(PhoScales_mistagDown)
+
+  PhoScales_sjbtagUp = target_sjbtagUp.Clone(); PhoScales_sjbtagUp.SetName("photon_weights_%s_sjbtag_Up"%nam)
+  PhoScales_sjbtagUp.Divide(Pho); _fOut.WriteTObject(PhoScales_sjbtagUp)
+  
+  PhoScales_sjbtagDown = target_sjbtagDown.Clone(); PhoScales_sjbtagDown.SetName("photon_weights_%s_sjbtag_Down"%nam)
+  PhoScales_sjbtagDown.Divide(Pho); _fOut.WriteTObject(PhoScales_sjbtagDown)
+
+  PhoScales_sjmistagUp = target_sjmistagUp.Clone(); PhoScales_sjmistagUp.SetName("photon_weights_%s_sjmistag_Up"%nam)
+  PhoScales_sjmistagUp.Divide(Pho); _fOut.WriteTObject(PhoScales_sjmistagUp)
+  
+  PhoScales_sjmistagDown = target_sjmistagDown.Clone(); PhoScales_sjmistagDown.SetName("photon_weights_%s_sjmistag_Down"%nam)
+  PhoScales_sjmistagDown.Divide(Pho); _fOut.WriteTObject(PhoScales_sjmistagDown)
+
   ### done btag ###
 
   ratio_ren_scale_up = Zvv.Clone();  ratio_ren_scale_up.SetName("photon_weights_%s_renscale_Up"%nam);

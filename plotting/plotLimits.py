@@ -135,8 +135,11 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
     graphXsec.SetLineColor(2)
     graphXsecLow.SetLineColor(4)
     subscript = 'SR' if 'Resonant' in plottitle else 'FC'
-    leg.AddEntry(graphXsec,'theory a_{%s}=b_{%s}=0.1'%(subscript,subscript),'l')
-#    leg.AddEntry(graphXsecLow,'theory a_{%s}=b_{%s}=0.025'%(subscript,subscript),'l')
+    if 'Resonant' in plottitle:
+      leg.AddEntry(graphXsec,'Theory #splitline{a_{%s}=b_{%s}=0.1}{m_{#chi}=100 GeV}'%(subscript,subscript),'l')
+    else:
+      leg.AddEntry(graphXsec,'Theory a_{%s}=b_{%s}=0.1'%(subscript,subscript),'l')
+#    leg.AddEntry(graphXsecLow,'Theory a_{%s}=b_{%s}=0.025'%(subscript,subscript),'l')
     for g in [graphXsec]:
       g.SetLineWidth(2)
       g.SetLineStyle(2)
@@ -155,17 +158,18 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   if scale:
     if 'Resonant' in plottitle:
       label.DrawLatex(0.19,0.7,"a_{SR} = b_{SR} = 0.1")
+      label.DrawLatex(0.19,0.64,"m_{#chi}=100 GeV")
     else:
       label.DrawLatex(0.19,0.7,"a_{FC} = b_{FC} = 0.1")
   label.SetTextSize(0.5*c.GetTopMargin())
   label.SetTextFont(42)
   label.SetTextAlign(31) # align right
-  label.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
+  label.DrawLatex(0.9, 0.94,"2.3 fb^{-1} (13 TeV)")
   c.SaveAs(foutname+'.pdf')
   c.SaveAs(foutname+'.png')
 
 makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_final/fcnc_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
-makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_final/resonant_obs_limits_xsec','#splitline{Resonant}{production}','M_{S}')
+makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_final/resonant_obs_limits_xsec','#splitline{Resonant}{production}','M_{#phi}')
 makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_final/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
 #makePlot('../datacards/fcnc_obs_limits.txt','~/public_html/figs/monotop/fits_final/fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
-makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_final/resonant_obs_limits','#splitline{Resonant}{production}','M_{S}',True)
+makePlot('../datacards/resonant_obs_limits.txt','~/public_html/figs/monotop/fits_final/resonant_obs_limits','#splitline{Resonant}{production}','M_{#phi}',True)

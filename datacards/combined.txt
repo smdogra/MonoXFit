@@ -1,4 +1,4 @@
-Combination of monotop_dielectron_control.txt  monotop_dimuon_control.txt  monotop_photon_control.txt  monotop_signal.txt  monotop_singleelectrontop_control.txt  monotop_singleelectronw_control.txt  monotop_singlemuontop_control.txt  monotop_singlemuonw_control.txt
+Combination of monotop_dielectron_control.txt  monotop_dilepton_control.txt  monotop_photon_control.txt  monotop_signal.txt  monotop_singleelectrontop_control.txt  monotop_singleelectronw_control.txt  monotop_singleleptontop_control.txt  monotop_singlelepton_control.txt
 imax * number of bins
 jmax * number of processes minus 1
 kmax * number of nuisance parameters
@@ -6,9 +6,9 @@ kmax * number of nuisance parameters
 shapes *         zee       ../combined_model.root combinedws:monotop_dielectron_$PROCESS combinedws:monotop_dielectron_$PROCESS_$SYSTEMATIC
 shapes data_obs  zee       ../combined_model.root combinedws:monotop_dielectron_data
 shapes zll       zee       ../combined_model.root combinedws:monotop_dielectronModel_zjets_model
-shapes *         zmm       ../combined_model.root combinedws:monotop_dimuon_$PROCESS combinedws:monotop_dimuon_$PROCESS_$SYSTEMATIC
-shapes data_obs  zmm       ../combined_model.root combinedws:monotop_dimuon_data
-shapes zll       zmm       ../combined_model.root combinedws:monotop_dimuonModel_zjets_model
+shapes *         zmm       ../combined_model.root combinedws:monotop_dilepton_$PROCESS combinedws:monotop_dilepton_$PROCESS_$SYSTEMATIC
+shapes data_obs  zmm       ../combined_model.root combinedws:monotop_dilepton_data
+shapes zll       zmm       ../combined_model.root combinedws:monotop_dileptonModel_zjets_model
 shapes *         pho       ../combined_model.root combinedws:monotop_photon_$PROCESS combinedws:monotop_photon_$PROCESS_$SYSTEMATIC
 shapes data_obs  pho       ../combined_model.root combinedws:monotop_photon_data
 shapes gjets     pho       ../combined_model.root combinedws:monotop_photonModel_zjets_model
@@ -36,12 +36,12 @@ shapes ttbar     ten       ../combined_model.root combinedws:monotop_singleelect
 shapes *         wen       ../combined_model.root combinedws:monotop_singleelectronw_$PROCESS combinedws:monotop_singleelectronw_$PROCESS_$SYSTEMATIC
 shapes data_obs  wen       ../combined_model.root combinedws:monotop_singleelectronw_data
 shapes wjets     wen       ../combined_model.root combinedws:monotop_singleelectronwModel_wjets_model
-shapes *         tmn       ../combined_model.root combinedws:monotop_singlemuontop_$PROCESS combinedws:monotop_singlemuontop_$PROCESS_$SYSTEMATIC
-shapes data_obs  tmn       ../combined_model.root combinedws:monotop_singlemuontop_data
-shapes ttbar     tmn       ../combined_model.root combinedws:monotop_singlemuontopModel_ttbar_model
-shapes *         wmn       ../combined_model.root combinedws:monotop_singlemuonw_$PROCESS combinedws:monotop_singlemuonw_$PROCESS_$SYSTEMATIC
-shapes data_obs  wmn       ../combined_model.root combinedws:monotop_singlemuonw_data
-shapes wjets     wmn       ../combined_model.root combinedws:monotop_singlemuonwModel_wjets_model
+shapes *         tmn       ../combined_model.root combinedws:monotop_singleleptontop_$PROCESS combinedws:monotop_singleleptontop_$PROCESS_$SYSTEMATIC
+shapes data_obs  tmn       ../combined_model.root combinedws:monotop_singleleptontop_data
+shapes ttbar     tmn       ../combined_model.root combinedws:monotop_singleleptontopModel_ttbar_model
+shapes *         wmn       ../combined_model.root combinedws:monotop_singlelepton_$PROCESS combinedws:monotop_singlelepton_$PROCESS_$SYSTEMATIC
+shapes data_obs  wmn       ../combined_model.root combinedws:monotop_singlelepton_data
+shapes wjets     wmn       ../combined_model.root combinedws:monotop_singleleptonModel_wjets_model
 ----------------------------------------------------------------------------------------------------------------------------------
 bin          zee    zmm    pho    sig    ten    wen    tmn    wmn  
 observation  -1.0   -1.0   -1.0   -1.0   -1.0   -1.0   -1.0   -1.0 
@@ -80,11 +80,11 @@ monotop_stat_error_photonModelCR_bin1 param 0.0 1
 monotop_stat_error_photonModelCR_bin2 param 0.0 1
 monotop_stat_error_photonModelCR_bin3 param 0.0 1
 monotop_stat_error_photonModelCR_bin4 param 0.0 1
-monotop_stat_error_dimuonModelCR_bin0 param 0.0 1
-monotop_stat_error_dimuonModelCR_bin1 param 0.0 1
-monotop_stat_error_dimuonModelCR_bin2 param 0.0 1
-monotop_stat_error_dimuonModelCR_bin3 param 0.0 1
-monotop_stat_error_dimuonModelCR_bin4 param 0.0 1
+monotop_stat_error_dileptonModelCR_bin0 param 0.0 1
+monotop_stat_error_dileptonModelCR_bin1 param 0.0 1
+monotop_stat_error_dileptonModelCR_bin2 param 0.0 1
+monotop_stat_error_dileptonModelCR_bin3 param 0.0 1
+monotop_stat_error_dileptonModelCR_bin4 param 0.0 1
 monotop_stat_error_dielectronModelCR_bin0 param 0.0 1
 monotop_stat_error_dielectronModelCR_bin1 param 0.0 1
 monotop_stat_error_dielectronModelCR_bin2 param 0.0 1
@@ -101,21 +101,21 @@ ewk_monotop_bin3 param 0.0 1
 ewk_monotop_bin4 param 0.0 1
 btag param 0.0 1
 mistag param 0.0 1
-monotop_stat_error_singlemuonwModel_bin0 param 0.0 1
-monotop_stat_error_singlemuonwModel_bin1 param 0.0 1
-monotop_stat_error_singlemuonwModel_bin2 param 0.0 1
-monotop_stat_error_singlemuonwModel_bin3 param 0.0 1
-monotop_stat_error_singlemuonwModel_bin4 param 0.0 1
+monotop_stat_error_singleleptonModel_bin0 param 0.0 1
+monotop_stat_error_singleleptonModel_bin1 param 0.0 1
+monotop_stat_error_singleleptonModel_bin2 param 0.0 1
+monotop_stat_error_singleleptonModel_bin3 param 0.0 1
+monotop_stat_error_singleleptonModel_bin4 param 0.0 1
 monotop_stat_error_singleelectronwModel_bin0 param 0.0 1
 monotop_stat_error_singleelectronwModel_bin1 param 0.0 1
 monotop_stat_error_singleelectronwModel_bin2 param 0.0 1
 monotop_stat_error_singleelectronwModel_bin3 param 0.0 1
 monotop_stat_error_singleelectronwModel_bin4 param 0.0 1
-monotop_stat_error_singlemuontopModelCR_bin0 param 0.0 1
-monotop_stat_error_singlemuontopModelCR_bin1 param 0.0 1
-monotop_stat_error_singlemuontopModelCR_bin2 param 0.0 1
-monotop_stat_error_singlemuontopModelCR_bin3 param 0.0 1
-monotop_stat_error_singlemuontopModelCR_bin4 param 0.0 1
+monotop_stat_error_singleleptontopModelCR_bin0 param 0.0 1
+monotop_stat_error_singleleptontopModelCR_bin1 param 0.0 1
+monotop_stat_error_singleleptontopModelCR_bin2 param 0.0 1
+monotop_stat_error_singleleptontopModelCR_bin3 param 0.0 1
+monotop_stat_error_singleleptontopModelCR_bin4 param 0.0 1
 monotop_stat_error_singleelectrontopModelCR_bin0 param 0.0 1
 monotop_stat_error_singleelectrontopModelCR_bin1 param 0.0 1
 monotop_stat_error_singleelectrontopModelCR_bin2 param 0.0 1
