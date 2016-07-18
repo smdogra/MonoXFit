@@ -99,6 +99,7 @@ def convertToCombineWorkspace(wsin_combine,f_simple_hists,categories,cmb_categor
          cr_expectations = ROOT.RooArgList()
          for b in range(nbins):
           cr_expectations.add(wsin_combine.function("pmu_cat_%s_ch_%s_bin_%d"%(cat+'_'+x.model,cr.chid,b)))
+         print 'ADDING %s %s %s'%(cat,cr.crname,x.model)
          p_phist = ROOT.RooParametricHist("%s_%s_%s_model"%(cat,cr.crname,x.model),"Expected Shape for %s in control region in Category %s"%(cr.crname,cat),varl,cr_expectations,samplehist)
          p_phist_norm = ROOT.RooAddition("%s_norm"%p_phist.GetName(),"Total number of expected events in %s"%p_phist.GetName(),cr_expectations);
          wsin_combine._import(p_phist)
