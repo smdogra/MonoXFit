@@ -73,6 +73,7 @@ for cat_id,cat in enumerate(x.categories):
 	for syst in systematics: 
 	  extU = "_%sUp"%syst
 	  extD = "_%sDown"%syst
+          print sample+extU, fin.Get(sample+extU)
 	  if fin.Get(sample+extU):
 #	    print " Adding systematic variation %s for %s "%(syst,sample)
             mb.addSample(sample+extU,entry[0],entry[1]+extU,entry[2],entry[3],1)  # name, region, process, is_mc, is_signal

@@ -13,7 +13,9 @@ def makeTop(cid,_fOut,newName,targetmc,controlmc,systs=None):
   _fOut.WriteTObject(TopScales)
 
   if not(systs==None):
-    for uncert in ['btag','sjbtag']:
+    for uncert in ['btag']:
+    # for uncert in ['btag','sjbtag']:
+      print 'targetmc%sUp'%(uncert),systs['targetmc%sUp'%uncert]
       TopScalesUp = systs['targetmc%sUp'%(uncert)].Clone(); TopScalesUp.SetName(newName+"_weights_%s_%s_Up"%(cid,uncert))
       TopScalesUp.Divide(systs['controlmc%sUp'%(uncert)])
       _fOut.WriteTObject(TopScalesUp)
@@ -35,7 +37,8 @@ def addTopErrors(TopScales,targetmc,newName,crName,_fOut,CRs,nCR,cid):
    CRs[nCR].add_nuisance("CMS_eff_m",0.01) 
   '''
 
-  for uncert in ['btag','sjbtag']:
+  for uncert in ['btag']:
+  # for uncert in ['btag','sjbtag']:
     CRs[nCR].add_nuisance_shape(uncert,_fOut)
 
   bins = range(targetmc.GetNbinsX())
@@ -80,10 +83,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   systs['targetmcbtagDown'] = _fin.Get("signal_ttbar_btagDown"); systs_e['targetmcbtagDown'] = systs['targetmcbtagDown']
   systs['controlmcbtagUp'] = _fin.Get("singlemuontop_ttbar_btagUp"); systs_e['controlmcbtagUp'] = _fin.Get("singleelectrontop_ttbar_btagUp")
   systs['controlmcbtagDown'] = _fin.Get("singlemuontop_ttbar_btagDown"); systs_e['controlmcbtagDown'] = _fin.Get("singleelectrontop_ttbar_btagDown")
-  systs['targetmcsjbtagUp'] = _fin.Get("signal_ttbar_sjbtagUp"); systs_e['targetmcsjbtagUp'] = systs['targetmcsjbtagUp']
-  systs['targetmcsjbtagDown'] = _fin.Get("signal_ttbar_sjbtagDown"); systs_e['targetmcsjbtagDown'] = systs['targetmcsjbtagDown']
-  systs['controlmcsjbtagUp'] = _fin.Get("singlemuontop_ttbar_sjbtagUp"); systs_e['controlmcsjbtagUp'] = _fin.Get("singleelectrontop_ttbar_sjbtagUp")
-  systs['controlmcsjbtagDown'] = _fin.Get("singlemuontop_ttbar_sjbtagDown"); systs_e['controlmcsjbtagDown'] = _fin.Get("singleelectrontop_ttbar_sjbtagDown")
+  # systs['targetmcsjbtagUp'] = _fin.Get("signal_ttbar_sjbtagUp"); systs_e['targetmcsjbtagUp'] = systs['targetmcsjbtagUp']
+  # systs['targetmcsjbtagDown'] = _fin.Get("signal_ttbar_sjbtagDown"); systs_e['targetmcsjbtagDown'] = systs['targetmcsjbtagDown']
+  # systs['controlmcsjbtagUp'] = _fin.Get("singlemuontop_ttbar_sjbtagUp"); systs_e['controlmcsjbtagUp'] = _fin.Get("singleelectrontop_ttbar_sjbtagUp")
+  # systs['controlmcsjbtagDown'] = _fin.Get("singlemuontop_ttbar_sjbtagDown"); systs_e['controlmcsjbtagDown'] = _fin.Get("singleelectrontop_ttbar_sjbtagDown")
 
   genVpt = "genVpt"
 
