@@ -386,7 +386,7 @@ void ModelBuilder::addSample(std::string name, std::string region, std::string p
    /**************************************************************************/
    if (! (wspace->genobj("treevars"))) {
    	//treevariables.SetName("treevars");
-   	wspace->import(treevariables,"treevars");
+   	wspace->import(treevariables);
    }
    
    std::string lcutstring = cutstring;

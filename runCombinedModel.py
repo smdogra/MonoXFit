@@ -383,7 +383,8 @@ categories = ["monojet","resolved","boosted"]
 #categories = ["monojet"]
 _f = r.TFile.Open("mono-x-vtagged.root")
 out_ws = r.RooWorkspace("combinedws")
-out_ws._import = getattr(out_ws,"import")
+#out_ws._import = getattr(out_ws,"import")
+out_ws._import = SafeWorkspaceImporter(out_ws)
 
 # Need to setup the things here for combined dataset, need to add all possible sample types first because otherwise RooFit throws a fit! 
 sampleType  = r.RooCategory("bin_number","Bin Number");

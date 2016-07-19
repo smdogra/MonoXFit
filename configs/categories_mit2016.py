@@ -31,7 +31,7 @@ monotop_category = {
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/monojet-combo-electron.root_recoil"
        #,'in_file_name':"files/monotop-boosted-combo-weight.root"
 #       ,'in_file_name':"files/monotop-boosted-combo-mar9.root"
-       ,'in_file_name':"files/limitForest.root"
+        ,'in_file_name':"/local/snarayan/monotop_80/limits/limitForest.root"
 	   ,"cutstring":"met>250 && met<1000"
 	   ,"varstring":["met",250,1000]
 	   ,"weightname":"weight"

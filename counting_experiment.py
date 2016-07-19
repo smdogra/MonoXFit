@@ -2,6 +2,8 @@ import ROOT as r
 import sys
 import array 
 
+from HiggsAnalysis.CombinedLimit.ModelTools import *
+
 MAXBINS=100
 
 def getNormalizedHist(hist):
@@ -108,8 +110,8 @@ class Bin:
 
  def set_wspace(self,w):
    self.wspace = w
-   self.wspace._import = getattr(self.wspace,"import") # workaround: import is a python keyword
-
+#   self.wspace._import = getattr(self.wspace,"import") # workaround: import is a python keyword
+   self.wspace._import = SafeWorkspaceImporter(self.wspace)
 
  def set_sfactor(self,val):
    #print "Scale Factor for " ,self.binid,val
@@ -347,8 +349,9 @@ class Channel:
 
   def set_wspace(self,w):
    self.wspace = w
-   self.wspace._import = getattr(self.wspace,"import") # workaround: import is a python keyword
-  
+#   self.wspace._import = getattr(self.wspace,"import") # workaround: import is a python keyword
+   self.wspace._import = SafeWorkspaceImporter(self.wspace)
+
   def ret_bkg_nuisances(self):
     return self.bkg_nuisances
 
