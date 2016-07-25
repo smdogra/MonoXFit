@@ -120,24 +120,11 @@ monotop_category = {
     }
 }
 
-# old/76x model:
 for m in range(300,1700,200):
   signame = 'monotop_fcnc_mMed%i'%(m)
-  monotop_category['samples'][signame+'_signal'] = ['signal',signame+'_v0',1,1]
+  monotop_category['samples'][signame+'_signal'] = ['signal',signame,1,1]
 for m in range(900,2300,200):
   signame = 'monotop_res_mMed%i'%(m)
-  monotop_category['samples'][signame+'_signal'] = ['signal',signame+'_v0',1,1]
-for m in [1100,2100]:
-  signame = 'monotop-nr-%i'%(m)
-  oldname = 'monotop_fcnc_mMed%i'%(m)
-  monotop_category['samples'][signame+'_signal'] = ['signal',oldname+'_v0',1,1]
-
-# new v3 model
-for m in [50]+range(100,2300,200):
-  signame = 'monotop-nr-v3-%i-10_med-%i_dm-10'%(m,m)
-  monotop_category['samples'][signame+'_signal'] = ['signal',signame,1,1]
-for m in range(900,3100,200):
-  signame = 'monotop_med-%i_dm-100'%(m)
   monotop_category['samples'][signame+'_signal'] = ['signal',signame,1,1]
 
 categories = [monotop_category]

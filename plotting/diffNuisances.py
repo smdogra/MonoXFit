@@ -2,6 +2,7 @@
 import re
 from sys import argv, stdout, stderr, exit
 from optparse import OptionParser
+import plotConfig
 
 # tool to compare fitted nuisance parameters to prefit values.
 #
@@ -327,7 +328,7 @@ if options.plotfile:
     leg.Draw()
     fout.WriteTObject(canvas_nuis)
     
-    plotsDir = '~/public_html/figs/monotop/fits_final/'
+    plotsDir = plotConfig.plotDir
 
     canvas_nuis.SaveAs(plotsDir+"pulls.pdf") 
     canvas_nuis.SaveAs(plotsDir+"pulls.png") 

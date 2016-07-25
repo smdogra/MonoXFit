@@ -4,16 +4,18 @@ from os import system
 from re import sub
 
 
-def run(modelClass,modelsList,runObserved):
-  if runObserved:
-    print 'UNBLINDING'
+def run(modelClass,modelsList,runObserved=True):
   s=''
-  logfile = '%s_%slimits.txt'%(modelClass,'obs_' if runObserved else '')
-#  s += 'rm -f %s\n'%(logfile)
+  logfile = '%sv3_%slimits.txt'%(modelClass,'obs_' if runObserved else '')
   runOption = '' if runObserved else ' --run=blind'
   for l in modelsList:
     print l
-    mass = sub('[A-z]*','',l.split('_')[-1])
+    mass = sub('[A-z]*','',l.split('_')[0])
+    if 'nr' in l:
+      mass = l.split('-')[3]
+    else:
+      mass = sub('_dm','',l.split('-')[1])
+    print mass
     s += 'echo "MASS %s" \n'%(mass)
     s += "sed 's/XXXX/%s/g' combined_tmpl.txt > combined_run.txt \n"%(l)
     s += "combine -M Asymptotic combined_run.txt %s > tmp.txt\n"%(runOption)
@@ -22,5 +24,6 @@ def run(modelClass,modelsList,runObserved):
     runFile.write(s)
   system('sh run.sh > '+logfile)
     
-run('fcnc',['monotop_fcnc_mMed%i'%m for m in xrange(300,1700,200)+[2100]],True)
-run('resonant',['monotop_res_mMed%i'%(x) for x in xrange(900,2300,200)],True)
+
+run('fcnc',['monotop-nr-v3-%i-10_med-%i_dm-10'%(m,m) for m in range(300,2300,200)],True)
+# run('resonant',['monotop_med-%i_dm-100'%(m) for m in range(900,3100,200)],True)

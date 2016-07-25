@@ -1,4 +1,4 @@
-from ROOT import TCanvas, TGraph, TGraphAsymmErrors, TLegend, TLatex
+from ROOT import TCanvas, TGraph, TGraphAsymmErrors, TLegend, TLatex, TMarker
 from array import array
 from sys import argv,stdout
 from tdrStyle import *
@@ -37,17 +37,27 @@ resonantXsecs = {
   1700 : 0.1699,
   1900 : 0.0962,
   2100 : 0.05673,
+  2300 : 0.03456,
+  2500 : 0.02148,
+  2700 : 0.01375,
+  2900 : 0.008956,
     }
 
 fcncXsecs = {
-  300 : 32.55,
-  500 : 7.535,
-  700 : 2.403,
-  900 : 0.9205,
-  1100 : 0.3961,
-  1300 : 0.186,
-  1500 : 0.09285,
-  2100 : 0.014529,
+  50 : 2223,
+  100 :  750.4,
+  150 :  370.85,
+  200 :  187.1545,
+  300 :  48.4024,
+  500 :  9.23265,
+  700 :  2.836662,
+  900 :  1.098356,
+  1100 : 0.4855015,
+  1300 : 0.2350739,
+  1500 : 0.12218969,
+  1700 : 0.06657825,
+  1900 : 0.03860199,
+  2100 : 0.02303869,
     }
 
 BLIND=False
@@ -56,6 +66,18 @@ def parseLine(l):
   if 'Observed' in l:
     return 'Observed',float(l.split('<')[1])
   return float(l.split()[1].strip(':%')),float(l.split('<')[1])
+
+def findIntersect(g1,g2,x1,x2):
+  orientation = (g1.Eval(x1)<g2.Eval(x1))
+  for iX in xrange(1000):
+    x = (x2-x1)*iX/1000.+x1
+    if orientation != (g1.Eval(x)<g2.Eval(x)):
+      # return TGraph(1,array('f',[x]),array('f',[g1.Eval(x)]))
+      return TMarker(x,g1.Eval(x),1)
+      # return x
+  print 'Could not find intersection!'
+  return None
+
 
 def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   xsecs = resonantXsecs if 'resonant' in finname else fcncXsecs
@@ -157,6 +179,8 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   graph2Sigma.Draw('A3')
   graph1Sigma.Draw('3 same')
   graphCent.Draw('same L')
+  subscript = 'SR' if 'Resonant' in plottitle else 'FC'
+  coupling = '0.1' if 'Resonant' in plottitle else '0.25'
   if not BLIND:
     graphObs.Draw('same L')
   if scale:
@@ -167,16 +191,25 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   else:
     graphXsec.SetLineColor(2)
     graphXsecLow.SetLineColor(4)
-    subscript = 'SR' if 'Resonant' in plottitle else 'FC'
     if 'Resonant' in plottitle:
-      leg.AddEntry(graphXsec,'Theory #splitline{a_{%s}=b_{%s}=0.1}{m_{#chi}=100 GeV}'%(subscript,subscript),'l')
+      leg.AddEntry(graphXsec,'Theory #splitline{a_{%s}=b_{%s}=%s}{m_{#chi}=100 GeV}'%(subscript,subscript,coupling),'l')
     else:
-      leg.AddEntry(graphXsec,'Theory a_{%s}=b_{%s}=0.1'%(subscript,subscript),'l')
+      leg.AddEntry(graphXsec,'Theory #splitline{a_{%s}=b_{%s}=%s}{m_{#chi}=10 GeV}'%(subscript,subscript,coupling),'l')
 #    leg.AddEntry(graphXsecLow,'Theory a_{%s}=b_{%s}=0.025'%(subscript,subscript),'l')
     for g in [graphXsec]:
       g.SetLineWidth(2)
       g.SetLineStyle(2)
       g.Draw('same L')
+  if not BLIND:
+    gx = graphOne if scale else graphXsec
+    obslimit = findIntersect(graphObs,gx,xaxis[0],xaxis[-1])
+    if obslimit:
+      obslimit.SetMarkerStyle(29); obslimit.SetMarkerSize(3)
+      obslimit.Draw('p same')
+    explimit = findIntersect(graphCent,gx,xaxis[0],xaxis[-1])
+    if explimit:
+      explimit.SetMarkerStyle(30); explimit.SetMarkerSize(3)
+      explimit.Draw('p same')
   leg.Draw()
   label = TLatex()
   label.SetNDC()
@@ -190,10 +223,11 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
   label.DrawLatex(0.19,0.77,plottitle)
   if scale:
     if 'Resonant' in plottitle:
-      label.DrawLatex(0.19,0.7,"a_{SR} = b_{SR} = 0.1")
+      label.DrawLatex(0.19,0.7,"a_{SR} = b_{SR} = %s"%coupling)
       label.DrawLatex(0.19,0.64,"m_{#chi}=100 GeV")
     else:
-      label.DrawLatex(0.19,0.7,"a_{FC} = b_{FC} = 0.1")
+      label.DrawLatex(0.19,0.7,"a_{FC} = b_{FC} = %s"%coupling)
+      label.DrawLatex(0.19,0.64,"m_{#chi}=10 GeV")
   label.SetTextSize(0.5*c.GetTopMargin())
   label.SetTextFont(42)
   label.SetTextAlign(31) # align right
@@ -203,7 +237,7 @@ def makePlot(finname,foutname,plottitle='',masstitle='',scale=False):
 
 plotsdir = plotConfig.plotDir
 
-makePlot('../datacards/fcnc_obs_limits.txt',plotsdir+'fcnc_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
-makePlot('../datacards/fcnc_obs_limits.txt',plotsdir+'fcnc_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
-makePlot('../datacards/resonant_obs_limits.txt',plotsdir+'resonant_obs_limits_xsec','#splitline{Resonant}{production}','M_{#phi}')
-makePlot('../datacards/resonant_obs_limits.txt',plotsdir+'resonant_obs_limits','#splitline{Resonant}{production}','M_{#phi}',True)
+makePlot('../datacards/fcncv3_obs_limits.txt',plotsdir+'fcncv3_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
+makePlot('../datacards/fcncv3_obs_limits.txt',plotsdir+'fcncv3_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
+makePlot('../datacards/resonantv3_obs_limits.txt',plotsdir+'resonantv3_obs_limits_xsec','#splitline{Resonant}{production}','M_{#phi}')
+makePlot('../datacards/resonantv3_obs_limits.txt',plotsdir+'resonantv3_obs_limits','#splitline{Resonant}{production}','M_{#phi}',True)

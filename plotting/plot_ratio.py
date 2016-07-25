@@ -1,7 +1,10 @@
 from ROOT import *
+from math import sqrt
 from array import array
 from tdrStyle import *
 from os import getenv
+import plotConfig
+
 setTDRStyle()
 
 vtag=False
@@ -31,7 +34,7 @@ def plot_ratio(process):
         dirname = "Z_constraints_category_monotop"
         base    = "zee_weights_monotop"
         label   = "R_{Z(ee)}"
-        addsys  = sqrt(0.04*0.04 + 0.01*0.01)
+        addsys  = sqrt(0.04*0.04)
 
     if (process=='photon'):
         dirname = "Z_constraints_category_monotop" 
@@ -43,7 +46,7 @@ def plot_ratio(process):
         dirname = "W_constraints_category_monotop" 
         base    = "wen_weights_monotop"
         label   = "R_{W(e#nu)}"
-        addsys  = sqrt(0.02*0.02 + 0.01*0.01)
+        addsys  = sqrt(0.02*0.02)
 
     if (process=='singlemuonw'):
         dirname = "W_constraints_category_monotop" 
@@ -55,7 +58,7 @@ def plot_ratio(process):
         dirname = "Top_constraints_category_monotop" 
         base    = "topen_weights_monotop"
         label   = "R_{t#bar{t}(e#nub)}"
-        addsys  = sqrt(0.02*0.02 + 0.01*0.01)
+        addsys  = sqrt(0.02*0.02)
 
     if (process=='singlemuontop'):
         dirname = "Top_constraints_category_monotop" 
@@ -155,7 +158,7 @@ def plot_ratio(process):
     latex2.SetTextSize(0.035)
     latex2.SetTextAlign(31) # align right
     latex2.DrawLatex(0.3, 0.95, extralabel);
-    latex2.DrawLatex(0.87, 0.95, "2.32 fb^{-1} (13 TeV)");
+    latex2.DrawLatex(0.87, 0.95, "%.1f fb^{-1} (13 TeV)"%(plotConfig.lumi));
 #    latex2.DrawLatex(0.87, 0.95, "2.1 pb^{-1} (13 TeV)");
 
     latex3 = TLatex()
@@ -175,7 +178,7 @@ def plot_ratio(process):
     gPad.RedrawAxis()
 
 
-    plotDir = '~/public_html/figs/monotop/fits_wip/'
+    plotDir = plotConfig.plotDir
 
     c.SaveAs(plotDir+"rfactor_"+process+".pdf")
     c.SaveAs(plotDir+"rfactor_"+process+".png")

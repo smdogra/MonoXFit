@@ -3,10 +3,18 @@ from collections import defaultdict
 from os import getenv
 from array import array
 from tdrStyle import *
+import plotConfig
 setTDRStyle()
 
 
 new_dic = defaultdict(dict)
+
+def getInt(h):
+  nbins = h.GetNbinsX()
+  total=0.
+  for iB in xrange(1,nbins+1):
+    total += h.GetBinContent(iB)*h.GetBinWidth(iB)
+  return total
 
 def plotPreFitPostFit(region):
   global blind
@@ -41,7 +49,7 @@ def plotPreFitPostFit(region):
   h_data = gDirectory.Get(region+"_data")
   if region=='signal':
 #    h_res = gDirectory.Get('signal_Mres1100_Mchi100'); h_res.SetLineColor(kGreen+3)
-    h_fcnc = gDirectory.Get('signal_Mchi900'); h_fcnc.SetLineColor(kViolet+9)
+    h_fcnc = gDirectory.Get('signal_monotop_fcnc_mMed900'); h_fcnc.SetLineColor(kViolet+9)
 #    h_res.Scale(3.91)
     h_fcnc.Scale(0.78)
 #    for h in [h_res,h_fcnc]:
@@ -90,6 +98,7 @@ def plotPreFitPostFit(region):
       'qcd',
       'dibosons',
       'stop',
+      'wjets',
       'ttbar',
   ]
 
@@ -121,6 +130,17 @@ def plotPreFitPostFit(region):
                   'wjets':'W#rightarrowl#nu'
                   }
   
+  order = [
+           'Z#rightarrow#nu#nu',
+           'Z#rightarrowll',
+           'W#rightarrowl#nu',
+           't#bar{t}',
+           'Single top',
+           'VV',
+           'QCD',
+           '#gamma+jets',
+           'Data',
+      ]
   zcolor = kCyan-4
   colors = {
       'qcd':kMagenta-10,
@@ -242,8 +262,10 @@ def plotPreFitPostFit(region):
 
   legend = TLegend(.55,.55,.95,.90)
   #legend.SetTextSize(0.04)
+  yields = {}
   if not blind:
     legend.AddEntry(h_data,"Data","elp")
+    yields['Data'] = getInt(h_data)
   legend.AddEntry(h_all_prefit, "SM backgrounds (pre-fit)", "l")
   legend.AddEntry(h_all_postfit, "SM backgrounds (post-fit)", "l") 
   for process in processes:
@@ -252,6 +274,7 @@ def plotPreFitPostFit(region):
       if (not h_postfit[process]): continue
       if (str(h_postfit[process].Integral())=="nan"): continue
       legend.AddEntry(hist,processNames[process],"f")
+      yields[processNames[process]] = getInt(hist)
     except KeyError:
       pass
   if region=='signal':
@@ -264,13 +287,25 @@ def plotPreFitPostFit(region):
   legend.SetLineColor(0);
   legend.Draw("same")
 
+  l1=region+' & '
+  for o in order:
+    if o in yields:
+      y = yields[o]
+      if o=='Data':
+        l1 += ' $%i$ & '%(int(y))
+      else:
+        l1 += ' $%.3g$ & '%y
+    else:
+      l1 += ' $-$ & '
+  print l1
+
   latex2 = TLatex()
   latex2.SetNDC()
   latex2.SetTextSize(0.5*c.GetTopMargin())
   latex2.SetTextFont(42)
   latex2.DrawLatex(0.12, 0.94,extralabel)
   latex2.SetTextAlign(31) # align right
-  latex2.DrawLatex(0.9, 0.94,"2.3 fb^{-1} (13 TeV)")
+  latex2.DrawLatex(0.9, 0.94,"%.1f fb^{-1} (13 TeV)"%(plotConfig.lumi))
   #latex2.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
   latex2.SetTextFont(62)
   latex2.SetTextAlign(11) # align right
@@ -432,7 +467,7 @@ def plotPreFitPostFit(region):
       l.SetLineColor(0);
       l.Draw()
 
-  plotDir = '~/public_html/figs/monotop/fits_final/'
+  plotDir = plotConfig.plotDir
 
   c.SaveAs(plotDir+"stackedPostfit_"+region+".pdf")
   c.SaveAs(plotDir+"stackedPostfit_"+region+".png")
