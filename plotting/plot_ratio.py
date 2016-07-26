@@ -161,10 +161,16 @@ def plot_ratio(process):
     latex2.DrawLatex(0.87, 0.95, "%.1f fb^{-1} (13 TeV)"%(plotConfig.lumi));
 #    latex2.DrawLatex(0.87, 0.95, "2.1 pb^{-1} (13 TeV)");
 
-    latex3 = TLatex()
-    latex3.SetNDC()
-    latex3.SetTextSize(0.75*c.GetTopMargin())
-    latex3.DrawLatex(0.19,0.85,"Work In Progress")
+    #latex3 = TLatex()
+    #latex3.SetNDC()
+    #latex3.SetTextSize(0.75*c.GetTopMargin())
+    latex2.SetTextFont(62)
+    latex2.SetTextAlign(11) # align right
+    latex2.DrawLatex(0.19, 0.85, "CMS")
+    latex2.SetTextSize(0.5*c.GetTopMargin())
+    latex2.SetTextFont(52)
+    latex2.SetTextAlign(11)
+    latex2.DrawLatex(0.28, 0.85, "Preliminary")          
     '''
     latex3.SetTextFont(62)
     latex3.SetTextAlign(11) # align right

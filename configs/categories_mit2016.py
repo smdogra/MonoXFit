@@ -4,7 +4,9 @@ out_file_name = 'mono-x.root'
 
 # can define any thing useful here which may be common to several categories, eg binning in MET 
 #bins = range(200,1200,200)
-bins = [250,300,350,400,500,1000]
+bins = [250,280,310,350,400,450,600,1000]
+#bins = [250,280,310,350,400,500,600,1000]
+#bins = [250,300,350,400,500,1000]
 #bins = [250,300,350,400,500,600,1000]
 # will expect samples with sample_sys_Up/Down but will skip if not found 
 #systematics=["Met","FP","btag","mistag","wjethf","zjethf","gjethf"]
@@ -31,9 +33,11 @@ monotop_category = {
 	   #,'in_file_name':"/afs/cern.ch/user/p/pharris/pharris/public/bacon/prod/CMSSW_7_4_12_patch1/src/MonoX/monojet-combo-electron.root_recoil"
        #,'in_file_name':"files/monotop-boosted-combo-weight.root"
 #       ,'in_file_name':"files/monotop-boosted-combo-mar9.root"
-        ,'in_file_name':"/local/snarayan/monotop_80/limits/limitForest.root"
-	   ,"cutstring":"met>250 && met<1000"
-	   ,"varstring":["met",250,1000]
+        ,'in_file_name':"/local/snarayan/monotop_80_13fb/limits/limitForest.root"
+#	   ,"cutstring":"met>250 && met<1000"
+#	   ,"varstring":["met",250,1000]
+     ,"cutstring":"met>250"
+     ,"varstring":["min(999.9999,met)",250,1000]
 	   ,"weightname":"weight"
 	   ,"bins":bins[:]
 	   #,"bins":[200.0 , 210.0 , 220.0 , 230.0 , 240.0 , 250.0 , 260.0 , 270.0 , 280.0 , 290.0 , 300.0 , 310.0 , 320.0 , 330.0,340,360,380,420,510,1000]
@@ -121,12 +125,14 @@ monotop_category = {
 }
 
 # old/76x model:
+'''
 for m in range(300,1700,200):
   signame = 'monotop_fcnc_mMed%i'%(m)
   monotop_category['samples'][signame+'_signal'] = ['signal',signame+'_v0',1,1]
 for m in range(900,2300,200):
   signame = 'monotop_res_mMed%i'%(m)
   monotop_category['samples'][signame+'_signal'] = ['signal',signame+'_v0',1,1]
+'''
 for m in [1100,2100]:
   signame = 'monotop-nr-%i'%(m)
   oldname = 'monotop_fcnc_mMed%i'%(m)

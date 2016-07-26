@@ -26,4 +26,4 @@ def run(modelClass,modelsList,runObserved=True):
     
 
 run('fcnc',['monotop-nr-v3-%i-10_med-%i_dm-10'%(m,m) for m in range(300,2300,200)],True)
-# run('resonant',['monotop_med-%i_dm-100'%(m) for m in range(900,3100,200)],True)
+run('resonant',['monotop_med-%i_dm-100'%(m) for m in range(900,3100,200)],True)

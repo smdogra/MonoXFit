@@ -47,16 +47,16 @@ def plotPreFitPostFit(region):
   h_data = None
   blind = False 
   h_data = gDirectory.Get(region+"_data")
-  if region=='signal':
+#  if region=='signal':
 #    h_res = gDirectory.Get('signal_Mres1100_Mchi100'); h_res.SetLineColor(kGreen+3)
-    h_fcnc = gDirectory.Get('signal_monotop_fcnc_mMed900'); h_fcnc.SetLineColor(kViolet+9)
+#    h_fcnc = gDirectory.Get('signal_monotop_fcnc_mMed900'); h_fcnc.SetLineColor(kViolet+9)
 #    h_res.Scale(3.91)
-    h_fcnc.Scale(0.78)
+#    h_fcnc.Scale(0.78)
 #    for h in [h_res,h_fcnc]:
-    for h in [h_fcnc]:
-      h.Scale(1,"width")
-      h.SetLineWidth(2)
-      h.SetLineStyle(2)
+#    for h in [h_fcnc]:
+#      h.Scale(1,"width")
+#      h.SetLineWidth(2)
+#      h.SetLineStyle(2)
 
   '''
   if not region=="signal":
@@ -256,9 +256,9 @@ def plotPreFitPostFit(region):
     h_data.Scale(1,"width")
     h_data.Draw("epsame")
 
-  if region=='signal':
+#  if region=='signal':
 #    h_res.Draw('hist same')
-    h_fcnc.Draw('hist same')
+#    h_fcnc.Draw('hist same')
 
   legend = TLegend(.55,.55,.95,.90)
   #legend.SetTextSize(0.04)
@@ -277,9 +277,9 @@ def plotPreFitPostFit(region):
       yields[processNames[process]] = getInt(hist)
     except KeyError:
       pass
-  if region=='signal':
+#  if region=='signal':
 #    legend.AddEntry(h_res,'Resonant M_{#phi}=1.1 TeV','l')
-    legend.AddEntry(h_fcnc,'FCNC M_{V}=0.9 TeV','l')
+#    legend.AddEntry(h_fcnc,'FCNC M_{V}=0.9 TeV','l')
   legend.SetShadowColor(0);
   legend.SetFillColor(0);
   legend.SetFillStyle(0)
