@@ -303,17 +303,20 @@ def plotPreFitPostFit(region):
   latex2.SetNDC()
   latex2.SetTextSize(0.5*c.GetTopMargin())
   latex2.SetTextFont(42)
-  latex2.DrawLatex(0.12, 0.94,extralabel)
+  latex2.SetTextSize(0.6*c.GetTopMargin())
+  latex2.DrawLatex(0.16, 0.85,extralabel)
   latex2.SetTextAlign(31) # align right
-  latex2.DrawLatex(0.9, 0.94,"%.1f fb^{-1} (13 TeV)"%(plotConfig.lumi))
+  latex2.SetTextSize(0.5*c.GetTopMargin())
+  latex2.DrawLatex(0.94, 0.94,"%.1f fb^{-1} (13 TeV)"%(plotConfig.lumi))
   #latex2.DrawLatex(0.9, 0.94,"2.32 fb^{-1} (13 TeV)")
+  latex2.SetTextSize(0.6*c.GetTopMargin())
   latex2.SetTextFont(62)
-  latex2.SetTextAlign(11) # align right
-  latex2.DrawLatex(0.19, 0.85, "CMS")
+  latex2.SetTextAlign(11) # align left
+  latex2.DrawLatex(0.12, 0.94, "CMS")
   latex2.SetTextSize(0.5*c.GetTopMargin())
   latex2.SetTextFont(52)
   latex2.SetTextAlign(11)
-  latex2.DrawLatex(0.28, 0.85, "Preliminary")          
+  latex2.DrawLatex(0.21, 0.94, "Preliminary")          
 
   gPad.RedrawAxis()
 
@@ -324,7 +327,7 @@ def plotPreFitPostFit(region):
   pad.SetRightMargin(0.06)
   #pad.SetLeftMargin(0.18)
   pad.SetFillColor(0)
-  pad.SetGridy(1)
+  pad.SetGridy(0)
   pad.SetFillStyle(0)
   pad.Draw()
   pad.cd(0)
@@ -436,7 +439,7 @@ def plotPreFitPostFit(region):
   dummy2.GetYaxis().SetTitleSize(0.04)
   dummy2.GetYaxis().SetTitleOffset(1.5)
 
-  dummy2.SetMaximum(2.0)
+  dummy2.SetMaximum(2.5)
   dummy2.SetMinimum(0)
   dummy2.Draw("hist")
 

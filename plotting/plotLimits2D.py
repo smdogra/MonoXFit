@@ -1,4 +1,5 @@
-from ROOT import TCanvas, TGraph, TGraphAsymmErrors, TLegend, TLatex, TMarker, TFile, TTree, TH2D
+from ROOT import TCanvas, TGraph, TGraphAsymmErrors, TLegend, TLatex, TFile, TTree, TH2D, TGraph2D
+import ROOT as root
 from array import array
 from sys import argv,stdout
 from tdrStyle import *
@@ -7,6 +8,7 @@ from glob import glob
 
 setTDRStyle()
 
+XSECUNCERT=0.2
 VERBOSE=False
 
 resonantXsecs = {
@@ -21,6 +23,8 @@ resonantXsecs = {
   2500 : 0.02148,
   2700 : 0.01375,
   2900 : 0.008956,
+  3100 : 0.00598399,
+  3300 : 0.0040608,
     }
 
 fcncXsecs = {
@@ -54,188 +58,138 @@ class Limit():
     self.down2=0
     self.obs=0
 
-def findIntersect1D(g1,g2,x1,x2):
-  orientation = (g1.Eval(x1)<g2.Eval(x1))
-  for iX in xrange(1000):
-    x = (x2-x1)*iX/1000.+x1
-    if orientation != (g1.Eval(x)<g2.Eval(x)):
-      # return TGraph(1,array('f',[x]),array('f',[g1.Eval(x)]))
-      return TMarker(x,g1.Eval(x),1)
-      # return x
-  print 'Could not find intersection!'
-  return None
-
-
-def makePlot1D(filepath,foutname,plottitle='',masstitle='',scale=False):
-  xsecs = resonantXsecs if 'Resonant' in plottitle else fcncXsecs
-  limits = {} # mMed : Limit
-
-  runObs=(not BLIND)
+def parseLimitFiles2D(filepath,xsecs=None):
+  # returns a dict (mMed,mChi) : Limit
+  # if xsecs=None, Limit will have absolute xsec
+  # if xsecs=dict of xsecs, Limit will have mu values
+  limits = {}
   filelist = glob(filepath)
-  maxval = 0; minval = 999
   for f in filelist:
     ff = f.split('_')
     mMed = int(ff[1])
     mChi = int(ff[2].split('.')[0])
-    xsec = xsecs[mMed]
-    if scale:
-      l = Limit(mMed,mChi,1)
+    mChi = int(ff[2].split('.')[0])
+    if xsecs:
+      xsec = xsecs[mMed]
+      # xsec = xsecs[(mMed,mChi)] #FIXME
     else:
-      l = Limit(mMed,mChi,xsec)
+      xsec=1
+    l = Limit(mMed,mChi,xsec)
     fin = TFile(f)
     t = fin.Get('limit')
     nL = t.GetEntries()
-    if nL<6:
-      runObs=False
     limitNames = ['down2','down1','cent','up1','up2','obs']
     for iL in xrange(nL):
       t.GetEntry(iL)
       val = t.limit
-      if scale:
-        val /= xsec
-      maxval = max(maxval,val)
-      minval = min(minval,val)
+      val /= xsec
       setattr(l,limitNames[iL],val)
-    limits[mMed] = l
+    limits[(mMed,mChi)] = l
     fin.Close()
+  return limits
 
-  xaxis = []; xseclist = []
-  cent = []; obs = []
-  up1 = []; up2 = []
-  down1 = []; down2 = []
-  for m in sorted(limits):
-    l = limits[m]
-    xaxis.append(m)
-    xseclist.append(l.xsec)
-    cent.append(l.cent)
-    up1.append(l.up1-l.cent)
-    up2.append(l.up2-l.cent)
-    down1.append(l.cent-l.down1)
-    down2.append(l.cent-l.down2)
-    if runObs:
-      obs.append(l.obs)
+def makePlot2D(filepath,foutname,medcfg,chicfg,offshell=True):
+  xsecs = fcncXsecs # FIXME
+  limits = parseLimitFiles2D(filepath,xsecs)
+  gs = {}
+  for g in ['exp','expup','expdown','obs','obsup','obsdown']:
+    gs[g] = TGraph2D()
 
+  iP=0
+  for p in limits:
+    mMed = p[0]; mChi = p[1]
+    l = limits[p]
+    gs['exp'].SetPoint(iP,mMed,mChi,l.cent)
+    gs['expup'].SetPoint(iP,mMed,mChi,l.up1)
+    gs['expdown'].SetPoint(iP,mMed,mChi,l.down1)
+    gs['obs'].SetPoint(iP,mMed,mChi,l.obs)
+    gs['obsup'].SetPoint(iP,mMed,mChi,l.obs/(1-XSECUNCERT))
+    gs['obsdown'].SetPoint(iP,mMed,mChi,l.obs/(1+XSECUNCERT))
+    iP += 1
 
-  N = len(xaxis)
-  
-  up1Sigma = array('f',up1)
-  up2Sigma = array('f',up2)
-  down1Sigma = array('f',down1)
-  down2Sigma = array('f',down2)
-  cent = array('f',cent)
-  if runObs:
-    obs = array('f',obs)
-  xarray = array('f',xaxis)
-  xsecarray = array('f',xseclist)
-  zeros = array('f',[0 for i in xrange(N)])
+  hs = {}
+  for h in ['exp','expup','expdown','obs','obsup','obsdown']:
+    hs[h] = TH2D(h,h,medcfg[0],medcfg[1],medcfg[2],chicfg[0],chicfg[1],chicfg[2])
+    # hs[h].SetStats(0); hs[h].SetTitle('')
+    for iX in xrange(0,medcfg[0]):
+      for iY in xrange(0,chicfg[0]):
+        x = medcfg[1] + (medcfg[2]-medcfg[1])*iX/medcfg[0]
+        y = chicfg[1] + (chicfg[2]-chicfg[1])*iY/chicfg[0]
+        if not(offshell) and 2*y>x:
+          continue
+        hs[h].SetBinContent(iX+1,iY+1,gs[h].Interpolate(x,y))
+        # if h=='obs':
+        #   print iX+1,iY+1,x,y,gs[h].Interpolate(x,y)
 
-  graphXsec = TGraph(N,xarray,xsecarray)
+  hs['obsclone'] = hs['obs'].Clone() # clone it so we can draw with different settings
+  for h in ['exp','expup','expdown','obsclone','obsup','obsdown']:
+    hs[h].SetContour(2)
+    hs[h].SetContourLevel(1,1)
+    for iX in xrange(1,medcfg[0]+1):
+      for iY in xrange(1,chicfg[0]+1):
+        if hs[h].GetBinContent(iX,iY)<=0:
+          hs[h].SetBinContent(iX,iY,100)
 
-  graphCent = TGraph(N,xarray,cent)
-  if runObs:
-    graphObs = TGraph(N,xarray,obs)
-  graph1Sigma = TGraphAsymmErrors(N,xarray,cent,zeros,zeros,down1Sigma,up1Sigma)
-  graph2Sigma = TGraphAsymmErrors(N,xarray,cent,zeros,zeros,down2Sigma,up2Sigma)
+  canvas = ROOT.TCanvas("canvas", "canvas", 1000, 800)
+  canvas.SetLogz()
 
-  c = TCanvas('c','c',700,600)
-  c.SetLogy()
-  c.SetLeftMargin(.15)
+  frame = canvas.DrawFrame(300,10,2100,500,"")
 
-  graph2Sigma.GetXaxis().SetTitle(masstitle+' [GeV]')
-  if scale:
-    graph2Sigma.GetYaxis().SetTitle('Upper limit [#sigma/#sigma_{theory}]')  
-  else:
-    graph2Sigma.GetYaxis().SetTitle("Upper limit [#sigma] [pb]")  
-  graph2Sigma.SetLineColor(5)
-  graph1Sigma.SetLineColor(3)
-  graph2Sigma.SetFillColor(5)
-  graph1Sigma.SetFillColor(3)
-  graph2Sigma.SetMinimum(0.5*minval)
-  if scale:
-    graph2Sigma.SetMaximum(10*max(maxval,max(xsecarray),4))
-  else:
-    graph2Sigma.SetMaximum(10*max(maxval,max(xsecarray)))
-  graphCent.SetLineWidth(2)
-  graphCent.SetLineStyle(2)
-  if runObs:
-    graphObs.SetLineColor(1)
-    graphObs.SetLineWidth(3)
-  graph1Sigma.SetLineStyle(0)
-  graph2Sigma.SetLineStyle(0)
- 
-  leg = TLegend(0.55,0.7,0.9,0.9)
-  leg.AddEntry(graphCent,'Expected','L')
-  if runObs:
-    leg.AddEntry(graphObs,'Observed','L')
-  leg.AddEntry(graph1Sigma,'1 #sigma','F')
-  leg.AddEntry(graph2Sigma,'2 #sigma','F')
-  leg.SetFillStyle(0)
-  leg.SetBorderSize(0)
+  frame.GetYaxis().CenterTitle();
+  frame.GetYaxis().SetTitle("m_{DM} [GeV]");
+  frame.GetXaxis().SetTitle("M_{MED} [GeV]");
+  frame.GetXaxis().SetTitleOffset(1.15);
+  frame.GetYaxis().SetTitleOffset(1.15);
 
-  graph2Sigma.Draw('A3')
-  graph1Sigma.Draw('3 same')
-  graphCent.Draw('same L')
-  if runObs:
-    graphObs.Draw('same L')
+  root.gStyle.SetLabelSize(0.035,"X");
+  root.gStyle.SetLabelSize(0.035,"Y");
+  root.gStyle.SetLabelSize(0.035,"Z");
 
-  subscript = 'SR' if 'Resonant' in plottitle else 'FC'
-  coupling = '0.1' if 'Resonant' in plottitle else '0.25'
+  frame.Draw()
 
-  graphXsec.SetLineColor(2)
-  graphXsec.SetLineWidth(2)
-  graphXsec.SetLineStyle(2)
-  graphXsec.Draw('same L')
-  if scale:
-    graphOne.SetLineColor(2)
-    graphOne.SetLineWidth(2)
-    graphOne.SetLineStyle(2)
-    graphOne.Draw('same L')
-  else:
-    graphXsec.SetLineColor(2)
-    if 'Resonant' in plottitle:
-      leg.AddEntry(graphXsec,'Theory #splitline{a_{%s}=b_{%s}=%s}{m_{#chi}=100 GeV}'%(subscript,subscript,coupling),'l')
-    else:
-      leg.AddEntry(graphXsec,'Theory #splitline{a_{%s}=b_{%s}=%s}{m_{#chi}=10 GeV}'%(subscript,subscript,coupling),'l')
-  if runObs:
-    obslimit = findIntersect1D(graphObs,graphXsec,xaxis[0],xaxis[-1])
-    if obslimit:
-      obslimit.SetMarkerStyle(29); obslimit.SetMarkerSize(3)
-      obslimit.Draw('p same')
-  explimit = findIntersect1D(graphCent,graphXsec,xaxis[0],xaxis[-1])
-  if explimit:
-    explimit.SetMarkerStyle(30); explimit.SetMarkerSize(3)
-    explimit.Draw('p same')
+  ##Color palette
+  ncontours = 999;
+  #root.TColor.InitializeColors();
+  stops = [ 0.0000, 0.1250, 0.2500, 0.3750, 0.5000, 0.6250, 0.7500, 0.8750, 1.0000]
+  red   = [ 243./255., 243./255., 240./255., 240./255., 241./255., 239./255., 186./255., 151./255., 129./255.]
+  green = [   0./255.,  46./255.,  99./255., 149./255., 194./255., 220./255., 183./255., 166./255., 147./255.]
+  blue  = [   6./255.,   8./255.,  36./255.,  91./255., 169./255., 235./255., 246./255., 240./255., 233./255.]
 
-  leg.Draw()
+  stopsArray = array('d',stops)
+  redArray   = array('d',red)
+  greenArray = array('d',green)
+  blueArray  = array('d',blue)
 
-  label = TLatex()
-  label.SetNDC()
-  label.SetTextFont(62)
-  label.SetTextAlign(11)
-  label.DrawLatex(0.19,0.85,"CMS")
-  label.SetTextFont(52)
-  label.DrawLatex(0.28,0.85,"Preliminary")
-  label.SetTextFont(42)
-  label.SetTextSize(0.6*c.GetTopMargin())
-  label.DrawLatex(0.19,0.77,plottitle)
-  if scale:
-    if 'Resonant' in plottitle:
-      label.DrawLatex(0.19,0.7,"a_{SR} = b_{SR} = %s"%coupling)
-      label.DrawLatex(0.19,0.64,"m_{#chi}=100 GeV")
-    else:
-      label.DrawLatex(0.19,0.7,"a_{FC} = b_{FC} = %s"%coupling)
-      label.DrawLatex(0.19,0.64,"m_{#chi}=10 GeV")
-  label.SetTextSize(0.5*c.GetTopMargin())
-  label.SetTextFont(42)
-  label.SetTextAlign(31) # align right
-  label.DrawLatex(0.9, 0.94,"%.1f fb^{-1} (13 TeV)"%(plotConfig.lumi))
+  root.TColor.CreateGradientColorTable(9, stopsArray, redArray, greenArray, blueArray, ncontours);
+  root.gStyle.SetNumberContours(ncontours);
 
-  c.SaveAs(foutname+'.pdf')
-  c.SaveAs(foutname+'.png')
+  hs['obs'].SetMinimum(0.01)
+  hs['obs'].SetMaximum(10.)
+
+  hs['obs'].Draw("COLZ SAME")
+
+  hs['obsclone'].SetLineStyle(1)
+  hs['obsclone'].SetLineWidth(3)
+  hs['obsclone'].SetLineColor(2)
+  hs['obsclone'].Draw('CONT3 SAME')
+
+  hs['exp'].SetLineStyle(1)
+  hs['exp'].SetLineWidth(2)
+  hs['exp'].SetLineColor(1)
+  hs['exp'].Draw('CONT3 SAME')
+
+  root.gPad.SetRightMargin(0.15);
+  root.gPad.SetTopMargin(0.05);
+  root.gPad.SetBottomMargin(0.15);
+  root.gPad.RedrawAxis();
+  root.gPad.Modified(); 
+  root.gPad.Update();
+
+  canvas.SaveAs(foutname+'.root')
+  canvas.SaveAs(foutname+'.pdf')
+  canvas.SaveAs(foutname+'.png')
 
 plotsdir = plotConfig.plotDir
 
-makePlot1D('../datacards/scan/higgsCombinefcnc_*_10.Asymptotic.mH120.root',plotsdir+'test_fcncv3_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
-# makePlot('../datacards/fcncv3_obs_limits.txt',plotsdir+'fcncv3_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
-# makePlot('../datacards/resonantv3_obs_limits.txt',plotsdir+'resonantv3_obs_limits_xsec','#splitline{Resonant}{production}','M_{#phi}')
-# makePlot('../datacards/resonantv3_obs_limits.txt',plotsdir+'resonantv3_obs_limits','#splitline{Resonant}{production}','M_{#phi}',True)
+# makePlot2D('../datacards/scan/higgsCombinefcnc_*.Asymptotic.mH120.root',plotsdir+'fcnc2d',(10,300.,2100.),(10,10.,500.),True)
+makePlot2D('../datacards/scan/higgsCombinefcnc_*.Asymptotic.mH120.root',plotsdir+'fcnc2d',(100,300.,2100.),(100,10.,500.),True)

@@ -3,6 +3,8 @@ from ROOT import gStyle
 
 def setTDRStyle():
 
+    ROOT.TGaxis.SetMaxDigits(4)
+
     # For the canvas:
     ROOT . gStyle . SetCanvasBorderMode(0)
     ROOT . gStyle . SetCanvasColor(0) # must be kWhite but I dunno how to do that in PyROOT
