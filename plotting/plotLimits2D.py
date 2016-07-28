@@ -6,43 +6,12 @@ from tdrStyle import *
 import plotConfig
 from glob import glob 
 
+from xsecs import *
+
 setTDRStyle()
 
 XSECUNCERT=0.2
 VERBOSE=False
-
-resonantXsecs = {
-  900 : 3.09067,
-  1100 : 1.307,
-  1300 : 0.6149,
-  1500 : 0.314,
-  1700 : 0.1699,
-  1900 : 0.0962,
-  2100 : 0.05673,
-  2300 : 0.03456,
-  2500 : 0.02148,
-  2700 : 0.01375,
-  2900 : 0.008956,
-  3100 : 0.00598399,
-  3300 : 0.0040608,
-    }
-
-fcncXsecs = {
-  50 : 2223,
-  100 :  750.4,
-  150 :  370.85,
-  200 :  187.1545,
-  300 :  48.4024,
-  500 :  9.23265,
-  700 :  2.836662,
-  900 :  1.098356,
-  1100 : 0.4855015,
-  1300 : 0.2350739,
-  1500 : 0.12218969,
-  1700 : 0.06657825,
-  1900 : 0.03860199,
-  2100 : 0.02303869,
-    }
 
 BLIND=False
 
@@ -70,8 +39,8 @@ def parseLimitFiles2D(filepath,xsecs=None):
     mChi = int(ff[2].split('.')[0])
     mChi = int(ff[2].split('.')[0])
     if xsecs:
-      xsec = xsecs[mMed]
-      # xsec = xsecs[(mMed,mChi)] #FIXME
+      # xsec = xsecs[mMed]
+      xsec = xsecs[mMed][mChi]
     else:
       xsec=1
     l = Limit(mMed,mChi,xsec)
@@ -136,8 +105,8 @@ def makePlot2D(filepath,foutname,medcfg,chicfg,offshell=True):
   frame = canvas.DrawFrame(300,10,2100,500,"")
 
   frame.GetYaxis().CenterTitle();
-  frame.GetYaxis().SetTitle("m_{DM} [GeV]");
-  frame.GetXaxis().SetTitle("M_{MED} [GeV]");
+  frame.GetYaxis().SetTitle("m_{#chi} [GeV]");
+  frame.GetXaxis().SetTitle("m_{V} [GeV]");
   frame.GetXaxis().SetTitleOffset(1.15);
   frame.GetYaxis().SetTitleOffset(1.15);
 
@@ -173,21 +142,71 @@ def makePlot2D(filepath,foutname,medcfg,chicfg,offshell=True):
   hs['obsclone'].SetLineColor(2)
   hs['obsclone'].Draw('CONT3 SAME')
 
+  hs['obsup'].SetLineStyle(3)
+  hs['obsup'].SetLineWidth(2)
+  hs['obsup'].SetLineColor(2)
+  hs['obsup'].Draw('CONT3 SAME')
+
+  hs['obsdown'].SetLineStyle(3)
+  hs['obsdown'].SetLineWidth(2)
+  hs['obsdown'].SetLineColor(2)
+  hs['obsdown'].Draw('CONT3 SAME')
+
   hs['exp'].SetLineStyle(1)
-  hs['exp'].SetLineWidth(2)
+  hs['exp'].SetLineWidth(3)
   hs['exp'].SetLineColor(1)
   hs['exp'].Draw('CONT3 SAME')
 
+  hs['expup'].SetLineStyle(3)
+  hs['expup'].SetLineWidth(2)
+  hs['expup'].SetLineColor(1)
+  hs['expup'].Draw('CONT3 SAME')
+
+  hs['expdown'].SetLineStyle(3)
+  hs['expdown'].SetLineWidth(2)
+  hs['expdown'].SetLineColor(1)
+  hs['expdown'].Draw('CONT3 SAME')
+
+  leg = root.TLegend(0.16,0.62,0.60,0.88);#,NULL,"brNDC");
+  leg.AddEntry(hs['exp'],"Median Expected (13 TeV) 95% CL","L");
+  leg.AddEntry(hs['expup'],"1 std. dev. (exp)","L");
+  leg.AddEntry(hs['obsclone'],"Observed (13 TeV) 95% CL","L");
+  leg.AddEntry(hs['obsup'],"1 std. dev. (theory)","L");
+  leg.SetFillColor(0);
+  leg.Draw("SAME");
+
+  tex = root.TLatex();
+  tex.SetNDC();
+  tex.SetTextFont(42);
+  tex.SetLineWidth(2);
+  tex.SetTextSize(0.040);
+  tex.Draw();
+  tex.DrawLatex(0.68,0.95,"12.9 fb^{-1} (13 TeV)");
+  tex2 = root.TLatex();
+  tex2.SetNDC();
+  tex2.SetTextFont(42);
+  tex2.SetLineWidth(2);
+  tex2.SetTextSize(0.042);
+  tex2.SetTextAngle(270);
+  tex2.DrawLatex(0.965,0.93,"Observed #sigma_{95% CL}/#sigma_{th}");
+
+  texCMS = root.TLatex(0.12,0.95,"#bf{CMS} #it{Preliminary}");
+  texCMS.SetNDC();
+  texCMS.SetTextFont(42);
+  texCMS.SetLineWidth(2);
+  texCMS.SetTextSize(0.05); texCMS.Draw();
+
   root.gPad.SetRightMargin(0.15);
-  root.gPad.SetTopMargin(0.05);
+  root.gPad.SetTopMargin(0.07);
   root.gPad.SetBottomMargin(0.15);
   root.gPad.RedrawAxis();
   root.gPad.Modified(); 
   root.gPad.Update();
 
-  canvas.SaveAs(foutname+'.root')
-  canvas.SaveAs(foutname+'.pdf')
+
   canvas.SaveAs(foutname+'.png')
+  canvas.SaveAs(foutname+'.pdf')
+  canvas.SaveAs(foutname+'.C')
 
 plotsdir = plotConfig.plotDir
 

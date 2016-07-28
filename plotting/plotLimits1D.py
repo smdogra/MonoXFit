@@ -5,43 +5,11 @@ from sys import argv,stdout
 from tdrStyle import *
 import plotConfig
 from glob import glob 
+from xsecs import *
 
 setTDRStyle()
 
 VERBOSE=False
-
-resonantXsecs = {
-  900 : 3.09067,
-  1100 : 1.307,
-  1300 : 0.6149,
-  1500 : 0.314,
-  1700 : 0.1699,
-  1900 : 0.0962,
-  2100 : 0.05673,
-  2300 : 0.03456,
-  2500 : 0.02148,
-  2700 : 0.01375,
-  2900 : 0.008956,
-  3100 : 0.00598399,
-  3300 : 0.0040608,
-    }
-
-fcncXsecs = {
-  50 : 2223,
-  100 :  750.4,
-  150 :  370.85,
-  200 :  187.1545,
-  300 :  48.4024,
-  500 :  9.23265,
-  700 :  2.836662,
-  900 :  1.098356,
-  1100 : 0.4855015,
-  1300 : 0.2350739,
-  1500 : 0.12218969,
-  1700 : 0.06657825,
-  1900 : 0.03860199,
-  2100 : 0.02303869,
-    }
 
 BLIND=False
 
@@ -71,7 +39,7 @@ def findIntersect1D(g1,g2,x1,x2):
 
 
 def makePlot1D(filepath,foutname,plottitle='',masstitle='',scale=False):
-  xsecs = resonantXsecs if 'Resonant' in plottitle else fcncXsecs
+  xsecs = resonantXsecs if 'Resonant' in plottitle else fcncXsecsMChi10
   limits = {} # mMed : Limit
 
   runObs=(not BLIND)
