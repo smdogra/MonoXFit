@@ -20,9 +20,11 @@ class Model():
     self.mChi=mChi
     self.isRes=isRes
     if isRes:
-      self.name = 'monotop_med-%i_dm-%i'%(mMed,mChi)
+      #self.name = 'monotop_med-%i_dm-%i'%(mMed,mChi)
+      self.name = 'monotop_med-%i'%(mMed)
     else:
-      self.name = 'monotop-nr-v3-%i-%i_med-%i_dm-%i'%(mMed,mChi,mMed,mChi)
+      #self.name = 'monotop-nr-v3-%i-%i_med-%i_dm-%i'%(mMed,mChi,mMed,mChi)
+      self.name = 'MonoTop_%i_%i_0.25_1_801'%(mMed,mChi)
 
 def run(model,runObserved=True):
   label = 'res_' if model.isRes else 'fcnc_'
@@ -32,33 +34,11 @@ def run(model,runObserved=True):
   system(cmd)
   system("sed -i 's?combined_model\.root?../combined_model.root?g' combined_%s.txt"%(label))
   # system("sed 's/XXXX/%s/g %s > combined_%s.txt'"%(model.name,args.template,label))
-  system("combine -M Asymptotic combined_%s.txt -n %s"%(label,label))
+  cmd = "combine -M Asymptotic combined_%s.txt -n %s"%(label,label)
+  print cmd
+  system(cmd)
   # system("combine -M Asymptotic combined_%s.txt -n %s -m %i"%(label,model.mMed*1000+mChi))
 
 model = Model(args.mMed,args.mChi,args.isRes)
 run(model,True)
-
-# def run(modelClass,modelsList,runObserved=True):
-#   s=''
-#   logfile = '%sv3_%slimits.txt'%(modelClass,'obs_' if runObserved else '')
-#   runOption = '' if runObserved else ' --run=blind'
-#   for l in modelsList:
-#     print l
-#     mass = sub('[A-z]*','',l.split('_')[0])
-#     if 'nr' in l:
-#       mass = l.split('-')[3]
-#     else:
-#       mass = sub('_dm','',l.split('-')[1])
-#     print mass
-#     s += 'echo "MASS %s" \n'%(mass)
-#     s += "sed 's/XXXX/%s/g' combined_tmpl.txt > combined_run.txt \n"%(l)
-#     s += "combine -M Asymptotic combined_run.txt %s > tmp.txt\n"%(runOption)
-#     s += 'grep "<" tmp.txt \n'
-#   with open('run.sh','w') as runFile:
-#     runFile.write(s)
-#   system('sh run.sh > '+logfile)
-    
-
-# run('fcnc',['monotop-nr-v3-%i-10_med-%i_dm-10'%(m,m) for m in range(300,2300,200)],True)
-# run('resonant',['monotop_med-%i_dm-100'%(m) for m in range(900,3100,200)],True)
 

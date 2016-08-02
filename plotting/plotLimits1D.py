@@ -1,4 +1,4 @@
-from ROOT import TCanvas, TGraph, TGraphAsymmErrors, TLegend, TLatex, TMarker, TFile, TTree, TH2D
+from ROOT import TCanvas, TGraph, TGraphErrors, TGraphAsymmErrors, TLegend, TLatex, TMarker, TFile, TTree, TH2D
 import ROOT as root
 from array import array
 from sys import argv,stdout
@@ -46,7 +46,7 @@ def makePlot1D(filepath,foutname,plottitle='',masstitle='',scale=False):
   filelist = glob(filepath)
   maxval = 0; minval = 999
   for f in filelist:
-    ff = f.split('_')
+    ff = f.split('/')[-1].split('_')
     mMed = int(ff[1])
     mChi = int(ff[2].split('.')[0])
     xsec = xsecs[mMed]
@@ -72,6 +72,7 @@ def makePlot1D(filepath,foutname,plottitle='',masstitle='',scale=False):
     fin.Close()
 
   xaxis = []; xseclist = []
+  xsecerr = []
   cent = []; obs = []
   up1 = []; up2 = []
   down1 = []; down2 = []
@@ -79,6 +80,7 @@ def makePlot1D(filepath,foutname,plottitle='',masstitle='',scale=False):
     l = limits[m]
     xaxis.append(m)
     xseclist.append(l.xsec)
+    xsecerr.append(l.xsec*.2)
     cent.append(l.cent)
     up1.append(l.up1-l.cent)
     up2.append(l.up2-l.cent)
@@ -99,9 +101,10 @@ def makePlot1D(filepath,foutname,plottitle='',masstitle='',scale=False):
     obs = array('f',obs)
   xarray = array('f',xaxis)
   xsecarray = array('f',xseclist)
+  xsecerrarray = array('f',xsecerr)
   zeros = array('f',[0 for i in xrange(N)])
 
-  graphXsec = TGraph(N,xarray,xsecarray)
+  graphXsec = TGraphErrors(N,xarray,xsecarray,zeros,xsecerrarray)
 
   graphCent = TGraph(N,xarray,cent)
   if runObs:
@@ -164,7 +167,9 @@ def makePlot1D(filepath,foutname,plottitle='',masstitle='',scale=False):
   graphXsec.SetLineColor(2)
   graphXsec.SetLineWidth(2)
   graphXsec.SetLineStyle(2)
-  graphXsec.Draw('same L')
+  graphXsec.SetFillColor(2)
+  graphXsec.SetFillStyle(3005)
+  graphXsec.Draw('same L3')
   if not scale:
     if 'Resonant' in plottitle:
       leg.AddEntry(graphXsec,'Theory #splitline{a_{%s}=b_{%s}=%s}{m_{#chi}=100 GeV}'%(subscript,subscript,coupling),'l')
@@ -205,10 +210,7 @@ def makePlot1D(filepath,foutname,plottitle='',masstitle='',scale=False):
 
 plotsdir = plotConfig.plotDir
 
-makePlot1D('../datacards/scan/higgsCombinefcnc_*_10.Asymptotic.mH120.root',plotsdir+'test_fcncv3_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
-makePlot1D('../datacards/scan/higgsCombinefcnc_*_10.Asymptotic.mH120.root',plotsdir+'test_fcncv3_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
-makePlot1D('../datacards/scan/higgsCombineres_*_100.Asymptotic.mH120.root',plotsdir+'test_resv3_obs_limits_xsec','#splitline{Resonant}{production}','M_{#phi}')
-makePlot1D('../datacards/scan/higgsCombineres_*_100.Asymptotic.mH120.root',plotsdir+'test_resv3_obs_limits','#splitline{Resonant}{production}','M_{#phi}',True)
-# makePlot('../datacards/fcncv3_obs_limits.txt',plotsdir+'fcncv3_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
-# makePlot('../datacards/resonantv3_obs_limits.txt',plotsdir+'resonantv3_obs_limits_xsec','#splitline{Resonant}{production}','M_{#phi}')
-# makePlot('../datacards/resonantv3_obs_limits.txt',plotsdir+'resonantv3_obs_limits','#splitline{Resonant}{production}','M_{#phi}',True)
+makePlot1D('../datacards/scan/higgsCombinefcnc_*_10.Asymptotic.mH120.root',plotsdir+'fcncv3_obs_limits_xsec','#splitline{Flavor-changing}{neutral current}','M_{V}')
+makePlot1D('../datacards/scan/results/higgsCombinefcnc_*_10.Asymptotic.mH120.root',plotsdir+'fcncv3_obs_limits','#splitline{Flavor-changing}{neutral current}','M_{V}',True)
+makePlot1D('../datacards/scan/higgsCombineres_*_100.Asymptotic.mH120.root',plotsdir+'resv3_obs_limits_xsec','#splitline{Resonant}{production}','M_{#phi}')
+makePlot1D('../datacards/scan/higgsCombineres_*_100.Asymptotic.mH120.root',plotsdir+'resv3_obs_limits','#splitline{Resonant}{production}','M_{#phi}',True)

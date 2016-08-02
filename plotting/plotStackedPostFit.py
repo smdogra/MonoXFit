@@ -439,7 +439,7 @@ def plotPreFitPostFit(region):
   dummy2.GetYaxis().SetTitleSize(0.04)
   dummy2.GetYaxis().SetTitleOffset(1.5)
 
-  dummy2.SetMaximum(2.5)
+  dummy2.SetMaximum(2)
   dummy2.SetMinimum(0)
   dummy2.Draw("hist")
 
