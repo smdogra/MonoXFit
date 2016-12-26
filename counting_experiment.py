@@ -27,7 +27,10 @@ class Bin:
    self.catid	  = catid
    #self.type_id   = 10*MAXBINS*catid+MAXBINS*chid+id
    self.binid     = "cat_%s_ch_%s_bin_%d"%(catid,chid,id)
+
    self.wspace_out = wspace_out
+   self.wspace_out._import = SafeWorkspaceImporter(self.wspace_out)
+
    self.set_wspace(wspace)
 
    self.var	  = self.wspace_out.var(var.GetName())
@@ -69,12 +72,19 @@ class Bin:
    nuisances = self.cr.ret_bkg_nuisances()
    if len(nuisances)>0:
      prod = 0
+     print "Is this really true? How many nuisance:", len(nuisances)
+
      if len(nuisances)>1:
        nuis_args = r.RooArgList()
        for nuis in nuisances: 
         print "Adding Background Nuisance ", nuis 
 	# Nuisance*Scale is the model 
 	#form_args = r.RooArgList(self.wspace_out.var("nuis_%s"%nuis),self.wspace_out.function("sys_function_%s_%s"%(nuis,self.binid)))
+        print "Trying to continue", self.wspace_out.function("sys_function_%s_%s"%(nuis,self.binid)).GetName()
+        print "Does it have an attribute:", self.wspace_out.function("sys_function_%s_%s"%(nuis,self.binid)).getAttribute("temp")
+        if (self.wspace_out.function("sys_function_%s_%s"%(nuis,self.binid)).getAttribute("temp")):
+          print "Hi Nick continue.. ", self.wspace_out.function("sys_function_%s_%s"%(nuis,self.binid)).GetName()
+          continue
 	form_args = r.RooArgList(self.wspace_out.function("sys_function_%s_%s"%(nuis,self.binid)))
      	delta_nuis = r.RooFormulaVar("delta_bkg_%s_%s"%(self.binid,nuis),"Delta Change from %s"%nuis,"1+@0",form_args)
         self.wspace_out._import(delta_nuis,r.RooFit.RecycleConflictNodes())
@@ -82,7 +92,11 @@ class Bin:
        prod = r.RooProduct("prod_background_%s"%self.binid,"Nuisance Modifier",nuis_args)
      else: 
        print "Adding Background Nuisance ", nuisances[0]
+       #if (self.wspace_out.function.getAttribute("temp")):
+       ##  prod = r.RooFormulaVar("prod_background_%s"%self.binid,"Delta Change in Background from %s"%nuisances[0],"1",r.RooArgList())
+       #else:
        prod = r.RooFormulaVar("prod_background_%s"%self.binid,"Delta Change in Background from %s"%nuisances[0],"1+@0",r.RooArgList(self.wspace_out.function("sys_function_%s_%s"%(nuisances[0],self.binid))))
+
      self.b = r.RooFormulaVar("background_%s"%self.binid,"Number of expected background events in %s"%self.binid,"@0*%f"%b,r.RooArgList(prod))
    else: self.b = r.RooFormulaVar("background_%s"%self.binid,"Number of expected background events in %s"%self.binid,"@0",r.RooArgList(r.RooFit.RooConst(b)))
    self.wspace_out._import(self.b)
@@ -93,6 +107,7 @@ class Bin:
 
  def set_initY(self,mcdataset):
    self.initY = self.wspace.data(mcdataset).sumEntries("%s>=%g && %s<%g"%(self.var.GetName(),self.xmin,self.var.GetName(),self.xmax),self.rngename)
+   print "DAVID", self.initY, self.rngename, self.xmin, self.xmax
 
  def set_initE_precorr(self):
    return 0 
@@ -110,8 +125,9 @@ class Bin:
 
  def set_wspace(self,w):
    self.wspace = w
-#   self.wspace._import = getattr(self.wspace,"import") # workaround: import is a python keyword
+   #self.wspace._import = getattr(self.wspace,"import") # workaround: import is a python keyword
    self.wspace._import = SafeWorkspaceImporter(self.wspace)
+
 
  def set_sfactor(self,val):
    #print "Scale Factor for " ,self.binid,val
@@ -145,6 +161,12 @@ class Bin:
      if len(nuisances)>1:
        nuis_args = r.RooArgList()
        for nuis in nuisances: 
+
+        if (self.wspace_out.function("sys_function_%s_%s"%(nuis,self.binid)).getAttribute("temp")):
+         print "Hi Nick continue.. ", self.wspace_out.function("sys_function_%s_%s"%(nuis,self.binid)).GetName()
+         continue
+
+
         print "Adding Nuisance ", nuis 
 	# Nuisance*Scale is the model 
 	#form_args = r.RooArgList(self.wspace_out.var("nuis_%s"%nuis),self.wspace_out.function("sys_function_%s_%s"%(nuis,self.binid)))
@@ -152,6 +174,7 @@ class Bin:
      	delta_nuis = r.RooFormulaVar("delta_%s_%s"%(self.binid,nuis),"Delta Change from %s"%nuis,"1+@0",form_args)
         self.wspace_out._import(delta_nuis,r.RooFit.RecycleConflictNodes())
      	nuis_args.add(self.wspace_out.function(delta_nuis.GetName()))
+
        prod = r.RooProduct("prod_%s"%self.binid,"Nuisance Modifier",nuis_args)
      else: 
        print "Adding Nuisance ", nuisances[0]
@@ -230,6 +253,7 @@ class Channel:
     self.chname = "ControlRegion_%s"%self.chid
     self.backgroundname  = ""
     self.wspace_out = wspace_out
+    self.wspace_out._import = SafeWorkspaceImporter(self.wspace_out)
     self.set_wspace(wspace)
     self.nuisances = []
     self.bkg_nuisances = []
@@ -330,11 +354,16 @@ class Channel:
            vd = 1./(sysdn.GetBinContent(b+1)) - nsf  # Note this should be <ve if down is lower, its not a bug
 	coeff_a = 0.5*(vu+vd)
 	coeff_b = 0.5*(vu-vd)
+
         func = r.RooFormulaVar("sys_function_%s_cat_%s_ch_%s_bin_%d"%(name,self.catid,self.chid,b) \
 		,"Systematic Varation"\
 		,"(%f*@0*@0+%f*@0)/%f"%(coeff_a,coeff_b,nsf) \
-		#,"(%f*@0*@0+%f*@0)"%(coeff_a,coeff_b) \
 		,r.RooArgList(self.wspace_out.var("%s"%name))) # this is now relative deviation, SF-SF_0 = func => SF = SF_0*(1+func/SF_0)
+
+        if (coeff_a == 0): 
+          print "Hi Nick adding attribute temp", func.GetName()          
+          func.setAttribute("temp",True)
+
 	self.wspace_out.var("%s"%name).setVal(0)
         if not self.wspace_out.function(func.GetName()) :self.wspace_out._import(func)
     if setv!="":
@@ -349,9 +378,9 @@ class Channel:
 
   def set_wspace(self,w):
    self.wspace = w
-#   self.wspace._import = getattr(self.wspace,"import") # workaround: import is a python keyword
    self.wspace._import = SafeWorkspaceImporter(self.wspace)
-
+   #self.wspace._import = getattr(self.wspace,"import") # workaround: import is a python keyword
+  
   def ret_bkg_nuisances(self):
     return self.bkg_nuisances
 
@@ -408,6 +437,10 @@ class Category:
 
    self._wspace = _wspace
    self._wspace_out = _wspace_out
+   
+   self._wspace_out._import = SafeWorkspaceImporter(self._wspace_out)
+   self._wspace._import = SafeWorkspaceImporter(self._wspace)
+
    #self.diag = diag
    self.additional_vars = {}
    self.additional_targets = []
@@ -499,13 +532,18 @@ class Category:
      
    return hist.Clone()
 
-  def init_channels(self):
+  def init_channels(self):    
+   #print "self._wspace_out.Print(V)", self._wspace_out.Print("V")
    sample = self._wspace_out.cat("bin_number") #r.RooCategory("bin_number","bin_number")
+   #print "zeynep sample", sample, self._wspace_out.cat("bin_number")
+
    #for j,cr in enumerate(self._control_regions):
    for j,cr in enumerate(self._control_regions):
     for i,bl in enumerate(self._bins):
      if i >= len(self._bins)-1 : continue
      xmin,xmax = bl,self._bins[i+1]
+     if i==len(self._bins)-2:
+       xmax = 999999.
      ch = Bin(self.category,self.catid,cr.chid,i,self._var,"",self._wspace,self._wspace_out,xmin,xmax)
      ch.set_control_region(cr)
      if cr.has_background(): ch.add_background(cr.ret_background())

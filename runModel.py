@@ -17,6 +17,8 @@ from pullPlot import pullPlot
 from counting_experiment import *
 from convert import * 
 
+from HiggsAnalysis.CombinedLimit.ModelTools import *
+
 import ROOT as r 
 
 ROOT.gSystem.AddIncludePath("-I$CMSSW_BASE/src/ ");
@@ -36,7 +38,9 @@ from ROOT import diagonalizer
 _fOut 	   = r.TFile(fOutName,"RECREATE") 
 _f 	   = r.TFile.Open(fName) 
 out_ws 	   = r.RooWorkspace("combinedws") 
+
 out_ws._import = SafeWorkspaceImporter(out_ws)
+
 sampleType  = r.RooCategory("bin_number","Bin Number");
 obs         = r.RooRealVar("observed","Observed Events bin",1)
 out_ws._import(sampleType)  # Global variables for dataset

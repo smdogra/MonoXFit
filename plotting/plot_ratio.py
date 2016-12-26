@@ -14,7 +14,7 @@ def plot_ratio(process):
     highest = {}
     lowest = {}
 
-    baseDir = getenv('CMSSW_BASE')+'/src/MonoX/'
+    baseDir = getenv('CMSSW_BASE')+'/src/MonoXFit_CSV/'
     f = TFile(baseDir + 'combined_model.root','READ')
 
     if 'electron' in process:
@@ -23,47 +23,55 @@ def plot_ratio(process):
       extralabel = 'Muons'
     elif 'photon' in process:
       extralabel = 'Photons'
+    else:
+      extralabel = ''
+
+    if (process=='wz'):
+        dirname = 'Z_constraints_category_monotop'
+        base    = 'w_weights_monotop'
+        label   = 'Z#rightarrow#nu#nu/W#rightarrow(l)#nu'
+        addsys = 0
 
     if (process=='dimuon'):
         dirname = "Z_constraints_category_monotop"
         base    = "zmm_weights_monotop"
-        label = "R_{Z(#mu#mu)}"
+        label   = 'Z#rightarrow#nu#nu/Z#rightarrow#mu#mu'
         addsys  = sqrt(0.02*0.02)
 
     if (process=='dielectron'):
         dirname = "Z_constraints_category_monotop"
         base    = "zee_weights_monotop"
-        label   = "R_{Z(ee)}"
+        label   = 'Z#rightarrow#nu#nu/Z#rightarrowee'
         addsys  = sqrt(0.04*0.04)
 
     if (process=='photon'):
         dirname = "Z_constraints_category_monotop" 
         base    = "photon_weights_monotop"
-        label   = "R_{#gamma}"
+        label   = 'Z#rightarrow#nu#nu/#gamma'
         addsys  = 0
 
     if (process=='singleelectronw'):
         dirname = "W_constraints_category_monotop" 
         base    = "wen_weights_monotop"
-        label   = "R_{W(e#nu)}"
+        label   = 'W#rightarrow(l)#nu/W#rightarrowe#nu'
         addsys  = sqrt(0.02*0.02)
 
     if (process=='singlemuonw'):
         dirname = "W_constraints_category_monotop" 
         base    = "wmn_weights_monotop"
-        label   = "R_{W(#mu#nu)}"
+        label   = 'W#rightarrow(l)#nu/W#rightarrow#mu#nu'
         addsys  = sqrt(0.01*0.01)
 
     if (process=='singleelectrontop'):
         dirname = "Top_constraints_category_monotop" 
         base    = "topen_weights_monotop"
-        label   = "R_{t#bar{t}(e#nub)}"
+        label   = 't#rightarrowb(l)#nu/t#rightarrowbe#nu'
         addsys  = sqrt(0.02*0.02)
 
     if (process=='singlemuontop'):
         dirname = "Top_constraints_category_monotop" 
         base    = "topmn_weights_monotop"
-        label   = "R_{t#bar{t}(#mu#nub)}"
+        label   = 't#rightarrowb(l)#nu/t#rightarrowb#mu#nu'
         addsys  = sqrt(0.01*0.01)
 
     ratio = f.Get(dirname+"/"+base)
@@ -107,7 +115,7 @@ def plot_ratio(process):
     c.cd()
     c.SetRightMargin(0.04)
     c.SetTopMargin(0.07)
-    c.SetLeftMargin(0.12)
+    c.SetLeftMargin(0.15)
 
 
     uncertband = ratio.Clone("ratio")
@@ -156,18 +164,19 @@ def plot_ratio(process):
     latex2 = TLatex()
     latex2.SetNDC()
     latex2.SetTextSize(0.035)
+    latex2.SetTextAlign(11) # align left
+    latex2.DrawLatex(0.15, 0.95, extralabel);
     latex2.SetTextAlign(31) # align right
-    latex2.DrawLatex(0.3, 0.95, extralabel);
     latex2.DrawLatex(0.87, 0.95, "%.1f fb^{-1} (13 TeV)"%(plotConfig.lumi));
 #    latex2.DrawLatex(0.87, 0.95, "2.1 pb^{-1} (13 TeV)");
 
     #latex3 = TLatex()
     #latex3.SetNDC()
     #latex3.SetTextSize(0.75*c.GetTopMargin())
+    latex2.SetTextSize(0.7*c.GetTopMargin())
     latex2.SetTextFont(62)
     latex2.SetTextAlign(11) # align right
     latex2.DrawLatex(0.19, 0.85, "CMS")
-    latex2.SetTextSize(0.5*c.GetTopMargin())
     latex2.SetTextFont(52)
     latex2.SetTextAlign(11)
     latex2.DrawLatex(0.28, 0.85, "Preliminary")          
@@ -206,3 +215,4 @@ plot_ratio('singlemuonw')
 plot_ratio('singleelectronw')
 plot_ratio('singlemuontop')
 plot_ratio('singleelectrontop')
+plot_ratio('wz')

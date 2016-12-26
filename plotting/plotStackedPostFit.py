@@ -38,7 +38,7 @@ def plotPreFitPostFit(region):
   extralabel = extralabels[region]
   mainbkg = {"singlemuonw":"wjets", "dimuon":"zll", "photon":"gjets", "signal":None, "singleelectronw":"wjets", "dielectron":"zll", "singlemuontop":"ttbar","singleelectrontop":"ttbar"}
 
-  basedir = getenv('CMSSW_BASE') + '/src/MonoX/'
+  basedir = getenv('CMSSW_BASE') + '/src/MonoXFit_CSV/'
 
   f_mlfit = TFile(basedir+'/datacards/mlfit.root','READ')
 
@@ -141,17 +141,17 @@ def plotPreFitPostFit(region):
            '#gamma+jets',
            'Data',
       ]
-  zcolor = kCyan-4
+  zcolor = kAzure+5
   colors = {
-      'qcd':kMagenta-10,
-      'dibosons':kYellow-9,    
+      'qcd':kGray,
+      'dibosons':kViolet-8,    
       'ttbar':kOrange-3,
-      'gjets':zcolor,
+      'gjets':kCyan-2,
       'zjets':zcolor,
       'zvv':zcolor,
       'zll':zcolor,
-      'wjets':kGreen-10,
-      'stop':kRed-9
+      'wjets':kGreen-6,
+      'stop':kRed-5
   }
 
   binLowE = []
@@ -492,4 +492,4 @@ plotPreFitPostFit("singleelectronw")
 plotPreFitPostFit("singleelectrontop")
 plotPreFitPostFit("dielectron")
 
-plotPreFitPostFit("signal") ### fitting to real data now!
+#plotPreFitPostFit("signal") ### fitting to real data now!

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import ROOT as root
+import plotConfig as cfg
 
-fTemplates = root.TFile('combined_model.root')
+fTemplates = root.TFile('../combined_model.root')
 
 counter=0
 
@@ -93,8 +94,8 @@ leg.SetFillStyle(0)
 leg.SetBorderSize(0)
 leg.Draw()
 
-phocanvas.SaveAs('~/public_html/figs/monotop/fits_smoothed/variations/phoshapes.png')
-phocanvas.SaveAs('~/public_html/figs/monotop/fits_smoothed/variations/phoshapes.pdf')
+for e in ['pdf','png']:
+  phocanvas.SaveAs(cfg.plotDir+'/phoshapes.'+e)
 
 
 ###
@@ -118,8 +119,8 @@ leg.SetFillStyle(0)
 leg.SetBorderSize(0)
 leg.Draw()
 
-zmmcanvas.SaveAs('~/public_html/figs/monotop/fits_smoothed/variations/zmmshapes.png')
-zmmcanvas.SaveAs('~/public_html/figs/monotop/fits_smoothed/variations/zmmshapes.pdf')
+for e in ['pdf','png']:
+  zmmcanvas.SaveAs(cfg.plotDir+'/zmmshapes.'+e)
 
 ###
 zeecanvas = mycanvas()
@@ -142,8 +143,8 @@ leg.SetFillStyle(0)
 leg.SetBorderSize(0)
 leg.Draw()
 
-zeecanvas.SaveAs('~/public_html/figs/monotop/fits_smoothed/variations/zeeshapes.png')
-zeecanvas.SaveAs('~/public_html/figs/monotop/fits_smoothed/variations/zeeshapes.pdf')
+for e in ['pdf','png']:
+  zeecanvas.SaveAs(cfg.plotDir+'/zeeshapes.'+e)
 
 ###
 
@@ -162,8 +163,8 @@ leg.SetFillStyle(0)
 leg.SetBorderSize(0)
 leg.Draw()
 
-topencanvas.SaveAs('~/public_html/figs/monotop/fits_smoothed/variations/topenshapes.png')
-topencanvas.SaveAs('~/public_html/figs/monotop/fits_smoothed/variations/topenshapes.pdf')
+for e in ['pdf','png']:
+  topencanvas.SaveAs(cfg.plotDir+'/topenshapes.'+e)
 
 ###
 
@@ -182,8 +183,8 @@ leg.SetFillStyle(0)
 leg.SetBorderSize(0)
 leg.Draw()
 
-topmncanvas.SaveAs('~/public_html/figs/monotop/fits_smoothed/variations/topmnshapes.png')
-topmncanvas.SaveAs('~/public_html/figs/monotop/fits_smoothed/variations/topmnshapes.pdf')
+for e in ['pdf','png']:
+  topmncanvas.SaveAs(cfg.plotDir+'/topmnshapes.'+e)
 
 
 

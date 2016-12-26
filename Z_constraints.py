@@ -17,27 +17,21 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # example below for creating shape systematic for photon which is just every bin up/down 30% 
 
   metname    = "met"          # Observable variable name 
-  gvptname   = "genVpt"    # Weights are in generator pT
+  gvptname   = "genBosonPt"    # Weights are in generator pT
 
-  target             = _fin.Get("signal_zjets")      # define monimal (MC) of which process this config will model
-  target_btagUp      = _fin.Get("signal_zjets_btagUp")
-  target_btagDown      = _fin.Get("signal_zjets_btagDown")
-  target_sjbtagUp      = _fin.Get("signal_zjets_sjbtagUp")
-  target_sjbtagDown      = _fin.Get("signal_zjets_sjbtagDown")
-  target_mistagUp      = _fin.Get("signal_zjets_mistagUp")
-  target_mistagDown      = _fin.Get("signal_zjets_mistagDown")
-  target_sjmistagUp      = _fin.Get("signal_zjets_sjmistagUp")
-  target_sjmistagDown      = _fin.Get("signal_zjets_sjmistagDown")
-  controlmc          = _fin.Get("dimuon_zll")           # defines Zmm MC of which process will be controlled by
-  controlmc_photon   = _fin.Get("photon_gjets")       # defines Gjets MC of which process will be controlled by
-  controlmc_e        = _fin.Get("dielectron_zll")           # defines Zmm MC of which process will be controlled by
-  
-  '''
-  targetmcUp = _fin.Get("signal_zjets_zjethfUp")
-  targetmcDown = _fin.Get("signal_zjets_zjethfDown")
-  controlmcUp = _fin.Get("dimuon_zll_zjethfUp"); controlmcUp_e = _fin.Get("dielectron_zll_zjethfUp")
-  controlmcDown = _fin.Get("dimuon_zll_zjethfDown"); controlmcDown_e = _fin.Get("dielectron_zll_zjethfDown")
-  '''
+  target                = _fin.Get("signal_zjets")            # define monimal (MC) of which process this config will model
+  target_btagUp         = _fin.Get("signal_zjets_btagUp")
+  target_btagDown       = _fin.Get("signal_zjets_btagDown")
+  target_sjbtagUp       = _fin.Get("signal_zjets_sjbtagUp")
+  target_sjbtagDown     = _fin.Get("signal_zjets_sjbtagDown")
+  target_mistagUp       = _fin.Get("signal_zjets_mistagUp")
+  target_mistagDown     = _fin.Get("signal_zjets_mistagDown")
+  target_sjmistagUp     = _fin.Get("signal_zjets_sjmistagUp")
+  target_sjmistagDown   = _fin.Get("signal_zjets_sjmistagDown")
+  controlmc             = _fin.Get("dimuon_zll")              # defines Zmm MC of which process will be controlled by
+  controlmc_photon      = _fin.Get("photon_gjets")            # defines Gjets MC of which process will be controlled by
+  controlmc_e           = _fin.Get("dielectron_zll")          # defines Zmm MC of which process will be controlled by
+  controlmc_w           = _fin.Get('signal_wjets')            # Wlv MC in signal region
 
   # Create the transfer factors and save them (not here you can also create systematic variations of these 
   # transfer factors (named with extention _sysname_Up/Down
@@ -98,22 +92,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   ZeeScales_sjmistagDown = target_sjmistagDown.Clone(); ZeeScales_sjmistagDown.SetName("zee_weights_%s_sjmistag_Down"%cid)
   ZeeScales_sjmistagDown.Divide(controlmc_e); _fOut.WriteTObject(ZeeScales_sjmistagDown)
 
+  WZScales = target.Clone(); WZScales.SetName('w_weights_%s'%cid)
+  WZScales.Divide(controlmc_w); _fOut.WriteTObject(WZScales)
+
   ### done btag ###
-
-  ### HF ###
-  '''
-  ZeeScalesUp = targetmcUp.Clone(); ZeeScalesUp.SetName("zee_weights_%s_zjethf_Up"%(cid))
-  ZeeScalesUp.Divide(controlmc); _fOut.WriteTObject(ZeeScalesUp)
-
-  ZeeScalesDown = targetmcDown.Clone(); ZeeScalesDown.SetName("zee_weights_%s_zjethf_Down"%(cid))
-  ZeeScalesDown.Divide(controlmc); _fOut.WriteTObject(ZeeScalesDown)
-
-  ZeeScalesUp = targetmcUp.Clone(); ZeeScalesUp.SetName("zee_weights_%s_zjethf_Up"%(cid))
-  ZeeScalesUp.Divide(controlmc_e); _fOut.WriteTObject(ZeeScalesUp)
-
-  ZeeScalesDown = targetmcDown.Clone(); ZeeScalesDown.SetName("zee_weights_%s_zjethf_Down"%(cid))
-  ZeeScalesDown.Divide(controlmc_e); _fOut.WriteTObject(ZeeScalesDown)
-  '''
 
   ### PHOTONS ###
   my_function(_wspace,_fin,_fOut,cid,diag)
@@ -135,7 +117,7 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
    Channel("photonModel",_wspace,out_ws,cid+'_'+model,PhotonScales) 
   ,Channel("dimuonModel",_wspace,out_ws,cid+'_'+model,ZmmScales)
   ,Channel("dielectronModel",_wspace,out_ws,cid+'_'+model,ZeeScales)
-#  ,Channel("wjetssignal",_wspace,out_ws,cid+'_'+model,WZScales)
+  ,Channel("wzModel",_wspace,out_ws,cid+'_'+model,WZScales)
   ]
 
   # ############################ USER DEFINED ###########################################################
@@ -145,9 +127,35 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # these must be created and writted to the same dirctory as the nominal (fDir)
 
   # Bin by bin nuisances to cover statistical uncertainties ...
+
+  # define function locally for convenient access to stuff
+  def addStatErrs(hx,cr,crname1,crname2):
+    for b in range(1,target.GetNbinsX()+1):
+      err = hx.GetBinError(b)
+      if not hx.GetBinContent(b)>0:
+        continue
+      relerr = err/hx.GetBinContent(b)
+      if relerr<0.01:
+        continue
+      byb_u = hx.Clone(); byb_u.SetName('%s_weights_%s_%s_stat_error_%s_bin%d_Up'%(crname1,cid,cid,crname2,b))
+      byb_u.SetBinContent(b,hx.GetBinContent(b)+err)
+      byb_d = hx.Clone(); byb_d.SetName('%s_weights_%s_%s_stat_error_%s_bin%d_Down'%(crname1,cid,cid,crname2,b))
+      if err<hx.GetBinContent(b):
+        byb_d.SetBinContent(b,hx.GetBinContent(b)-err)
+      else:
+        byb_d.SetBinContent(b,0)
+      _fOut.WriteTObject(byb_u)
+      _fOut.WriteTObject(byb_d)
+      cr.add_nuisance_shape('%s_stat_error_%s_bin%d'%(cid,crname2,b),_fOut)
+
+  addStatErrs(PhotonScales,CRs[0],'photon','photonModelCR')
+  addStatErrs(ZmmScales,CRs[1],'zmm','dimuonModelCR')
+  addStatErrs(ZeeScales,CRs[2],'zee','dielectronModelCR')
+  addStatErrs(WZScales,CRs[3],'w','wzModelCR')
+
+  '''
   for b in range(target.GetNbinsX()):
     err = PhotonScales.GetBinError(b+1)
-    print "ZEYNEP MISSING Z:", b+1, PhotonScales.GetBinContent(b+1), err
     if not PhotonScales.GetBinContent(b+1)>0: continue 
     relerr = err/PhotonScales.GetBinContent(b+1)
     if relerr<0.01: continue
@@ -157,7 +165,6 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
     byb_d.SetBinContent(b+1,PhotonScales.GetBinContent(b+1)-err)
     _fOut.WriteTObject(byb_u)
     _fOut.WriteTObject(byb_d)
-    print "Adding an error -- ", byb_u.GetName(),err
     CRs[0].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"photonModelCR",b),_fOut)
 
   for b in range(target.GetNbinsX()):
@@ -174,7 +181,6 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
       byb_d.SetBinContent(b+1,1)
     _fOut.WriteTObject(byb_u)
     _fOut.WriteTObject(byb_d)
-    print "Adding an error -- ", byb_u.GetName(),err
     CRs[1].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"dimuonModelCR",b),_fOut)
 
   for b in range(target.GetNbinsX()):
@@ -193,6 +199,7 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
     _fOut.WriteTObject(byb_d)
     print "Adding an error -- ", byb_u.GetName(),err
     CRs[2].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"dielectronModelCR",b),_fOut)
+  '''
 
   #######################################################################################################
   
@@ -201,23 +208,17 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   CRs[0].add_nuisance_shape("pdf",_fOut) 
   CRs[0].add_nuisance("PhotonEff",0.02) 
   for cr in [0,1,2]:
-#    CRs[cr].add_nuisance("SFSubJetBMistag",0.14)
-#    CRs[cr].add_nuisance("SFSubJetBtag",0.09)
     CRs[cr].add_nuisance_shape('btag',_fOut)
     CRs[cr].add_nuisance_shape('mistag',_fOut)
     CRs[cr].add_nuisance_shape('sjbtag',_fOut)
     CRs[cr].add_nuisance_shape('sjmistag',_fOut)
-#  CRs[0].add_nuisance_shape("gjethf",_fOut)
-#  CRs[1].add_nuisance_shape("zjethf",_fOut)
-#  CRs[2].add_nuisance_shape("zjethf",_fOut)
-  #CRs[1].add_nuisance("DimuonEff",0.02)
-  #CRs[2].add_nuisance("DielEff",0.04)
+  CRs[3].add_nuisance_shape('wrenscale',_fOut)
+  CRs[3].add_nuisance_shape('wfacscale',_fOut)
+  CRs[3].add_nuisance_shape('wpdf',_fOut)
   
-  #CRs[0].add_nuisance_shape("ewk",_fOut) 
   for b in range(target.GetNbinsX()):
-    #CRs[0].add_nuisance_shape("ewk_%s_bin%d"%(cid,b),_fOut,"SetTo=1") #Don't undertsand this set to 1
     CRs[0].add_nuisance_shape("ewk_%s_bin%d"%(cid,b),_fOut)
-#    CRs[3].add_nuisance_shape("w_ewk_%s_bin%d"%(cid,b),_fOut)
+    CRs[3].add_nuisance_shape("w_ewk_%s_bin%d"%(cid,b),_fOut)
 
   #######################################################################################################
 
@@ -229,23 +230,21 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 def my_function(_wspace,_fin,_fOut,nam,diag):
 
   metname    = "met"          # Observable variable name 
-  gvptname   = "genVpt"    # Weights are in generator pT
+  gvptname   = "genBosonPt"    # Weights are in generator pT
 
   target             = _fin.Get("signal_zjets")      # define monimal (MC) of which process this config will model
-  target_btagUp      = _fin.Get("signal_zjets_btagUp")
+  target_btagUp        = _fin.Get("signal_zjets_btagUp")
   target_btagDown      = _fin.Get("signal_zjets_btagDown")
   target_mistagUp      = _fin.Get("signal_zjets_mistagUp")
-  target_mistagDown      = _fin.Get("signal_zjets_mistagDown")
+  target_mistagDown    = _fin.Get("signal_zjets_mistagDown")
   target_sjbtagUp      = _fin.Get("signal_zjets_sjbtagUp")
-  target_sjbtagDown      = _fin.Get("signal_zjets_sjbtagDown")
-  target_sjmistagUp      = _fin.Get("signal_zjets_sjmistagUp")
-  target_sjmistagDown      = _fin.Get("signal_zjets_sjmistagDown")
+  target_sjbtagDown    = _fin.Get("signal_zjets_sjbtagDown")
+  target_sjmistagUp    = _fin.Get("signal_zjets_sjmistagUp")
+  target_sjmistagDown  = _fin.Get("signal_zjets_sjmistagDown")
   
   controlmc          = _fin.Get("dimuon_zll")           # defines Zmm MC of which process will be controlled by
   controlmc_photon   = _fin.Get("photon_gjets")       # defines Gjets MC of which process will be controlled by
- 
-#  controlmc_photonUp = _fin.Get("photon_gjets_gjethfUp")
-#  controlmc_photonDown = _fin.Get("photon_gjets_gjethfDown")
+  controlmc_w        = _fin.Get('signal_wjets')            # Wlv MC in signal region
   
   _gjet_mcname 	     = "photon_gjets"
   GJet               = _fin.Get("photon_gjets")
@@ -341,18 +340,9 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   PhotonScales = Zvv.Clone()
   _fOut.WriteTObject(PhotonScales)
   
-  '''
-  ### HF ###
-  PhotonsUp = target.Clone(); PhotonsUp.SetName('photon_weights_%s_gjethf_Up'%nam)
-  PhotonsUp.Divide(controlmc_photonUp); _fOut.WriteTObject(PhotonsUp)
 
-  PhotonsDown = target.Clone(); PhotonsDown.SetName('photon_weights_%s_gjethf_Down'%nam)
-  PhotonsDown.Divide(controlmc_photonDown); _fOut.WriteTObject(PhotonsDown)
-  ### HF ###
-  '''
-
-#  fztoaewk = r.TFile.Open("files/atoz_ewkunc.root")
-  fztoaewk = fztoa
+  # fztoaewk = fztoa
+  fztoaewk = r.TFile.Open('files/atoz_unc.root')
   ztoa_ewk_up   = fztoaewk.Get("a_ewkcorr_overz_Upcommon")
   ztoa_ewk_down = fztoaewk.Get("a_ewkcorr_overz_Downcommon")
 
@@ -360,19 +350,14 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   for b in range(ratio_ewk_up.GetNbinsX()): ratio_ewk_up.SetBinContent(b+1,0)  
   diag.generateWeightedTemplate(ratio_ewk_up,ztoa_ewk_up,gvptname,metname,_wspace.data("signal_zjets"))
   ratio_ewk_up.Divide(Pho)
-  # We are now going to uncorrelate the bins
-  #_fOut.WriteTObject(ratio_ewk_up)
   
   ratio_ewk_down = Zvv.Clone();  ratio_ewk_down.SetName("photon_weights_%s_ewk_Down"%nam);
   for b in range(ratio_ewk_down.GetNbinsX()): ratio_ewk_down.SetBinContent(b+1,0)  
   diag.generateWeightedTemplate(ratio_ewk_down,ztoa_ewk_down,gvptname,metname,_wspace.data("signal_zjets"))
   ratio_ewk_down.Divide(Pho)
-  # We are now going to uncorrelate the bins
-  #_fOut.WriteTObject(ratio_ewk_down)
 
   #Now lets uncorrelate the bins:
   for b in range(target.GetNbinsX()):
-    #print "HELLO trying to fill up / down"
     ewk_up = Zvv.Clone(); ewk_up.SetName("photon_weights_%s_ewk_%s_bin%d_Up"%(nam,nam,b))
     ewk_down = Zvv.Clone(); ewk_down.SetName("photon_weights_%s_ewk_%s_bin%d_Down"%(nam,nam,b))
     for i in range(target.GetNbinsX()):
@@ -381,8 +366,6 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
         ewk_down.SetBinContent(i+1,ratio_ewk_down.GetBinContent(i+1))
         break
 
-
-    #print "HELLO filled up / down ",ewk_up.GetBinContent(b+1), ewk_down.GetBinContent(b+1)
 
     _fOut.WriteTObject(ewk_up)
     _fOut.WriteTObject(ewk_down)
@@ -394,23 +377,21 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   #################################################################################################################
   ### Now lets do the same thing for W
 
-  '''
   fztow = r.TFile.Open("files/wtoz_unc.root")
   
-  ztow_renscale_up   = fztow.Get("znlo012_over_wnlo012_renScaleUp")
-  ztow_renscale_down = fztow.Get("znlo012_over_wnlo012_renScaleDown")
+  ztow_renscale_up   = fztow.Get("znlo1_over_wnlo1_renScaleUp")
+  ztow_renscale_down = fztow.Get("znlo1_over_wnlo1_renScaleDown")
 
-  ztow_facscale_up   = fztow.Get("znlo012_over_wnlo012_facScaleUp")
-  ztow_facscale_down = fztow.Get("znlo012_over_wnlo012_facScaleDown")
+  ztow_facscale_up   = fztow.Get("znlo1_over_wnlo1_facScaleUp")
+  ztow_facscale_down = fztow.Get("znlo1_over_wnlo1_facScaleDown")
 
-  ztow_pdf_up   = fztow.Get("znlo012_over_wnlo012_pdfUp")
-  ztow_pdf_down = fztow.Get("znlo012_over_wnlo012_pdfDown")
+  ztow_pdf_up   = fztow.Get("znlo1_over_wnlo1_pdfUp")
+  ztow_pdf_down = fztow.Get("znlo1_over_wnlo1_pdfDown")
 
   WSpectrum = controlmc_w.Clone(); WSpectrum.SetName("w_spectrum_%s_"%nam)
   ZvvSpectrum 	 = target.Clone(); ZvvSpectrum.SetName("zvv_spectrum_%s_"%nam)
 
   _fOut.WriteTObject( WSpectrum )
-  #_fOut.WriteTObject( ZvvSpectrum ) No need to rewrite
 
   #################################################################################################################
 
@@ -453,7 +434,7 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   wratio_pdf_down.Divide(Wsig)
   _fOut.WriteTObject(wratio_pdf_down)
 
-  fztowewk = r.TFile.Open("files/wtoz_ewkunc.root")
+  fztowewk = r.TFile.Open("files/wtoz_unc.root")
   ztow_ewk_up   = fztowewk.Get("w_ewkcorr_overz_Upcommon")
   ztow_ewk_down = fztowewk.Get("w_ewkcorr_overz_Downcommon")
 
@@ -461,26 +442,18 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   for b in range(wratio_ewk_up.GetNbinsX()): wratio_ewk_up.SetBinContent(b+1,0)  
   diag.generateWeightedTemplate(wratio_ewk_up,ztow_ewk_up,gvptname,metname,_wspace.data("signal_zjets"))
   wratio_ewk_up.Divide(Wsig)
-  # We are now going to uncorrelate the bins
-  #_fOut.WriteTObject(ratio_ewk_up)
   
   wratio_ewk_down = Zvv_w.Clone();  wratio_ewk_down.SetName("w_weights_%s_ewk_Down"%nam);
   for b in range(wratio_ewk_down.GetNbinsX()): wratio_ewk_down.SetBinContent(b+1,0)  
   diag.generateWeightedTemplate(wratio_ewk_down,ztow_ewk_down,gvptname,metname,_wspace.data("signal_zjets"))
   wratio_ewk_down.Divide(Wsig)
-  # We are now going to uncorrelate the bins
-  #_fOut.WriteTObject(ratio_ewk_down)
 
 
   ############### GET SOMETHING CENTRAL PLEASE ############################
-  #Wsig = controlmc_w.Clone(); Wsig.SetName("w_weights_denom_%s"%nam)
-  #Zvv_w = target.Clone(); Zvv_w.SetName("w_weights_nom_%s"%nam)
-
   Zvv_w.Divide(Wsig)
 
   #Now lets uncorrelate the bins:
   for b in range(target.GetNbinsX()):
-    #print "HELLO trying to fill up / down"
     ewk_up_w = Zvv_w.Clone(); ewk_up_w.SetName("w_weights_%s_w_ewk_%s_bin%d_Up"%(nam,nam,b))
     ewk_down_w = Zvv_w.Clone(); ewk_down_w.SetName("w_weights_%s_w_ewk_%s_bin%d_Down"%(nam,nam,b))
     for i in range(target.GetNbinsX()):
@@ -489,9 +462,7 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
         ewk_down_w.SetBinContent(i+1,wratio_ewk_down.GetBinContent(i+1))
         break
 
-    #print "HELLO filled up / down ",ewk_up.GetBinContent(b+1), ewk_down.GetBinContent(b+1)
 
     _fOut.WriteTObject(ewk_up_w)
     _fOut.WriteTObject(ewk_down_w)
 
-  '''
