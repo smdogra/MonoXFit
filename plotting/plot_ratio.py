@@ -74,6 +74,18 @@ def plot_ratio(process):
         label   = 't#rightarrowb(l)#nu/t#rightarrowb#mu#nu'
         addsys  = sqrt(0.01*0.01)
 
+    if (process=='singleelectronwtop'):
+        dirname = "Top_constraints_category_monotop" 
+        base    = "topwen_weights_monotop"
+        label   = 't#rightarrowb(l)#nu/t#rightarrow(b)e#nu'
+        addsys  = sqrt(0.02*0.02)
+
+    if (process=='singlemuonwtop'):
+        dirname = "Top_constraints_category_monotop" 
+        base    = "topwmn_weights_monotop"
+        label   = 't#rightarrowb(l)#nu/t#rightarrow(b)#mu#nu'
+        addsys  = sqrt(0.01*0.01)
+
     ratio = f.Get(dirname+"/"+base)
     up_final = ratio.Clone("ratio")
     down_final = ratio.Clone("ratio")
@@ -215,4 +227,6 @@ plot_ratio('singlemuonw')
 plot_ratio('singleelectronw')
 plot_ratio('singlemuontop')
 plot_ratio('singleelectrontop')
+plot_ratio('singlemuonwtop')
+plot_ratio('singleelectronwtop')
 plot_ratio('wz')

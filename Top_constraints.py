@@ -13,32 +13,28 @@ def makeTop(cid,_fOut,newName,targetmc,controlmc,systs=None):
   _fOut.WriteTObject(TopScales)
 
   if not(systs==None):
-    for uncert in ['btag']:
-    # for uncert in ['btag','sjbtag']:
-      print 'targetmc%sUp'%(uncert),systs['targetmc%sUp'%uncert]
-      TopScalesUp = systs['targetmc%sUp'%(uncert)].Clone(); TopScalesUp.SetName(newName+"_weights_%s_%s_Up"%(cid,uncert))
-      TopScalesUp.Divide(systs['controlmc%sUp'%(uncert)])
-      _fOut.WriteTObject(TopScalesUp)
+    for uncert in ['btag','sjbtag']:
+      try:
+        TopScalesUp = systs['targetmc%sUp'%(uncert)].Clone(); TopScalesUp.SetName(newName+"_weights_%s_%s_Up"%(cid,uncert))
+        TopScalesUp.Divide(systs['controlmc%sUp'%(uncert)])
 
-      TopScalesDown = systs['targetmc%sDown'%(uncert)].Clone(); TopScalesDown.SetName(newName+"_weights_%s_%s_Down"%(cid,uncert))
-      TopScalesDown.Divide(systs['controlmc%sDown'%(uncert)])
-      _fOut.WriteTObject(TopScalesDown)
+        TopScalesDown = systs['targetmc%sDown'%(uncert)].Clone(); TopScalesDown.SetName(newName+"_weights_%s_%s_Down"%(cid,uncert))
+        TopScalesDown.Divide(systs['controlmc%sDown'%(uncert)])
+
+        _fOut.WriteTObject(TopScalesUp)
+        _fOut.WriteTObject(TopScalesDown)
+      except KeyError:
+        pass
 
   return TopScales
 
 
-def addTopErrors(TopScales,targetmc,newName,crName,_fOut,CRs,nCR,cid):
+def addTopErrors(TopScales,targetmc,newName,crName,_fOut,CRs,nCR,cid,doSJ=False):
 
-  '''
-  CRs[nCR].add_nuisance("pdf_CT10",0.006)
-  if crName.find('electron')>=0:
-   CRs[nCR].add_nuisance("CMS_eff_e",0.01) 
-  else:
-   CRs[nCR].add_nuisance("CMS_eff_m",0.01) 
-  '''
-
-  for uncert in ['btag']:
-  # for uncert in ['btag','sjbtag']:
+  uncerts = ['btag']
+  if doSJ:
+    uncerts.append('sjbtag')
+  for uncert in uncerts:
     CRs[nCR].add_nuisance_shape(uncert,_fOut)
 
   bins = range(targetmc.GetNbinsX())
@@ -54,14 +50,13 @@ def addTopErrors(TopScales,targetmc,newName,crName,_fOut,CRs,nCR,cid):
     byb_d.SetBinContent(b+1,TopScales.GetBinContent(b+1)-err)
     _fOut.WriteTObject(byb_u)
     _fOut.WriteTObject(byb_d)
-    print "Adding an error -- ", byb_u.GetName(),err
     CRs[nCR].add_nuisance_shape("%s_stat_error_%sCR_bin%d"%(cid,crName,b),_fOut)
+
 
 def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # Some setup
   _fin = _f.Get("category_%s"%cid)
   _wspace = _fin.Get("wspace_%s"%cid)
-
 
   # ############################ USER DEFINED ###########################################################
   # First define the nominal transfer factors (histograms of signal/control, usually MC 
@@ -74,27 +69,40 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   targetmc     = _fin.Get("signal_ttbar")      # define monimal (MC) of which process this config will model
   controlmc    = _fin.Get("singlemuontop_ttbar")
   controlmc_e  = _fin.Get("singleelectrontop_ttbar")
+  controlmc_w    = _fin.Get("singlemuonw_ttbar")
+  controlmc_w_e  = _fin.Get("singleelectronw_ttbar")
  
 
   systs = {}; systs_e = {}
+  systs_w = {}; systs_w_e = {}
 
   # btag systs
-  systs['targetmcbtagUp'] = _fin.Get("signal_ttbar_btagUp"); systs_e['targetmcbtagUp'] = systs['targetmcbtagUp']
-  systs['targetmcbtagDown'] = _fin.Get("signal_ttbar_btagDown"); systs_e['targetmcbtagDown'] = systs['targetmcbtagDown']
-  systs['controlmcbtagUp'] = _fin.Get("singlemuontop_ttbar_btagUp"); systs_e['controlmcbtagUp'] = _fin.Get("singleelectrontop_ttbar_btagUp")
-  systs['controlmcbtagDown'] = _fin.Get("singlemuontop_ttbar_btagDown"); systs_e['controlmcbtagDown'] = _fin.Get("singleelectrontop_ttbar_btagDown")
+  systs['targetmcbtagUp']      = _fin.Get("signal_ttbar_btagUp");           systs_e['targetmcbtagUp']      = systs['targetmcbtagUp']
+  systs['targetmcbtagDown']    = _fin.Get("signal_ttbar_btagDown");         systs_e['targetmcbtagDown']    = systs['targetmcbtagDown']
+  systs['controlmcbtagUp']     = _fin.Get("singlemuontop_ttbar_btagUp");    systs_e['controlmcbtagUp']     = _fin.Get("singleelectrontop_ttbar_btagUp")
+  systs['controlmcbtagDown']   = _fin.Get("singlemuontop_ttbar_btagDown");  systs_e['controlmcbtagDown']   = _fin.Get("singleelectrontop_ttbar_btagDown")
+  
+  systs_w['targetmcbtagUp']      = _fin.Get("signal_ttbar_btagUp");           systs_w_e['targetmcbtagUp']      = systs_w['targetmcbtagUp']
+  systs_w['targetmcbtagDown']    = _fin.Get("signal_ttbar_btagDown");         systs_w_e['targetmcbtagDown']    = systs_w['targetmcbtagDown']
+  systs_w['targetmcsjbtagUp']    = _fin.Get("signal_ttbar_sjbtagUp");         systs_w_e['targetmcsjbtagUp']    = systs_w['targetmcsjbtagUp']
+  systs_w['targetmcsjbtagDown']  = _fin.Get("signal_ttbar_sjbtagDown");       systs_w_e['targetmcsjbtagDown']  = systs_w['targetmcsjbtagDown']
+  systs_w['controlmcbtagUp']     = _fin.Get("singlemuonw_ttbar_btagUp");      systs_w_e['controlmcbtagUp']     = _fin.Get("singleelectronw_ttbar_btagUp")
+  systs_w['controlmcbtagDown']   = _fin.Get("singlemuonw_ttbar_btagDown");    systs_w_e['controlmcbtagDown']   = _fin.Get("singleelectronw_ttbar_btagDown")
+  systs_w['controlmcsjbtagUp']   = _fin.Get("singlemuonw_ttbar_sjbtagUp");    systs_w_e['controlmcsjbtagUp']   = _fin.Get("singleelectronw_ttbar_sjbtagUp")
+  systs_w['controlmcsjbtagDown'] = _fin.Get("singlemuonw_ttbar_sjbtagDown");  systs_w_e['controlmcsjbtagDown'] = _fin.Get("singleelectronw_ttbar_sjbtagDown")
+
   # systs['targetmcsjbtagUp'] = _fin.Get("signal_ttbar_sjbtagUp"); systs_e['targetmcsjbtagUp'] = systs['targetmcsjbtagUp']
   # systs['targetmcsjbtagDown'] = _fin.Get("signal_ttbar_sjbtagDown"); systs_e['targetmcsjbtagDown'] = systs['targetmcsjbtagDown']
   # systs['controlmcsjbtagUp'] = _fin.Get("singlemuontop_ttbar_sjbtagUp"); systs_e['controlmcsjbtagUp'] = _fin.Get("singleelectrontop_ttbar_sjbtagUp")
   # systs['controlmcsjbtagDown'] = _fin.Get("singlemuontop_ttbar_sjbtagDown"); systs_e['controlmcsjbtagDown'] = _fin.Get("singleelectrontop_ttbar_sjbtagDown")
 
-  genVpt = "genVpt"
-
   # Create the transfer factors and save them (not here you can also create systematic variations of these 
   # transfer factors (named with extention _sysname_Up/Down
 
-  TopScales = makeTop(cid,_fOut,"topmn",targetmc,controlmc,systs)
-  TopScales_e = makeTop(cid,_fOut,"topen",targetmc,controlmc_e,systs_e)
+  TopScales      = makeTop(cid,_fOut,"topmn",targetmc,controlmc,systs)
+  TopScales_e    = makeTop(cid,_fOut,"topen",targetmc,controlmc_e,systs_e)
+  TopScales_w    = makeTop(cid,_fOut,"topwmn",targetmc,controlmc_w,systs_w)
+  TopScales_w_e  = makeTop(cid,_fOut,"topwen",targetmc,controlmc_w_e,systs_w_e)
 
 
   #######################################################################################################
@@ -110,8 +118,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # TRANSFERFACTORS are what is created above, eg TopScales
 
   CRs = [
-   Channel("singlemuontopModel",_wspace,out_ws,cid+'_'+model,TopScales)
-   ,Channel("singleelectrontopModel",_wspace,out_ws,cid+'_'+model,TopScales_e)
+   Channel("singlemuontopModel",      _wspace,out_ws,cid+'_'+model,TopScales),
+   Channel("singleelectrontopModel",  _wspace,out_ws,cid+'_'+model,TopScales_e),
+   Channel("singlemuonwtopModel",     _wspace,out_ws,cid+'_'+model,TopScales_w),
+   Channel("singleelectronwtopModel", _wspace,out_ws,cid+'_'+model,TopScales_w_e),
   ]
 
 
@@ -121,8 +131,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # note, the code will LOOK for something called NOMINAL_name_Up and NOMINAL_name_Down, where NOMINAL=TopScales.GetName()
   # these must be created and writted to the same dirctory as the nominal (fDir)
   
-  addTopErrors(TopScales,  targetmc,"topmn","singlemuontopModel",    _fOut,CRs,0,cid)
-  addTopErrors(TopScales_e,targetmc,"topen","singleelectrontopModel",_fOut,CRs,1,cid)
+  addTopErrors(TopScales,    targetmc,"topmn", "singlemuontopModel",     _fOut,CRs,0,cid)
+  addTopErrors(TopScales_e,  targetmc,"topen", "singleelectrontopModel", _fOut,CRs,1,cid)
+  addTopErrors(TopScales_w,  targetmc,"topwmn","singlemuonwtopModel",    _fOut,CRs,2,cid,True)
+  addTopErrors(TopScales_w_e,targetmc,"topwen","singleelectronwtopModel",_fOut,CRs,3,cid,True)
 
   #######################################################################################################
 

@@ -36,8 +36,8 @@ monotop_category = {
         ,'in_file_name':"/data/t3home000/snarayan/store/panda/v_8020_2_3/limits/limitForest.root"
 #	   ,"cutstring":"met>250 && met<1000"
 #	   ,"varstring":["met",250,1000]
-     #,"cutstring":"met>250 && top_ecf_bdt>0.1"
-     ,"cutstring":"met>250"
+     ,"cutstring":"met>250 && top_ecf_bdt>0.1"
+     #,"cutstring":"met>250"
      ,"varstring":["min(999.9999,met)",250,1000]
 	   ,"weightname":"weight"
 	   ,"bins":bins[:]
