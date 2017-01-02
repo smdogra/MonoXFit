@@ -10,7 +10,6 @@ parser.add_option("","--skip",default=False,action='store_true',help="Ignore mis
 
 # Configurations Read in from Separate .py files
 sys.path.append("configs")
-#import categories_config_vtag as x
 configuration = args[0]
 x = __import__(configuration) 
 
@@ -87,6 +86,7 @@ for cat_id,cat in enumerate(x.categories):
 	  
   
   mb.save()
+  print mb.cutstring
 
   # Add any 'cutstring' for future reference
   cstr = r.TNamed("cut_category_%s"%cat['name'],cat["cutstring"])

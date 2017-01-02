@@ -16,7 +16,7 @@ def getInt(h):
     total += h.GetBinContent(iB)*h.GetBinWidth(iB)
   return total
 
-def plotPreFitPostFit(region):
+def plotPreFitPostFit(region,cat='category_monotop',combinecat=''):
   global blind
   channel = {"singlemuonw":"wmn", 
               "singlemuontop":"tmn",
@@ -43,7 +43,7 @@ def plotPreFitPostFit(region):
   f_mlfit = TFile(basedir+'/datacards/mlfit.root','READ')
 
   f_data = TFile(basedir+"/mono-x.root","READ")
-  f_data.cd("category_monotop")
+  f_data.cd(cat)
   h_data = None
   blind = False 
   h_data = gDirectory.Get(region+"_data")
@@ -65,8 +65,8 @@ def plotPreFitPostFit(region):
     blind = True
   '''
   
-  h_postfit_sig = f_mlfit.Get("shapes_fit_b/"+channel['signal']+"/total_background")
-  h_prefit_sig = f_mlfit.Get("shapes_prefit/"+channel['signal']+"/total_background")
+  h_postfit_sig = f_mlfit.Get("shapes_fit_b/"+combinecat+channel['signal']+"/total_background")
+  h_prefit_sig = f_mlfit.Get("shapes_prefit/"+combinecat+channel['signal']+"/total_background")
   
   b_width = [50,50,50,100,500]
 
@@ -158,7 +158,8 @@ def plotPreFitPostFit(region):
 
   # Pre-Fit
   h_prefit = {}
-  h_prefit['total'] = f_mlfit.Get("shapes_prefit/"+channel[region]+"/total")
+  print "shapes_prefit/"+combinecat+channel[region]+"/total"
+  h_prefit['total'] = f_mlfit.Get("shapes_prefit/"+combinecat+channel[region]+"/total")
   for i in range(1,h_prefit['total'].GetNbinsX()+2):
     binLowE.append(h_prefit['total'].GetBinLowEdge(i))
 
@@ -167,7 +168,7 @@ def plotPreFitPostFit(region):
   h_stack_prefit = THStack("h_stack_prefit","h_stack_prefit")    
 
   for process in processes:
-    h_prefit[process] = f_mlfit.Get("shapes_prefit/"+channel[region]+"/"+process)
+    h_prefit[process] = f_mlfit.Get("shapes_prefit/"+combinecat+channel[region]+"/"+process)
     if (not h_prefit[process]): continue
     if (str(h_prefit[process].Integral())=="nan"): continue
 #    h_prefit[process].SetLineColor(colors[process])
@@ -179,20 +180,20 @@ def plotPreFitPostFit(region):
 
   # Post-Fit
   h_postfit = {}
-  h_postfit['total'] = f_mlfit.Get("shapes_fit_b/"+channel[region]+"/total")
+  h_postfit['total'] = f_mlfit.Get("shapes_fit_b/"+combinecat+channel[region]+"/total")
   h_all_postfit = TH1F("h_all_postfit","h_all_postfit",len(binLowE)-1,array('d',binLowE))    
   h_other_postfit = TH1F("h_other_postfit","h_other_postfit",len(binLowE)-1,array('d',binLowE))    
   h_stack_postfit = THStack("h_stack_postfit","h_stack_postfit")    
   
 
-  h_postfit['totalv2'] = f_mlfit.Get("shapes_fit_b/"+channel[region]+"/total_background")
+  h_postfit['totalv2'] = f_mlfit.Get("shapes_fit_b/"+combinecat+channel[region]+"/total_background")
 
   for i in range(1, h_postfit['totalv2'].GetNbinsX()+1):
     error = h_postfit['totalv2'].GetBinError(i)
     content = h_postfit['totalv2'].GetBinContent(i)
 
   for process in processes:
-    h_postfit[process] = f_mlfit.Get("shapes_fit_b/"+channel[region]+"/"+process)
+    h_postfit[process] = f_mlfit.Get("shapes_fit_b/"+combinecat+channel[region]+"/"+process)
     if (not h_postfit[process]): continue
     if (str(h_postfit[process].Integral())=="nan"): continue
 #    h_postfit[process].SetLineColor(colors[process])
@@ -305,6 +306,10 @@ def plotPreFitPostFit(region):
   latex2.SetTextFont(42)
   latex2.SetTextSize(0.6*c.GetTopMargin())
   latex2.DrawLatex(0.16, 0.85,extralabel)
+  if 'loose' in combinecat:
+    latex2.DrawLatex(0.16,0.8,"0.1<BDT<0.45")
+  elif 'tight' in combinecat:
+    latex2.DrawLatex(0.16,0.8,"BDT>0.45")
   latex2.SetTextAlign(31) # align right
   latex2.SetTextSize(0.5*c.GetTopMargin())
   latex2.DrawLatex(0.94, 0.94,"%.1f fb^{-1} (13 TeV)"%(plotConfig.lumi))
@@ -471,10 +476,11 @@ def plotPreFitPostFit(region):
       l.Draw()
 
   plotDir = plotConfig.plotDir
+  label = region+'_'
+  label += cat.replace('category_','')
 
-  c.SaveAs(plotDir+"stackedPostfit_"+region+".pdf")
-  c.SaveAs(plotDir+"stackedPostfit_"+region+".png")
-  c.SaveAs(plotDir+"stackedPostfit_"+region+".C")
+  for ext in ['pdf','png','C']:
+    c.SaveAs(plotDir+"stackedPostfit_"+label+"."+ext)
 
   #c.SaveAs("test.pdf")
 
@@ -484,12 +490,20 @@ def plotPreFitPostFit(region):
   #del h_prefit
 
 
-plotPreFitPostFit("singlemuonw")
-plotPreFitPostFit("singlemuontop")
-plotPreFitPostFit("dimuon")
-plotPreFitPostFit("photon")
-plotPreFitPostFit("singleelectronw")
-plotPreFitPostFit("singleelectrontop")
-plotPreFitPostFit("dielectron")
+plotPreFitPostFit("singlemuonw",combinecat="tight_")
+plotPreFitPostFit("singlemuontop",combinecat="tight_")
+plotPreFitPostFit("dimuon",combinecat="tight_")
+plotPreFitPostFit("photon",combinecat="tight_")
+plotPreFitPostFit("singleelectronw",combinecat="tight_")
+plotPreFitPostFit("singleelectrontop",combinecat="tight_")
+plotPreFitPostFit("dielectron",combinecat="tight_")
 
-plotPreFitPostFit("signal") ### fitting to real data now!
+plotPreFitPostFit("singlemuonw","category_monotop_loose",combinecat="loose_")
+plotPreFitPostFit("singlemuontop","category_monotop_loose",combinecat="loose_")
+plotPreFitPostFit("dimuon","category_monotop_loose",combinecat="loose_")
+plotPreFitPostFit("photon","category_monotop_loose",combinecat="loose_")
+plotPreFitPostFit("singleelectronw","category_monotop_loose",combinecat="loose_")
+plotPreFitPostFit("singleelectrontop","category_monotop_loose",combinecat="loose_")
+plotPreFitPostFit("dielectron","category_monotop_loose",combinecat="loose_")
+
+#plotPreFitPostFit("signal") ### fitting to real data now!
