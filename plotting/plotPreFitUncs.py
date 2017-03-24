@@ -7,8 +7,6 @@ import plotConfig
 
 setTDRStyle()
 
-vtag=False
-
 def plot_ratio(process,suffix = ''):
 
 		highest = {}

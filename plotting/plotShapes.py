@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 
+from sys import argv
+argv = []
+
 import ROOT as root
 import plotConfig as cfg
 
 fTemplates = root.TFile('../combined_model.root')
 
 counter=0
+#category = 'monotop_loose'
+category = 'monotop'
 
 def mycanvas():
   global counter
@@ -56,9 +61,46 @@ def getBinDivided(dirname,central,uncert,linecolor):
     hist.SetLineWidth(2)
   return upDivided,downDivided
 
+###
+
+wzcanvas = mycanvas()
+dirname = 'Z_constraints_category_%s/'%(category)
+central = 'w_weights_%s'%category
+leg = root.TLegend(0.7,0.7,0.9,0.9)
+upren,downren = getDivided(dirname,central,'wrenscale',1)
+upren.SetTitle('Shape variations (W#rightarrowl#nu/Z#rightarrow#nu#nu)')
+upren.Draw('hist'); downren.Draw('hist same')
+leg.AddEntry(upren,'wrenscale','L')
+
+upfac,downfac = getDivided(dirname,central,'wfacscale',2)
+upfac.Draw('hist same'); downfac.Draw('hist same')
+leg.AddEntry(upfac,'wfacscale','L')
+
+uppdf,downpdf = getDivided(dirname,central,'wpdf',3)
+uppdf.Draw('hist same'); downpdf.Draw('hist same')
+leg.AddEntry(uppdf,'PDF','L')
+
+upewk,downewk = getBinDivided(dirname,central,'w_ewk_%s'%(category),4)
+upewk.Draw('hist same'); downewk.Draw('hist same')
+leg.AddEntry(upewk,'EWK','L')
+
+ones = upewk.Clone(); ones.Divide(upewk);
+ones.SetLineStyle(2)
+ones.SetLineColor(1)
+ones.Draw('hist same')
+
+leg.SetFillStyle(0)
+leg.SetBorderSize(0)
+leg.Draw()
+
+for e in ['pdf','png']:
+  wzcanvas.SaveAs(cfg.plotDir+'/'+category+'_wzshapes.'+e)
+
+###
+
 phocanvas = mycanvas()
-dirname = 'Z_constraints_category_monotop/'
-central = 'photon_weights_monotop'
+dirname = 'Z_constraints_category_%s/'%(category)
+central = 'photon_weights_%s'%category
 leg = root.TLegend(0.7,0.7,0.9,0.9)
 upren,downren = getDivided(dirname,central,'renscale',1)
 upren.SetTitle('Shape variations (Z#rightarrow#nu#nu/#gamma)')
@@ -81,7 +123,7 @@ upmistag,downmistag = getDivided(dirname,central,'mistag',7)
 upmistag.Draw('hist same'); downmistag.Draw('hist same')
 leg.AddEntry(upmistag,'b-mistag','L')
 
-upewk,downewk = getBinDivided(dirname,central,'ewk_monotop',4)
+upewk,downewk = getBinDivided(dirname,central,'ewk_%s'%(category),4)
 upewk.Draw('hist same'); downewk.Draw('hist same')
 leg.AddEntry(upewk,'EWK','L')
 
@@ -95,23 +137,31 @@ leg.SetBorderSize(0)
 leg.Draw()
 
 for e in ['pdf','png']:
-  phocanvas.SaveAs(cfg.plotDir+'/phoshapes.'+e)
+  phocanvas.SaveAs(cfg.plotDir+'/'+category+'_phoshapes.'+e)
 
 
 ###
 zmmcanvas = mycanvas()
-dirname = 'Z_constraints_category_monotop/'
-central = 'zmm_weights_monotop'
+dirname = 'Z_constraints_category_%s/'%(category)
+central = 'zmm_weights_%s'%category
 leg = root.TLegend(0.7,0.7,0.9,0.9)
 
-upbtag,downbtag = getDivided(dirname,central,'btag',6)
-upbtag.SetTitle('Shape variations (Z#rightarrow#nu#nu/Z#rightarrow#mu#mu)')
-upbtag.Draw('hist'); downbtag.Draw('hist same')
-leg.AddEntry(upbtag,'b-tag','L')
+upsjmistag,downsjmistag = getDivided(dirname,central,'sjmistag',4)
+upsjmistag.SetTitle('Shape variations (Z#rightarrow#nu#nu/Z#rightarrow#mu#mu)')
+upsjmistag.Draw('hist'); downsjmistag.Draw('hist same')
+leg.AddEntry(upsjmistag,'b-sj-mistag','L')
+
+upsjbtag,downsjbtag = getDivided(dirname,central,'sjbtag',5)
+upsjbtag.Draw('hist same'); downsjbtag.Draw('hist same')
+leg.AddEntry(upsjbtag,'b-sj-tag','L')
 
 upmistag,downmistag = getDivided(dirname,central,'mistag',7)
 upmistag.Draw('hist same'); downmistag.Draw('hist same')
 leg.AddEntry(upmistag,'b-mistag','L')
+
+upbtag,downbtag = getDivided(dirname,central,'btag',6)
+upbtag.Draw('hist same'); downbtag.Draw('hist same')
+leg.AddEntry(upbtag,'b-tag','L')
 
 ones.Draw('hist same')
 
@@ -120,22 +170,30 @@ leg.SetBorderSize(0)
 leg.Draw()
 
 for e in ['pdf','png']:
-  zmmcanvas.SaveAs(cfg.plotDir+'/zmmshapes.'+e)
+  zmmcanvas.SaveAs(cfg.plotDir+'/'+category+'_zmmshapes.'+e)
 
 ###
 zeecanvas = mycanvas()
-dirname = 'Z_constraints_category_monotop/'
-central = 'zee_weights_monotop'
+dirname = 'Z_constraints_category_%s/'%(category)
+central = 'zee_weights_%s'%category
 leg = root.TLegend(0.7,0.7,0.9,0.9)
 
-upbtag,downbtag = getDivided(dirname,central,'btag',6)
-upbtag.SetTitle('Shape variations (Z#rightarrow#nu#nu/Z#rightarrowee)')
-upbtag.Draw('hist'); downbtag.Draw('hist same')
-leg.AddEntry(upbtag,'b-tag','L')
+upsjmistag,downsjmistag = getDivided(dirname,central,'sjmistag',4)
+upsjmistag.SetTitle('Shape variations (Z#rightarrow#nu#nu/Z#rightarrow#mu#mu)')
+upsjmistag.Draw('hist'); downsjmistag.Draw('hist same')
+leg.AddEntry(upsjmistag,'b-sj-mistag','L')
+
+upsjbtag,downsjbtag = getDivided(dirname,central,'sjbtag',5)
+upsjbtag.Draw('hist same'); downsjbtag.Draw('hist same')
+leg.AddEntry(upsjbtag,'b-sj-tag','L')
 
 upmistag,downmistag = getDivided(dirname,central,'mistag',7)
 upmistag.Draw('hist same'); downmistag.Draw('hist same')
 leg.AddEntry(upmistag,'b-mistag','L')
+
+upbtag,downbtag = getDivided(dirname,central,'btag',6)
+upbtag.Draw('hist same'); downbtag.Draw('hist same')
+leg.AddEntry(upbtag,'b-tag','L')
 
 ones.Draw('hist same')
 
@@ -144,13 +202,13 @@ leg.SetBorderSize(0)
 leg.Draw()
 
 for e in ['pdf','png']:
-  zeecanvas.SaveAs(cfg.plotDir+'/zeeshapes.'+e)
+  zeecanvas.SaveAs(cfg.plotDir+'/'+category+'_zeeshapes.'+e)
 
 ###
 
 topencanvas = mycanvas()
-dirname = 'Top_constraints_category_monotop/'
-central = 'topen_weights_monotop'
+dirname = 'Top_constraints_category_%s/'%(category)
+central = 'topen_weights_%s'%category
 leg = root.TLegend(0.7,0.85,0.9,0.9)
 upbtag,downbtag = getDivided(dirname,central,'btag',6)
 upbtag.SetTitle('Shape variations (t#bar{t}#rightarrowb(l)#nu/t#bar{t}#rightarrowbe#nu)')
@@ -164,13 +222,13 @@ leg.SetBorderSize(0)
 leg.Draw()
 
 for e in ['pdf','png']:
-  topencanvas.SaveAs(cfg.plotDir+'/topenshapes.'+e)
+  topencanvas.SaveAs(cfg.plotDir+'/'+category+'_topenshapes.'+e)
 
 ###
 
 topmncanvas = mycanvas()
-dirname = 'Top_constraints_category_monotop/'
-central = 'topmn_weights_monotop'
+dirname = 'Top_constraints_category_%s/'%(category)
+central = 'topmn_weights_%s'%category
 leg = root.TLegend(0.7,0.85,0.9,0.9)
 upbtag,downbtag = getDivided(dirname,central,'btag',6)
 upbtag.SetTitle('Shape variations (t#bar{t}#rightarrowb(l)#nu/t#bar{t}#rightarrowb#mu#nu)')
@@ -184,7 +242,7 @@ leg.SetBorderSize(0)
 leg.Draw()
 
 for e in ['pdf','png']:
-  topmncanvas.SaveAs(cfg.plotDir+'/topmnshapes.'+e)
+  topmncanvas.SaveAs(cfg.plotDir+'/'+category+'_topmnshapes.'+e)
 
 
 

@@ -6,6 +6,8 @@ from tdrStyle import *
 import plotConfig
 setTDRStyle()
 
+#plotextralabel = 'Masked'
+plotextralabel = ''
 
 new_dic = defaultdict(dict)
 
@@ -16,8 +18,7 @@ def getInt(h):
     total += h.GetBinContent(iB)*h.GetBinWidth(iB)
   return total
 
-def plotPreFitPostFit(region,cat='category_monotop',combinecat=''):
-  global blind
+def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
   channel = {"singlemuonw":"wmn", 
               "singlemuontop":"tmn",
               "dielectron":"zee",
@@ -45,7 +46,6 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat=''):
   f_data = TFile(basedir+"/mono-x.root","READ")
   f_data.cd(cat)
   h_data = None
-  blind = False 
   h_data = gDirectory.Get(region+"_data")
 #  if region=='signal':
 #    h_res = gDirectory.Get('signal_Mres1100_Mchi100'); h_res.SetLineColor(kGreen+3)
@@ -480,7 +480,7 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat=''):
   label += cat.replace('category_','')
 
   for ext in ['pdf','png','C']:
-    c.SaveAs(plotDir+"stackedPostfit_"+label+"."+ext)
+    c.SaveAs(plotDir+"stackedPostfit%s_"%plotextralabel+label+"."+ext)
 
   #c.SaveAs("test.pdf")
 
@@ -497,6 +497,7 @@ plotPreFitPostFit("photon",combinecat="tight_")
 plotPreFitPostFit("singleelectronw",combinecat="tight_")
 plotPreFitPostFit("singleelectrontop",combinecat="tight_")
 plotPreFitPostFit("dielectron",combinecat="tight_")
+plotPreFitPostFit("signal",combinecat="tight_",blind=True)
 
 plotPreFitPostFit("singlemuonw","category_monotop_loose",combinecat="loose_")
 plotPreFitPostFit("singlemuontop","category_monotop_loose",combinecat="loose_")
@@ -505,5 +506,6 @@ plotPreFitPostFit("photon","category_monotop_loose",combinecat="loose_")
 plotPreFitPostFit("singleelectronw","category_monotop_loose",combinecat="loose_")
 plotPreFitPostFit("singleelectrontop","category_monotop_loose",combinecat="loose_")
 plotPreFitPostFit("dielectron","category_monotop_loose",combinecat="loose_")
+plotPreFitPostFit("signal","category_monotop_loose",combinecat="loose_",blind=True)
 
 #plotPreFitPostFit("signal") ### fitting to real data now!

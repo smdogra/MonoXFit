@@ -26,7 +26,15 @@ To run the fit:
 
 ```bash
 cd datacards/
-combine -M MaxLikelihoodFit combined.txt --saveShapes --saveWithUncertainties
+combine -M MaxLikelihoodFit combined_2cat.txt --saveShapes --saveWithUncertainties
+```
+
+And the signal masked-fit:
+
+```bash
+cd datacards/
+text2workspace.py combined_2cat.txt --channel-masks
+combine combined_2cat.root -M MaxLikelihoodFit --saveShapes --saveWithUncertainties --setPhysicsModelParameters mask_tight_sig=1,mask_loose_sig=1
 ```
 
 ## Running the limit scan

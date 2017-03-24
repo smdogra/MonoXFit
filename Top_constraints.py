@@ -7,24 +7,23 @@ convertHistograms = []
 
 ### helper functions ###
 
-def makeTop(cid,_fOut,newName,targetmc,controlmc,systs=None):
+def makeTop(cid,_fOut,newName,targetmc,controlmc,systs=None,doSJ=False):
   TopScales = targetmc.Clone(); TopScales.SetName(newName+"_weights_%s"%cid)
   TopScales.Divide(controlmc)
   _fOut.WriteTObject(TopScales)
 
   if not(systs==None):
     for uncert in ['btag','sjbtag']:
-      try:
-        TopScalesUp = systs['targetmc%sUp'%(uncert)].Clone(); TopScalesUp.SetName(newName+"_weights_%s_%s_Up"%(cid,uncert))
-        TopScalesUp.Divide(systs['controlmc%sUp'%(uncert)])
+      if not(doSJ) and 'sj' in uncert:
+        continue
+      TopScalesUp = systs['targetmc%sUp'%(uncert)].Clone(); TopScalesUp.SetName(newName+"_weights_%s_%s_Up"%(cid,uncert))
+      TopScalesUp.Divide(systs['controlmc%sUp'%(uncert)])
 
-        TopScalesDown = systs['targetmc%sDown'%(uncert)].Clone(); TopScalesDown.SetName(newName+"_weights_%s_%s_Down"%(cid,uncert))
-        TopScalesDown.Divide(systs['controlmc%sDown'%(uncert)])
+      TopScalesDown = systs['targetmc%sDown'%(uncert)].Clone(); TopScalesDown.SetName(newName+"_weights_%s_%s_Down"%(cid,uncert))
+      TopScalesDown.Divide(systs['controlmc%sDown'%(uncert)])
 
-        _fOut.WriteTObject(TopScalesUp)
-        _fOut.WriteTObject(TopScalesDown)
-      except KeyError:
-        pass
+      _fOut.WriteTObject(TopScalesUp)
+      _fOut.WriteTObject(TopScalesDown)
 
   return TopScales
 
@@ -99,10 +98,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # Create the transfer factors and save them (not here you can also create systematic variations of these 
   # transfer factors (named with extention _sysname_Up/Down
 
-  TopScales      = makeTop(cid,_fOut,"topmn",targetmc,controlmc,systs)
-  TopScales_e    = makeTop(cid,_fOut,"topen",targetmc,controlmc_e,systs_e)
-  TopScales_w    = makeTop(cid,_fOut,"topwmn",targetmc,controlmc_w,systs_w)
-  TopScales_w_e  = makeTop(cid,_fOut,"topwen",targetmc,controlmc_w_e,systs_w_e)
+  TopScales      = makeTop(cid,_fOut,"topmn",targetmc,controlmc,systs,False)
+  TopScales_e    = makeTop(cid,_fOut,"topen",targetmc,controlmc_e,systs_e,False)
+  TopScales_w    = makeTop(cid,_fOut,"topwmn",targetmc,controlmc_w,systs_w,True)
+  TopScales_w_e  = makeTop(cid,_fOut,"topwen",targetmc,controlmc_w_e,systs_w_e,True)
 
 
   #######################################################################################################

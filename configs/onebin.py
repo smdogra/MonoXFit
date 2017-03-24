@@ -4,7 +4,8 @@ out_file_name = 'mono-x.root'
 
 # can define any thing useful here which may be common to several categories, eg binning in MET 
 #bins = range(200,1200,200)
-bins = [250,280,310,350,400,450,600,1000]
+#bins = [250,280,310,350,400,450,600,1000]
+bins = [250,1000]
 #bins = [250,280,310,350,400,500,600,1000]
 #bins = [250,300,350,400,500,1000]
 #bins = [250,300,350,400,500,600,1000]
@@ -27,8 +28,7 @@ systematics=["btag","mistag",'sjbtag','sjmistag']
 
 #  OPTIONAL --> 'extra_cuts': additional cuts maybe specific to this control region (eg ptphoton cuts) if this key is missing, the code will not complain   
  
-in_file_name = '/data/t3home000/snarayan/store/panda/v_8026_0_4/fitting/fittingForest.root'
-#in_file_name = '/data/t3home000/snarayan/store/panda/v_8026_0_3/fitting/fittingForest.root'
+in_file_name = '/data/t3home000/snarayan/store/panda/v_8026_0_3/fitting/fittingForest.root'
 
 monotop_category = {
         'name':"monotop"

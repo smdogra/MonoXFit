@@ -219,6 +219,8 @@ void diagonalizer::generateWeightedTemplate(TH1F *histNew, TH1 *pdf_num, std::st
   // var is the variable to be plotted
   histNew->Sumw2();
   int nevents = data->numEntries();
+  double lo_var = histNew->GetBinCenter(1);
+  double hi_var = histNew->GetBinCenter(histNew->GetNbinsX());
   //const char *varname = var.GetName();
   for (int ev=0;ev<nevents;ev++){
     const RooArgSet *vw = data->get(ev);
@@ -233,11 +235,23 @@ void diagonalizer::generateWeightedTemplate(TH1F *histNew, TH1 *pdf_num, std::st
     	  cweight *= pdf_num->GetBinContent(pdf_num->FindBin(wval));
 	} else{ 
 		if (verb) std::cout << "Event Out of range -> "<< wvar << " = "<< wval << std::endl;
+		if (wval<pdf_num->GetXaxis()->GetXmin())
+		  wval = pdf_num->GetXaxis()->GetXmin();
+		else if (wval>pdf_num->GetXaxis()->GetXmax())
+		  wval = pdf_num->GetXaxis()->GetXmax();
+		//cweight *= (pdf_num->GetBinContent(pdf_num->FindBin(wval))-1.)/3.+1.;
+		cweight *= pdf_num->GetBinContent(pdf_num->FindBin(wval));
 	}
     } else {
-    	std::cout <<"Correction function NULL "<<std::endl;
-	assert(0);
+    	// std::cout <<"Correction function NULL "<<std::endl;
+	// assert(0);
+	cweight = weight;
     }
+    if (val <= lo_var)
+      val = lo_var;
+    else if (val >= hi_var)
+      val = hi_var;
+
     histNew->Fill(val,cweight);
   }
   histNew->GetXaxis()->SetTitle(var.c_str());

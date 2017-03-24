@@ -398,6 +398,12 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   Wsig = controlmc_w.Clone(); Wsig.SetName("w_weights_denom_%s"%nam)
   Zvv_w = target.Clone(); Zvv_w.SetName("w_weights_nom_%s"%nam)
 
+  wratio_dummy = Zvv_w.Clone();  wratio_dummy.SetName("w_weights_%s_dummy"%nam);
+  for b in range(wratio_dummy.GetNbinsX()): wratio_dummy.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(wratio_dummy,None,gvptname,metname,_wspace.data("signal_zjets"))
+  wratio_dummy.Divide(Wsig)
+  _fOut.WriteTObject(wratio_dummy)
+  
   wratio_ren_scale_up = Zvv_w.Clone();  wratio_ren_scale_up.SetName("w_weights_%s_wrenscale_Up"%nam);
   for b in range(wratio_ren_scale_up.GetNbinsX()): wratio_ren_scale_up.SetBinContent(b+1,0)  
   diag.generateWeightedTemplate(wratio_ren_scale_up,ztow_renscale_up,gvptname,metname,_wspace.data("signal_zjets"))
