@@ -7,9 +7,10 @@ from argparse import ArgumentParser
 from array import array
 
 parser = ArgumentParser(description='perform 2d scan')
-parser.add_argument('template',metavar='template',type=str,default='tmpl.txt')
+parser.add_argument('template',metavar='template',type=str,default='correlated_tmpl.txt')
 parser.add_argument('--mMed',type=int,default=None)
 parser.add_argument('--mChi',type=int,default=None)
+parser.add_argument('--mParams',type=str,default=None)
 parser.add_argument('--isRes',dest='isRes',action='store_true')
 parser.add_argument('--isFCNC',dest='isRes',action='store_false')
 parser.add_argument('--infile',type=str,metavar='infile')
@@ -115,6 +116,11 @@ def run(model,runObserved=True):
 
     # system("combine -M Asymptotic combined_%s.txt -n %s -m %i"%(label,model.mMed*1000+mChi))
 
-model = Model(args.mMed,args.mChi,args.isRes)
-run(model,False)
+if args.mMed and args.mChi:
+    model = Model(args.mMed,args.mChi,args.isRes)
+    run(model,False)
+else:
+    for mMed,mChi in [x.split('_') for x in args.mParams.split('+')]:
+        model = Model(int(mMed),int(mChi),args.isRes)
+        run(model,False)
 

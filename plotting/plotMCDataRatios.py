@@ -24,6 +24,8 @@ regions = {
         'ten' : Region('singleelectrontop','t#rightarrowbe#nu','ttbar',None),
 }
 
+bkgs = ['zll','stop','wjets','diboson','qcd','ttbar']
+
 def build_ratio(hnum,hden,both_unc=True):
     hratio = hnum.Clone()
     hratio.Divide(hden)
@@ -59,12 +61,23 @@ def plot_ratio(num_region,den_region,cat,folder='shapes_prefit'):
     hden_mainproc = f_mlfit.Get(folder+'/'+cat+'_'+den_region+'/'+den.main_proc)
 
     # subleading background to subtract (if necessary)
-    if num.main_bkg:
-        hnum_mainbkg = f_mlfit.Get(folder+'/'+cat+'_'+num_region+'/'+num.main_bkg)
-        hnum_data = subtract(hnum_data,hnum_mainbkg)
-    if den.main_bkg:
-        hden_mainbkg = f_mlfit.Get(folder+'/'+cat+'_'+den_region+'/'+den.main_bkg)
-        hden_data = subtract(hden_data,hden_mainbkg)
+    for bkg in bkgs:
+        if not(bkg==num.main_proc):
+            hnum_bkg = None
+            hnum_bkg = f_mlfit.Get(folder+'/'+cat+'_'+num_region+'/'+bkg)
+            if hnum_bkg:
+                hnum_data = subtract(hnum_data,hnum_bkg)
+        if not(bkg==den.main_proc):
+            hden_bkg = None
+            hden_bkg = f_mlfit.Get(folder+'/'+cat+'_'+den_region+'/'+bkg)
+            if hden_bkg:
+                hden_data = subtract(hden_data,hden_bkg)
+#    if num.main_bkg:
+#        hnum_mainbkg = f_mlfit.Get(folder+'/'+cat+'_'+num_region+'/'+num.main_bkg)
+#        hnum_data = subtract(hnum_data,hnum_mainbkg)
+#    if den.main_bkg:
+#        hden_mainbkg = f_mlfit.Get(folder+'/'+cat+'_'+den_region+'/'+den.main_bkg)
+#        hden_data = subtract(hden_data,hden_mainbkg)
     
     hdata = build_ratio(hnum_data,hden_data)
     hmc = build_ratio(hnum_mainproc,hden_mainproc)
@@ -106,7 +119,17 @@ def plot_ratio(num_region,den_region,cat,folder='shapes_prefit'):
     latex.SetNDC()
     latex.SetTextFont(42)
     latex.SetTextSize(0.8*c.GetTopMargin())
-    latex.DrawLatex(0.2, 0.8,'#frac{%s}{%s}'%(num.label,den.label))
+    latex.DrawLatex(0.15, 0.75,'#frac{%s}{%s}'%(num.label,den.label))
+    latex.SetTextFont(62)
+    latex.SetTextAlign(11)
+    latex.DrawLatex(0.15,0.85,"CMS")
+    latex.SetTextFont(52)
+    latex.DrawLatex(0.28,0.85,"Preliminary")
+    latex.SetTextFont(42)
+    latex.SetTextSize(0.5*c.GetTopMargin())
+    latex.SetTextFont(42)
+    latex.SetTextAlign(31) # align right
+    latex.DrawLatex(0.9, 0.94,"%.1f fb^{-1} (13 TeV)"%(plotConfig.lumi))
 
     plotname = 'ratio_%s_%s_%s_%s'%(cat,num_region,den_region,folder)
     for ext in ['pdf','png','C']:
@@ -115,50 +138,34 @@ def plot_ratio(num_region,den_region,cat,folder='shapes_prefit'):
     del c
 
 
-plot_ratio('pho','zmm','tight',folder='shapes_prefit')
 plot_ratio('pho','zmm','tight',folder='shapes_fit_b')
 
-plot_ratio('pho','zmm','loose',folder='shapes_prefit')
 plot_ratio('pho','zmm','loose',folder='shapes_fit_b')
 
-plot_ratio('pho','zee','tight',folder='shapes_prefit')
 plot_ratio('pho','zee','tight',folder='shapes_fit_b')
 
-plot_ratio('pho','zee','loose',folder='shapes_prefit')
 plot_ratio('pho','zee','loose',folder='shapes_fit_b')
 
-plot_ratio('wmn','zmm','tight',folder='shapes_prefit')
 plot_ratio('wmn','zmm','tight',folder='shapes_fit_b')
 
-plot_ratio('wmn','zmm','loose',folder='shapes_prefit')
 plot_ratio('wmn','zmm','loose',folder='shapes_fit_b')
 
-plot_ratio('wen','zee','tight',folder='shapes_prefit')
 plot_ratio('wen','zee','tight',folder='shapes_fit_b')
 
-plot_ratio('wen','zee','loose',folder='shapes_prefit')
 plot_ratio('wen','zee','loose',folder='shapes_fit_b')
 
-plot_ratio('wen','pho','tight',folder='shapes_prefit')
 plot_ratio('wen','pho','tight',folder='shapes_fit_b')
 
-plot_ratio('wen','pho','loose',folder='shapes_prefit')
 plot_ratio('wen','pho','loose',folder='shapes_fit_b')
 
-plot_ratio('wmn','pho','tight',folder='shapes_prefit')
 plot_ratio('wmn','pho','tight',folder='shapes_fit_b')
 
-plot_ratio('wmn','pho','loose',folder='shapes_prefit')
 plot_ratio('wmn','pho','loose',folder='shapes_fit_b')
 
-plot_ratio('wmn','wen','loose',folder='shapes_prefit')
 plot_ratio('wmn','wen','loose',folder='shapes_fit_b')
 
-plot_ratio('zmm','zee','loose',folder='shapes_prefit')
 plot_ratio('zmm','zee','loose',folder='shapes_fit_b')
 
-plot_ratio('wmn','wen','tight',folder='shapes_prefit')
 plot_ratio('wmn','wen','tight',folder='shapes_fit_b')
 
-plot_ratio('zmm','zee','tight',folder='shapes_prefit')
 plot_ratio('zmm','zee','tight',folder='shapes_fit_b')

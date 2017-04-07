@@ -5,6 +5,8 @@ from sys import argv,stdout,exit
 from tdrStyle import *
 import plotConfig
 from glob import glob 
+from collections import namedtuple
+from math import log10
 
 root.gROOT.SetBatch(1)
 
@@ -24,6 +26,7 @@ blueArray  = array('d',blue)
 
 root.TColor.CreateGradientColorTable(9, stopsArray, redArray, greenArray, blueArray, ncontours);
 root.gStyle.SetNumberContours(ncontours);
+
 root.gStyle.SetLabelSize(0.035,"X");
 root.gStyle.SetLabelSize(0.035,"Y");
 root.gStyle.SetLabelSize(0.035,"Z");
@@ -38,9 +41,9 @@ drawLegend=True
 
 iC=0
 class Limit():
-  def __init__(self,mMed,mChi,xsec=1):
+  def __init__(self,mMed,gDM,xsec=1):
     self.mMed=mMed
-    self.mChi=mChi
+    self.gDM=gDM
     self.xsec=xsec
     self.cent=0
     self.up1=0
@@ -49,17 +52,21 @@ class Limit():
     self.down2=0
     self.obs=0
 
+LimitPoint = namedtuple('LimitPoint',['mV','mChi','gdmv','gdma','gqv','gqa','limit'])
 def parseLimitFiles2D(filepath):
-  # returns a dict (mMed,mChi) : Limit
-  # if xsecs=None, Limit will have absolute xsec
-  # if xsecs=dict of xsecs, Limit will have mu values
-  limits = {}
+  # returns a list of LimitPoints 
+  limits = [] 
   filelist = glob(filepath)
   for f in filelist:
     ff = f.split('/')[-1].split('_')
     mMed = int(ff[1])
     mChi = int(ff[2].split('.')[0])
-    l = Limit(mMed,mChi)
+    ff = f.split('/')[-2].split('_')
+    gdmv = float(ff[1].replace('p','.'))
+    gdma = float(ff[3].replace('p','.'))
+    gqv = float(ff[5].replace('p','.'))
+    gqa = float(ff[7].replace('p','.'))
+    l = Limit(mMed,max(gdmv,gdma))
     try:
       fin = TFile(f)
       t = fin.Get('limit')
@@ -70,50 +77,42 @@ def parseLimitFiles2D(filepath):
         val = t.limit
         val = val / 0.68
         setattr(l,limitNames[iL],val)
-      limits[(mMed,mChi)] = l
-    except:
+      lp = LimitPoint(mMed,mChi,gdmv,gdma,gqv,gqa,l)
+      limits.append(lp)
+    except Exception as e:
+      print e
       pass
     fin.Close()
   return limits
 
-def makePlot2D(filepath,foutname,medcfg,chicfg,header='g_{q}^{V} = 0.25, g_{DM}^{V} = 1',offshell=False):
+def makePlot2D(filepath,foutname,medcfg,gdmcfg,header):
   limits = parseLimitFiles2D(filepath)
   gs = {}
   for g in ['exp','expup','expdown','obs','obsup','obsdown']:
     gs[g] = TGraph2D()
 
   iP=0
-  hgrid = TH2D('grid','grid',medcfg[0],medcfg[1],medcfg[2],chicfg[0],chicfg[1],chicfg[2])
+  hgrid = TH2D('grid','grid',medcfg[0],medcfg[1],medcfg[2],gdmcfg[0],gdmcfg[1],gdmcfg[2])
   for p in limits:
-    mMed = p[0]; mChi = p[1]
-    '''
-    if mMed<0.5*medcfg[1] or mMed>1.2*medcfg[2]:
-      continue
-    if mChi<0.5*chicfg[1] or mChi>1.2*chicfg[2]:
-      continue
-    '''
-    l = limits[p]
+    l = p.limit 
     if l.obs==0 or l.cent==0:
-      print mMed,mChi
+      print l.mMed,l.gDM
       continue
-    hgrid.Fill(mMed,mChi)
-    gs['exp'].SetPoint(iP,mMed,mChi,l.cent)
-    gs['expup'].SetPoint(iP,mMed,mChi,l.up1)
-    gs['expdown'].SetPoint(iP,mMed,mChi,l.down1)
+    hgrid.Fill(l.mMed,log10(l.gDM))
+    gs['exp'].SetPoint(iP,l.mMed,log10(l.gDM),l.cent)
+    gs['expup'].SetPoint(iP,l.mMed,log10(l.gDM),l.up1)
+    gs['expdown'].SetPoint(iP,l.mMed,log10(l.gDM),l.down1)
     iP += 1
 
   hs = {}
   for h in ['exp','expup','expdown']:
-    hs[h] = TH2D(h,h,medcfg[0],medcfg[1],medcfg[2],chicfg[0],chicfg[1],chicfg[2])
+    hs[h] = TH2D(h,h,medcfg[0],medcfg[1],medcfg[2],gdmcfg[0],gdmcfg[1],gdmcfg[2])
     # hs[h].SetStats(0); hs[h].SetTitle('')
     for iX in xrange(0,medcfg[0]):
-      for iY in xrange(0,chicfg[0]):
+      for iY in xrange(0,gdmcfg[0]):
         x = medcfg[1] + (medcfg[2]-medcfg[1])*iX/medcfg[0]
-        y = chicfg[1] + (chicfg[2]-chicfg[1])*iY/chicfg[0]
-        if not(offshell) and 2*y>x:
-          val = 9999
-        else:
-          val = gs[h].Interpolate(x,y)
+        y = gdmcfg[1] + (gdmcfg[2]-gdmcfg[1])*iY/gdmcfg[0]
+        val = gs[h].Interpolate(x,y)
         if val == 0:
           val = 9999
         val = max(0.01,min(100,val))
@@ -134,7 +133,7 @@ def makePlot2D(filepath,foutname,medcfg,chicfg,header='g_{q}^{V} = 0.25, g_{DM}^
     hs[h].SetContour(2)
     hs[h].SetContourLevel(1,1)
     for iX in xrange(1,medcfg[0]+1):
-      for iY in xrange(1,chicfg[0]+1):
+      for iY in xrange(1,gdmcfg[0]+1):
         if hs[h].GetBinContent(iX,iY)<=0:
           hs[h].SetBinContent(iX,iY,100)
 
@@ -143,10 +142,10 @@ def makePlot2D(filepath,foutname,medcfg,chicfg,header='g_{q}^{V} = 0.25, g_{DM}^
   canvas.SetLogz()
   iC+=1
 
-  frame = canvas.DrawFrame(medcfg[1],chicfg[1],medcfg[2],chicfg[2],"")
+  frame = canvas.DrawFrame(medcfg[1],gdmcfg[1],medcfg[2],gdmcfg[2],"")
 
   frame.GetYaxis().CenterTitle();
-  frame.GetYaxis().SetTitle("m_{#chi} [GeV]");
+  frame.GetYaxis().SetTitle(gdmcfg[3]);
   frame.GetXaxis().SetTitle("m_{V} [GeV]");
   frame.GetXaxis().SetTitleOffset(1.15);
   frame.GetYaxis().SetTitleOffset(1.15);
@@ -196,7 +195,7 @@ def makePlot2D(filepath,foutname,medcfg,chicfg,header='g_{q}^{V} = 0.25, g_{DM}^
   tex.SetLineWidth(2);
   tex.SetTextSize(0.040);
   tex.Draw();
-  tex.DrawLatex(0.62,0.94,"36.3 fb^{-1} (13 TeV)");
+  tex.DrawLatex(0.62,0.94,"35.9 fb^{-1} (13 TeV)");
   tex2 = root.TLatex();
   tex2.SetNDC();
   tex2.SetTextFont(42);
@@ -235,6 +234,14 @@ def makePlot2D(filepath,foutname,medcfg,chicfg,header='g_{q}^{V} = 0.25, g_{DM}^
 
 plotsdir = plotConfig.plotDir
 
-makePlot2D(plotConfig.scansDir+'nominal/higgsCombinefcnc_*.Asymptotic.mH120.root',plotsdir+'fcnc2d_exp_vector',(50,200.,2200.),(50,100.,1200.),'g_{q}^{V} = 0.25, g_{DM}^{V} = 1',True)
-makePlot2D(plotConfig.scansDir+'gdmv_0_gdma_1p0_gv_0_ga_0p25/higgsCombinefcnc_*.Asymptotic.mH120.root',plotsdir+'fcnc2d_exp_axial',(50,200.,2200.),(50,100.,1200.),'g_{q}^{A} = 0.25, g_{DM}^{A} = 1',True)
-makePlot2D(plotConfig.scansDir+'gdmv_1p0_gdma_1p0_gv_0p25_ga_0p25/higgsCombinefcnc_*.Asymptotic.mH120.root',plotsdir+'fcnc2d_exp_VpA',(50,200.,2200.),(50,100.,1200.),'g_{q}^{A} = g_{q}^{V} = 0.25, g_{DM}^{A} = g_{DM}^{V} = 1',True)
+makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_0p25_ga_0/higgsCombinefcnc_*_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_exp_gdmv_mV',
+           (100,300.,2200.),
+           (40,-1,0.31,'log_{10}(g_{DM}^{V})'),
+           'm_{#chi} = 1 GeV, g_{q}^{V} = 0.25')
+
+makePlot2D(plotConfig.scansDir+'gdmv_0_gdma_*_gv_0_ga_0p25/higgsCombinefcnc_*_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_exp_gdma_mV',
+           (100,300.,2200.),
+           (40,-1,0.31,'log_{10}(g_{DM}^{A})'),
+           'm_{#chi} = 1 GeV, g_{q}^{A} = 0.25')

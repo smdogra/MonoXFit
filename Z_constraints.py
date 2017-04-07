@@ -3,6 +3,8 @@ from counting_experiment import *
 # Define how a control region(s) transfer is made by defining *cmodel*, the calling pattern must be unchanged!
 # First define simple string which will be used for the datacard 
 model = "zjets"
+correlate_ewk = True 
+new_ewk = False 
 
 def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   
@@ -153,53 +155,6 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   addStatErrs(ZeeScales,CRs[2],'zee','dielectronModelCR')
   addStatErrs(WZScales,CRs[3],'w','wzModelCR')
 
-  '''
-  for b in range(target.GetNbinsX()):
-    err = PhotonScales.GetBinError(b+1)
-    if not PhotonScales.GetBinContent(b+1)>0: continue 
-    relerr = err/PhotonScales.GetBinContent(b+1)
-    if relerr<0.01: continue
-    byb_u = PhotonScales.Clone(); byb_u.SetName("photon_weights_%s_%s_stat_error_%s_bin%d_Up"%(cid,cid,"photonModelCR",b))
-    byb_u.SetBinContent(b+1,PhotonScales.GetBinContent(b+1)+err)
-    byb_d = PhotonScales.Clone(); byb_d.SetName("photon_weights_%s_%s_stat_error_%s_bin%d_Down"%(cid,cid,"photonModelCR",b))
-    byb_d.SetBinContent(b+1,PhotonScales.GetBinContent(b+1)-err)
-    _fOut.WriteTObject(byb_u)
-    _fOut.WriteTObject(byb_d)
-    CRs[0].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"photonModelCR",b),_fOut)
-
-  for b in range(target.GetNbinsX()):
-    err = ZmmScales.GetBinError(b+1)
-    if not ZmmScales.GetBinContent(b+1)>0: continue 
-    relerr = err/ZmmScales.GetBinContent(b+1)
-    if relerr<0.01: continue
-    byb_u = ZmmScales.Clone(); byb_u.SetName("zmm_weights_%s_%s_stat_error_%s_bin%d_Up"%(cid,cid,"dimuonModelCR",b))
-    byb_u.SetBinContent(b+1,ZmmScales.GetBinContent(b+1)+err)
-    byb_d = ZmmScales.Clone(); byb_d.SetName("zmm_weights_%s_%s_stat_error_%s_bin%d_Down"%(cid,cid,"dimuonModelCR",b))
-    if (ZmmScales.GetBinContent(b+1)-err > 0):
-      byb_d.SetBinContent(b+1,ZmmScales.GetBinContent(b+1)-err)
-    else:
-      byb_d.SetBinContent(b+1,1)
-    _fOut.WriteTObject(byb_u)
-    _fOut.WriteTObject(byb_d)
-    CRs[1].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"dimuonModelCR",b),_fOut)
-
-  for b in range(target.GetNbinsX()):
-    err = ZeeScales.GetBinError(b+1)
-    if not ZeeScales.GetBinContent(b+1)>0: continue 
-    relerr = err/ZeeScales.GetBinContent(b+1)
-    if relerr<0.01: continue
-    byb_u = ZeeScales.Clone(); byb_u.SetName("zee_weights_%s_%s_stat_error_%s_bin%d_Up"%(cid,cid,"dielectronModelCR",b))
-    byb_u.SetBinContent(b+1,ZeeScales.GetBinContent(b+1)+err)
-    byb_d = ZeeScales.Clone(); byb_d.SetName("zee_weights_%s_%s_stat_error_%s_bin%d_Down"%(cid,cid,"dielectronModelCR",b))
-    if (ZeeScales.GetBinContent(b+1)-err > 0):
-      byb_d.SetBinContent(b+1,ZeeScales.GetBinContent(b+1)-err)
-    else:
-      byb_d.SetBinContent(b+1,1)
-    _fOut.WriteTObject(byb_u)
-    _fOut.WriteTObject(byb_d)
-    print "Adding an error -- ", byb_u.GetName(),err
-    CRs[2].add_nuisance_shape("%s_stat_error_%s_bin%d"%(cid,"dielectronModelCR",b),_fOut)
-  '''
 
   #######################################################################################################
   
@@ -216,9 +171,13 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   CRs[3].add_nuisance_shape('wfacscale',_fOut)
   CRs[3].add_nuisance_shape('wpdf',_fOut)
   
-  for b in range(target.GetNbinsX()):
-    CRs[0].add_nuisance_shape("ewk_%s_bin%d"%(cid,b),_fOut)
-    CRs[3].add_nuisance_shape("w_ewk_%s_bin%d"%(cid,b),_fOut)
+  if correlate_ewk:
+    CRs[0].add_nuisance_shape("ewk",_fOut)
+    CRs[3].add_nuisance_shape("w_ewk",_fOut)
+  else:
+    for b in range(target.GetNbinsX()):
+      CRs[0].add_nuisance_shape("ewk_%s_bin%d"%(cid,b),_fOut)
+      CRs[3].add_nuisance_shape("w_ewk_%s_bin%d"%(cid,b),_fOut)
 
   #######################################################################################################
 
@@ -342,33 +301,51 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   
 
   # fztoaewk = fztoa
-  fztoaewk = r.TFile.Open('files/atoz_unc.root')
-  ztoa_ewk_up   = fztoaewk.Get("a_ewkcorr_overz_Upcommon")
-  ztoa_ewk_down = fztoaewk.Get("a_ewkcorr_overz_Downcommon")
+  if new_ewk:
+    fztoaewk = r.TFile.Open('files/unc/gz_unc_v6.root')
+    ztoa_ewk_up   = fztoaewk.Get("ZG_NNLOEWK_met")
+    ztoa_ewk_down   = fztoaewk.Get("ZG_NNLOEWK_met_Down")
 
-  ratio_ewk_up = Zvv.Clone();  ratio_ewk_up.SetName("photon_weights_%s_ewk_Up"%nam);
-  for b in range(ratio_ewk_up.GetNbinsX()): ratio_ewk_up.SetBinContent(b+1,0)  
-  diag.generateWeightedTemplate(ratio_ewk_up,ztoa_ewk_up,gvptname,metname,_wspace.data("signal_zjets"))
-  ratio_ewk_up.Divide(Pho)
-  
-  ratio_ewk_down = Zvv.Clone();  ratio_ewk_down.SetName("photon_weights_%s_ewk_Down"%nam);
-  for b in range(ratio_ewk_down.GetNbinsX()): ratio_ewk_down.SetBinContent(b+1,0)  
-  diag.generateWeightedTemplate(ratio_ewk_down,ztoa_ewk_down,gvptname,metname,_wspace.data("signal_zjets"))
-  ratio_ewk_down.Divide(Pho)
+    ratio_ewk_up = Zvv.Clone();  ratio_ewk_up.SetName("photon_weights_%s_ewk_Up"%(nam));
+    for b in range(ratio_ewk_up.GetNbinsX()): ratio_ewk_up.SetBinContent(b+1,0)  
+    diag.generateWeightedTemplate(ratio_ewk_up,ztoa_ewk_up,metname,metname,_wspace.data("signal_zjets"))
+    ratio_ewk_up.Divide(Pho)
+    
+    ratio_ewk_down = Zvv.Clone();  ratio_ewk_down.SetName("photon_weights_%s_ewk_Down"%(nam));
+    for b in range(ratio_ewk_down.GetNbinsX()): ratio_ewk_down.SetBinContent(b+1,0)  
+    diag.generateWeightedTemplate(ratio_ewk_down,ztoa_ewk_down,metname,metname,_wspace.data("signal_zjets"))
+    ratio_ewk_down.Divide(Pho)
+  else:
+    fztoaewk = r.TFile.Open('files/atoz_unc.root')
+    ztoa_ewk_up   = fztoaewk.Get("a_ewkcorr_overz_Upcommon")
+    ztoa_ewk_down = fztoaewk.Get("a_ewkcorr_overz_Downcommon")
 
-  #Now lets uncorrelate the bins:
-  for b in range(target.GetNbinsX()):
-    ewk_up = Zvv.Clone(); ewk_up.SetName("photon_weights_%s_ewk_%s_bin%d_Up"%(nam,nam,b))
-    ewk_down = Zvv.Clone(); ewk_down.SetName("photon_weights_%s_ewk_%s_bin%d_Down"%(nam,nam,b))
-    for i in range(target.GetNbinsX()):
-      if i==b:
-        ewk_up.SetBinContent(i+1,ratio_ewk_up.GetBinContent(i+1))
-        ewk_down.SetBinContent(i+1,ratio_ewk_down.GetBinContent(i+1))
-        break
+    ratio_ewk_up = Zvv.Clone();  ratio_ewk_up.SetName("photon_weights_%s_ewk_Up"%(nam));
+    for b in range(ratio_ewk_up.GetNbinsX()): ratio_ewk_up.SetBinContent(b+1,0)  
+    diag.generateWeightedTemplate(ratio_ewk_up,ztoa_ewk_up,gvptname,metname,_wspace.data("signal_zjets"))
+    ratio_ewk_up.Divide(Pho)
+    
+    ratio_ewk_down = Zvv.Clone();  ratio_ewk_down.SetName("photon_weights_%s_ewk_Down"%(nam));
+    for b in range(ratio_ewk_down.GetNbinsX()): ratio_ewk_down.SetBinContent(b+1,0)  
+    diag.generateWeightedTemplate(ratio_ewk_down,ztoa_ewk_down,gvptname,metname,_wspace.data("signal_zjets"))
+    ratio_ewk_down.Divide(Pho)
+
+  if correlate_ewk:
+    _fOut.WriteTObject(ratio_ewk_up)
+    _fOut.WriteTObject(ratio_ewk_down)
+  else:
+    for b in range(target.GetNbinsX()):
+      ewk_up = Zvv.Clone(); ewk_up.SetName("photon_weights_%s_ewk_%s_bin%d_Up"%(nam,nam,b))
+      ewk_down = Zvv.Clone(); ewk_down.SetName("photon_weights_%s_ewk_%s_bin%d_Down"%(nam,nam,b))
+      for i in range(target.GetNbinsX()):
+        if i==b:
+          ewk_up.SetBinContent(i+1,ratio_ewk_up.GetBinContent(i+1))
+          ewk_down.SetBinContent(i+1,ratio_ewk_down.GetBinContent(i+1))
+          break
 
 
-    _fOut.WriteTObject(ewk_up)
-    _fOut.WriteTObject(ewk_down)
+      _fOut.WriteTObject(ewk_up)
+      _fOut.WriteTObject(ewk_down)
 
 
 
@@ -440,35 +417,54 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   wratio_pdf_down.Divide(Wsig)
   _fOut.WriteTObject(wratio_pdf_down)
 
-  fztowewk = r.TFile.Open("files/wtoz_unc.root")
-  ztow_ewk_up   = fztowewk.Get("w_ewkcorr_overz_Upcommon")
-  ztow_ewk_down = fztowewk.Get("w_ewkcorr_overz_Downcommon")
+  if new_ewk:
+    fztowewk = r.TFile.Open("files/unc/wz_unc_v6.root")
+    ztow_ewk_up   = fztowewk.Get("ZW_NNLOEWK_met")
+    ztow_ewk_down = fztowewk.Get("ZW_NNLOEWK_met_Down")
 
-  wratio_ewk_up = Zvv_w.Clone();  wratio_ewk_up.SetName("w_weights_%s_ewk_Up"%nam);
-  for b in range(wratio_ewk_up.GetNbinsX()): wratio_ewk_up.SetBinContent(b+1,0)  
-  diag.generateWeightedTemplate(wratio_ewk_up,ztow_ewk_up,gvptname,metname,_wspace.data("signal_zjets"))
-  wratio_ewk_up.Divide(Wsig)
-  
-  wratio_ewk_down = Zvv_w.Clone();  wratio_ewk_down.SetName("w_weights_%s_ewk_Down"%nam);
-  for b in range(wratio_ewk_down.GetNbinsX()): wratio_ewk_down.SetBinContent(b+1,0)  
-  diag.generateWeightedTemplate(wratio_ewk_down,ztow_ewk_down,gvptname,metname,_wspace.data("signal_zjets"))
-  wratio_ewk_down.Divide(Wsig)
+    wratio_ewk_up = Zvv_w.Clone();  wratio_ewk_up.SetName("w_weights_%s_w_ewk_Up"%(nam));
+    for b in range(wratio_ewk_up.GetNbinsX()): wratio_ewk_up.SetBinContent(b+1,0)  
+    diag.generateWeightedTemplate(wratio_ewk_up,ztow_ewk_up,metname,metname,_wspace.data("signal_zjets"))
+    wratio_ewk_up.Divide(Wsig)
+    
+    wratio_ewk_down = Zvv_w.Clone();  wratio_ewk_down.SetName("w_weights_%s_w_ewk_Down"%(nam));
+    for b in range(wratio_ewk_down.GetNbinsX()): wratio_ewk_down.SetBinContent(b+1,0)  
+    diag.generateWeightedTemplate(wratio_ewk_down,ztow_ewk_down,metname,metname,_wspace.data("signal_zjets"))
+    wratio_ewk_down.Divide(Wsig)
+  else:
+    fztowewk = r.TFile.Open("files/wtoz_unc.root")
+    ztow_ewk_up   = fztowewk.Get("w_ewkcorr_overz_Upcommon")
+    ztow_ewk_down = fztowewk.Get("w_ewkcorr_overz_Downcommon")
+
+    wratio_ewk_up = Zvv_w.Clone();  wratio_ewk_up.SetName("w_weights_%s_w_ewk_Up"%(nam));
+    for b in range(wratio_ewk_up.GetNbinsX()): wratio_ewk_up.SetBinContent(b+1,0)  
+    diag.generateWeightedTemplate(wratio_ewk_up,ztow_ewk_up,gvptname,metname,_wspace.data("signal_zjets"))
+    wratio_ewk_up.Divide(Wsig)
+    
+    wratio_ewk_down = Zvv_w.Clone();  wratio_ewk_down.SetName("w_weights_%s_w_ewk_Down"%(nam));
+    for b in range(wratio_ewk_down.GetNbinsX()): wratio_ewk_down.SetBinContent(b+1,0)  
+    diag.generateWeightedTemplate(wratio_ewk_down,ztow_ewk_down,gvptname,metname,_wspace.data("signal_zjets"))
+    wratio_ewk_down.Divide(Wsig)
 
 
   ############### GET SOMETHING CENTRAL PLEASE ############################
   Zvv_w.Divide(Wsig)
 
-  #Now lets uncorrelate the bins:
-  for b in range(target.GetNbinsX()):
-    ewk_up_w = Zvv_w.Clone(); ewk_up_w.SetName("w_weights_%s_w_ewk_%s_bin%d_Up"%(nam,nam,b))
-    ewk_down_w = Zvv_w.Clone(); ewk_down_w.SetName("w_weights_%s_w_ewk_%s_bin%d_Down"%(nam,nam,b))
-    for i in range(target.GetNbinsX()):
-      if i==b:
-        ewk_up_w.SetBinContent(i+1,wratio_ewk_up.GetBinContent(i+1))
-        ewk_down_w.SetBinContent(i+1,wratio_ewk_down.GetBinContent(i+1))
-        break
+  if correlate_ewk:
+    _fOut.WriteTObject(wratio_ewk_up)
+    _fOut.WriteTObject(wratio_ewk_down)
+  else:
+    #Now lets uncorrelate the bins:
+    for b in range(target.GetNbinsX()):
+      ewk_up_w = Zvv_w.Clone(); ewk_up_w.SetName("w_weights_%s_w_ewk_%s_bin%d_Up"%(nam,nam,b))
+      ewk_down_w = Zvv_w.Clone(); ewk_down_w.SetName("w_weights_%s_w_ewk_%s_bin%d_Down"%(nam,nam,b))
+      for i in range(target.GetNbinsX()):
+        if i==b:
+          ewk_up_w.SetBinContent(i+1,wratio_ewk_up.GetBinContent(i+1))
+          ewk_down_w.SetBinContent(i+1,wratio_ewk_down.GetBinContent(i+1))
+          break
 
 
-    _fOut.WriteTObject(ewk_up_w)
-    _fOut.WriteTObject(ewk_down_w)
+      _fOut.WriteTObject(ewk_up_w)
+      _fOut.WriteTObject(ewk_down_w)
 
