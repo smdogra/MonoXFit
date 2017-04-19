@@ -497,7 +497,7 @@ plotPreFitPostFit("photon",combinecat="tight_")
 plotPreFitPostFit("singleelectronw",combinecat="tight_")
 plotPreFitPostFit("singleelectrontop",combinecat="tight_")
 plotPreFitPostFit("dielectron",combinecat="tight_")
-plotPreFitPostFit("signal",combinecat="tight_",blind=True)
+plotPreFitPostFit("signal",combinecat="tight_",blind=False)
 
 plotPreFitPostFit("singlemuonw","category_monotop_loose",combinecat="loose_")
 plotPreFitPostFit("singlemuontop","category_monotop_loose",combinecat="loose_")
@@ -506,6 +506,6 @@ plotPreFitPostFit("photon","category_monotop_loose",combinecat="loose_")
 plotPreFitPostFit("singleelectronw","category_monotop_loose",combinecat="loose_")
 plotPreFitPostFit("singleelectrontop","category_monotop_loose",combinecat="loose_")
 plotPreFitPostFit("dielectron","category_monotop_loose",combinecat="loose_")
-plotPreFitPostFit("signal","category_monotop_loose",combinecat="loose_",blind=True)
+plotPreFitPostFit("signal","category_monotop_loose",combinecat="loose_",blind=False)
 
 #plotPreFitPostFit("signal") ### fitting to real data now!

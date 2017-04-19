@@ -11,10 +11,8 @@ parser.add_argument('template',metavar='template',type=str,default='correlated_t
 parser.add_argument('--mMed',type=int,default=None)
 parser.add_argument('--mChi',type=int,default=None)
 parser.add_argument('--mParams',type=str,default=None)
-parser.add_argument('--isRes',dest='isRes',action='store_true')
-parser.add_argument('--isFCNC',dest='isRes',action='store_false')
+parser.add_argument('--model',type=str)
 parser.add_argument('--infile',type=str,metavar='infile')
-parser.set_defaults(isRes=False)
 args = parser.parse_args()
 argv = []
 
@@ -26,11 +24,14 @@ root.gSystem.Load("libRooFitCore.so")
 from HiggsAnalysis.CombinedLimit.ModelTools import *
 
 class Model():
-    def __init__(self,mMed,mChi,isRes):
+    def __init__(self,mMed,mChi,isRes,isSTDM=False):
         self.mMed=mMed
         self.mChi=mChi
         self.isRes=isRes
-        if isRes:
+        self.isSTDM=isSTDM
+        if isSTDM:
+            self.name = 'stdm_%i'%(mMed)
+        elif isRes:
             self.name = 'scalar_%i_%i'%(mMed,mChi)
         else:
             #self.name = 'monotop-nr-v3-%i-%i_med-%i_dm-%i'%(mMed,mChi,mMed,mChi)
@@ -117,10 +118,10 @@ def run(model,runObserved=True):
     # system("combine -M Asymptotic combined_%s.txt -n %s -m %i"%(label,model.mMed*1000+mChi))
 
 if args.mMed and args.mChi:
-    model = Model(args.mMed,args.mChi,args.isRes)
+    model = Model(args.mMed,args.mChi,args.model=='res',args.model=='stdm')
     run(model,False)
 else:
     for mMed,mChi in [x.split('_') for x in args.mParams.split('+')]:
-        model = Model(int(mMed),int(mChi),args.isRes)
+        model = Model(int(mMed),int(mChi),args.model=='res',args.model=='stdm')
         run(model,False)
 

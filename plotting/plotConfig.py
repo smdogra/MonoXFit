@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-plotDir = '/home/snarayan/public_html/figs/monotop/v14//fits_egmv2_corr/2cat/'
+plotDir = '/home/snarayan/public_html/figs/monotop/v14//fits_unblind/2cat/'
 scansDir = '/data/t3home000/snarayan/store/panda/v_8026_0_4/fitting/scans/'
 lumi = 35.8
 

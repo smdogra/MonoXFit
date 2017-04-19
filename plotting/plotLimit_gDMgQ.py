@@ -98,14 +98,17 @@ def makePlot2D(filepath,foutname,gqcfg,gdmcfg,header,legend_pos=1):
     if l.obs==0 or l.cent==0:
       print l.gQ,l.gDM
       continue
-    hgrid.Fill(l.gQ,log10(l.gDM))
-    gs['exp'].SetPoint(iP,log10(l.gQ),log10(l.gDM),l.cent)
-    gs['expup'].SetPoint(iP,log10(l.gQ),log10(l.gDM),l.up1)
-    gs['expdown'].SetPoint(iP,log10(l.gQ),log10(l.gDM),l.down1)
+    hgrid.Fill(l.gQ,l.gDM)
+    gs['exp'].SetPoint(iP,l.gQ,l.gDM,l.cent)
+    gs['expup'].SetPoint(iP,l.gQ,l.gDM,l.up1)
+    gs['expdown'].SetPoint(iP,l.gQ,l.gDM,l.down1)
+    gs['obs'].SetPoint(iP,l.gQ,l.gDM,l.obs)
+    gs['obsup'].SetPoint(iP,l.gQ,l.gDM,l.obs/(1-XSECUNCERT))
+    gs['obsdown'].SetPoint(iP,l.gQ,l.gDM,l.obs/(1+XSECUNCERT))
     iP += 1
 
   hs = {}
-  for h in ['exp','expup','expdown']:
+  for h in ['exp','expup','expdown','obs','obsup','obsdown']:
     hs[h] = TH2D(h,h,gqcfg[0],gqcfg[1],gqcfg[2],gdmcfg[0],gdmcfg[1],gdmcfg[2])
     # hs[h].SetStats(0); hs[h].SetTitle('')
     for iX in xrange(0,gqcfg[0]):
@@ -128,8 +131,8 @@ def makePlot2D(filepath,foutname,gqcfg,gdmcfg,header,legend_pos=1):
   zaxis.SetBinLabel(nbins,'>10')
   '''
 
-  hs['expclone'] = hs['exp'].Clone()
-  for h in ['expup','expdown','expclone']:
+  hs['obsclone'] = hs['obs'].Clone() # clone it so we can draw with different settings
+  for h in ['exp','expup','expdown','obsclone','obsup','obsdown']:
     hs[h].SetContour(2)
     hs[h].SetContourLevel(1,1)
     for iX in xrange(1,gqcfg[0]+1):
@@ -152,22 +155,38 @@ def makePlot2D(filepath,foutname,gqcfg,gdmcfg,header,legend_pos=1):
 
   frame.Draw()
 
-  hs['exp'].SetMinimum(0.01)
-  hs['exp'].SetMaximum(100.)
+  hs['obs'].SetMinimum(0.01)
+  hs['obs'].SetMaximum(100.)
 
-  hs['exp'].Draw("COLZ SAME")
+  hs['obs'].Draw("COLZ SAME")
 
-  hs['expclone'].SetLineStyle(1)
-  hs['expclone'].SetLineWidth(3)
-  hs['expclone'].SetLineColor(1)
-  hs['expclone'].Draw('CONT3 SAME')
+  hs['obsclone'].SetLineStyle(1)
+  hs['obsclone'].SetLineWidth(3)
+  hs['obsclone'].SetLineColor(2)
+  hs['obsclone'].Draw('CONT3 SAME')
 
   ctemp = root.TCanvas()
-  hs['expclone'].Draw('contlist')
+  hs['obsclone'].Draw('contlist')
   ctemp.Update()
   objs = root.gROOT.GetListOfSpecials().FindObject('contours')
+  saveobs = (objs.At(0)).First()
 
   canvas.cd()
+
+  hs['obsup'].SetLineStyle(2)
+  hs['obsup'].SetLineWidth(2)
+  hs['obsup'].SetLineColor(2)
+  hs['obsup'].Draw('CONT3 SAME')
+
+  hs['obsdown'].SetLineStyle(2)
+  hs['obsdown'].SetLineWidth(2)
+  hs['obsdown'].SetLineColor(2)
+  hs['obsdown'].Draw('CONT3 SAME')
+
+  hs['exp'].SetLineStyle(1)
+  hs['exp'].SetLineWidth(3)
+  hs['exp'].SetLineColor(1)
+  hs['exp'].Draw('CONT3 SAME')
 
   hs['expup'].SetLineStyle(2)
   hs['expup'].SetLineWidth(2)
@@ -185,8 +204,10 @@ def makePlot2D(filepath,foutname,gqcfg,gdmcfg,header,legend_pos=1):
     else:
       leg = root.TLegend(0.40,0.62,0.81,0.88);#,NULL,"brNDC");
     leg.SetHeader(header)
-    leg.AddEntry(hs['expclone'],"Median Expected  95% CL","L");
+    leg.AddEntry(hs['exp'],"Median Expected  95% CL","L");
     leg.AddEntry(hs['expup'],"Exp. #pm 1 std. dev. (exp)","L");
+    leg.AddEntry(hs['obsclone'],"Observed 95% CL","L");
+    leg.AddEntry(hs['obsup'],"Obs. #pm 1 std. dev. (theory)","L");
     leg.SetFillColor(0); leg.SetBorderSize(0)
     leg.Draw("SAME");
 
@@ -205,7 +226,7 @@ def makePlot2D(filepath,foutname,gqcfg,gdmcfg,header,legend_pos=1):
   tex2.SetLineWidth(2);
   tex2.SetTextSize(0.04);
   tex2.SetTextAngle(270);
-  tex2.DrawLatex(0.965,0.93,"Expected #sigma_{95% CL}/#sigma_{theory}");
+  tex2.DrawLatex(0.965,0.93,"#sigma_{95% CL}/#sigma_{theory}");
 
   texCMS = root.TLatex(0.12,0.94,"#bf{CMS}");
   texCMS.SetNDC();
@@ -237,79 +258,87 @@ def makePlot2D(filepath,foutname,gqcfg,gdmcfg,header,legend_pos=1):
 
 plotsdir = plotConfig.plotDir
 
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_2250_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_exp_gdmv_gQ_mV2250',
-           (40,-.5,0.,'log_{10}(g_{q}^{V})'),
-           (40,-0.2,0.31,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 2.25 TeV, m_{#chi} = 1 GeV')
+'''
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_2250_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obs_gdmv_gQ_mV2250',
+           (40,-.5,0.,'g_{q}^{V}'),
+           (40,-0.2,0.31,'g_{DM}^{V}'),
+           'm_{V} = 2.25 TeV, m_{#chi} = 1 GeV [FCNC]')
 
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1750_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_exp_gdmv_gQ_mV1750',
-           (40,-1.,0.,'log_{10}(g_{q}^{V})'),
-           (40,-.5,0.31,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 1.75 TeV, m_{#chi} = 1 GeV')
-
-
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_300_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_exp_gdmv_gQ_mV300',
-           (40,-2.,0.,'log_{10}(g_{q}^{V})'),
-           (40,-2.,-0.4,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 300 GeV, m_{#chi} = 1 GeV')
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1750_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obs_gdmv_gQ_mV1750',
+           (40,-1.,0.,'g_{q}^{V}'),
+           (40,-.5,0.31,'g_{DM}^{V}'),
+           'm_{V} = 1.75 TeV, m_{#chi} = 1 GeV [FCNC]')
 
 
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_750_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_exp_gdmv_gQ_mV750',
-           (40,-2.,0.,'log_{10}(g_{q}^{V})'),
-           (40,-2.,-0.,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 750 GeV, m_{#chi} = 1 GeV')
-
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1000_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_exp_gdmv_gQ_mV1000',
-           (40,-2.,0.,'log_{10}(g_{q}^{V})'),
-           (40,-1.5,0.31,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 1 TeV, m_{#chi} = 1 GeV')
-
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1500_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_exp_gdmv_gQ_mV1500',
-           (40,-1.,0.,'log_{10}(g_{q}^{V})'),
-           (40,-1.5,0.31,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 1.5 TeV, m_{#chi} = 1 GeV')
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_300_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obs_gdmv_gQ_mV300',
+           (40,0.01,1.,'g_{q}^{V}'),
+           (40,-2.,-0.4,'g_{DM}^{V}'),
+           'm_{V} = 300 GeV, m_{#chi} = 1 GeV [FCNC]')
 
 
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_2250_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_expfixed_gdmv_gQ_mV2250',
-           (40,-2.,0.,'log_{10}(g_{q}^{V})'),
-           (40,-2.,0.31,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 2.25 TeV, m_{#chi} = 1 GeV')
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_750_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obs_gdmv_gQ_mV750',
+           (40,0.01,1.,'g_{q}^{V}'),
+           (40,-2.,-0.,'g_{DM}^{V}'),
+           'm_{V} = 750 GeV, m_{#chi} = 1 GeV [FCNC]')
 
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1750_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_expfixed_gdmv_gQ_mV1750',
-           (40,-2.,0.,'log_{10}(g_{q}^{V})'),
-           (40,-2.,0.31,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 1.75 TeV, m_{#chi} = 1 GeV')
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1000_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obs_gdmv_gQ_mV1000',
+           (40,0.01,1.,'g_{q}^{V}'),
+           (40,-1.5,0.31,'g_{DM}^{V}'),
+           'm_{V} = 1 TeV, m_{#chi} = 1 GeV [FCNC]')
+
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1500_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obs_gdmv_gQ_mV1500',
+           (40,-1.,0.,'g_{q}^{V}'),
+           (40,-1.5,0.31,'g_{DM}^{V}'),
+           'm_{V} = 1.5 TeV, m_{#chi} = 1 GeV [FCNC]')
+'''
 
 
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_300_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_expfixed_gdmv_gQ_mV300',
-           (40,-2.,0.,'log_{10}(g_{q}^{V})'),
-           (40,-2.,0.31,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 300 GeV, m_{#chi} = 1 GeV')
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_2500_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obsfixed_gdmv_gQ_mV2500',
+           (40,0.01,1.,'g_{q}^{V}'),
+           (40,0.01,2.,'g_{DM}^{V}'),
+           'm_{V} = 2.5 TeV, m_{#chi} = 1 GeV [FCNC]')
+
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_2250_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obsfixed_gdmv_gQ_mV2250',
+           (40,0.01,1.,'g_{q}^{V}'),
+           (40,0.01,2.,'g_{DM}^{V}'),
+           'm_{V} = 2.25 TeV, m_{#chi} = 1 GeV [FCNC]')
+
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1750_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obsfixed_gdmv_gQ_mV1750',
+           (40,0.01,1.,'g_{q}^{V}'),
+           (40,0.01,2.,'g_{DM}^{V}'),
+           'm_{V} = 1.75 TeV, m_{#chi} = 1 GeV [FCNC]',9)
 
 
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_750_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_expfixed_gdmv_gQ_mV750',
-           (40,-2,0.,'log_{10}(g_{q}^{V})'),
-           (40,-2,0.31,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 750 GeV, m_{#chi} = 1 GeV')
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_300_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obsfixed_gdmv_gQ_mV300',
+           (40,0.01,1.,'g_{q}^{V}'),
+           (40,0.01,2.,'g_{DM}^{V}'),
+           'm_{V} = 300 GeV, m_{#chi} = 1 GeV [FCNC]',9)
 
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1000_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_expfixed_gdmv_gQ_mV1000',
-           (40,-2.,0.,'log_{10}(g_{q}^{V})'),
-           (40,-2.,0.31,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 1 TeV, m_{#chi} = 1 GeV')
 
-makePlot2D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1500_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_expfixed_gdmv_gQ_mV1500',
-           (40,-2.,0.,'log_{10}(g_{q}^{V})'),
-           (40,-2.,0.31,'log_{10}(g_{DM}^{V})'),
-           'm_{V} = 1.5 TeV, m_{#chi} = 1 GeV')
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_750_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obsfixed_gdmv_gQ_mV750',
+           (40,0.01,1.,'g_{q}^{V}'),
+           (40,0.01,2.,'g_{DM}^{V}'),
+           'm_{V} = 750 GeV, m_{#chi} = 1 GeV [FCNC]',9)
+
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1000_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obsfixed_gdmv_gQ_mV1000',
+           (40,0.01,1.,'g_{q}^{V}'),
+           (40,0.01,2.,'g_{DM}^{V}'),
+           'm_{V} = 1 TeV, m_{#chi} = 1 GeV [FCNC]',9)
+
+makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_1500_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc2d_obsfixed_gdmv_gQ_mV1500',
+           (40,0.01,1.,'g_{q}^{V}'),
+           (40,0.01,2.,'g_{DM}^{V}'),
+           'm_{V} = 1.5 TeV, m_{#chi} = 1 GeV [FCNC]',9)

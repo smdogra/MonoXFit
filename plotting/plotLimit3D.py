@@ -115,9 +115,8 @@ def makePlot3D(filepath,foutname,gqcfg,gdmcfg,medcfg):
   points = []
   values = []
   for l in limits:
-    points.append((log10(l.limit.gQ),log10(l.limit.gDM),l.mV))
-    values.append(l.limit.cent)
-
+    points.append((l.limit.gQ,l.limit.gDM,l.mV))
+    values.append(l.limit.obs)
 
   interp = LNDI(points,values)
 
@@ -181,8 +180,8 @@ def makePlot3D(filepath,foutname,gqcfg,gdmcfg,medcfg):
 plotsdir = plotConfig.plotDir
 
 
-makePlot3D(plotConfig.scansDir+'gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_*_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc3d_exp_gdmv_gQ_mV',
-           (20,-1.7,0.,'log_{10}(g_{q}^{V})'),
-           (20,-1.4,0.30,'log_{10}(g_{DM}^{V})'),
+makePlot3D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_*_1.Asymptotic.mH120.root',
+           plotsdir+'fcnc3d_obs_gdmv_gQ_mV',
+           (20,0.01,1.,'g_{q}^{V}'),
+           (20,0.01,2,'g_{DM}^{V}'),
            (300,2500))

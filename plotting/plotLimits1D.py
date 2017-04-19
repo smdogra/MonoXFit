@@ -11,7 +11,7 @@ setTDRStyle()
 
 VERBOSE=False
 
-BLIND=True
+BLIND=False
 
 class Limit():
   def __init__(self,mMed,mChi,xsec=1):
@@ -199,5 +199,5 @@ def makePlot1D(filepath,foutname,plottitle='',masstitle=''):
 
 plotsdir = plotConfig.plotDir
 
-makePlot1D(plotConfig.scansDir+'/higgsCombineres_*.root',plotsdir+'/res_exp_limit','#splitline{Resonant}{scalar production}','M_{#phi}')
-makePlot1D(plotConfig.scansDir+'/higgsCombinefcnc_*_1.Asymptotic.mH120.root',plotsdir+'/fcnc_exp_limit','#splitline{Flavor-changing}{neutral current}','M_{V}')
+makePlot1D(plotConfig.scansDir+'/res/nominal/higgsCombineres_*.root',plotsdir+'/res_obs_limit','#splitline{Resonant}{scalar production}','M_{#phi}')
+#makePlot1D(plotConfig.scansDir+'/higgsCombinefcnc_*_1.Asymptotic.mH120.root',plotsdir+'/fcnc_exp_limit','#splitline{Flavor-changing}{neutral current}','M_{V}')

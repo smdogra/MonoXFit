@@ -163,8 +163,8 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   CRs[0].add_nuisance_shape("pdf",_fOut) 
   CRs[0].add_nuisance("PhotonEff",0.02) 
   for cr in [0,1,2]:
-    CRs[cr].add_nuisance_shape('btag',_fOut)
-    CRs[cr].add_nuisance_shape('mistag',_fOut)
+    # CRs[cr].add_nuisance_shape('btag',_fOut)
+    # CRs[cr].add_nuisance_shape('mistag',_fOut)
     CRs[cr].add_nuisance_shape('sjbtag',_fOut)
     CRs[cr].add_nuisance_shape('sjmistag',_fOut)
   CRs[3].add_nuisance_shape('wrenscale',_fOut)

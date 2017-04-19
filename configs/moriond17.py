@@ -54,6 +54,9 @@ monotop_category = {
           ,"QCD_signal"                      :['signal','qcd',1,0]
           ,"Data_signal"               :['signal','data',0,0]
           ,'1750_1_signal'     :['signal','nonres_1750_1',1,1]
+          ,'stdm_1000_signal'          :['signal','stdm_1000',1,1]
+          ,'stdm_300_signal'          :['signal','stdm_300',1,1]
+          ,'stdm_500_signal'          :['signal','stdm_500',1,1]
 
           # some signals 
 #          ,"res_mMed1900_signal"           :['signal','Mres1900_Mchi100',1,1]
@@ -145,6 +148,9 @@ monotop_loose_category = {
           ,"QCD_signal"                      :['signal','qcd',1,0]
           ,"Data_signal"               :['signal','data',0,0]
           ,'1750_1_signal'           :['signal','nonres_1750_1',1,1]
+          ,'stdm_1000_signal'          :['signal','stdm_1000',1,1]
+          ,'stdm_300_signal'          :['signal','stdm_300',1,1]
+          ,'stdm_500_signal'          :['signal','stdm_500',1,1]
 
           # some signals 
 #          ,"res_mMed1900_signal"           :['signal','Mres1900_Mchi100',1,1]
