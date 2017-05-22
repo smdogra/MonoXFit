@@ -179,7 +179,7 @@ def makePlot1D(filepath,foutname,plottitle='',masstitle=''):
   label.DrawLatex(0.15,0.94,"CMS")
   label.SetTextFont(52)
   label.SetTextSize(0.6*c.GetTopMargin())
-  label.DrawLatex(0.25,0.94,"Preliminary")
+#  label.DrawLatex(0.25,0.94,"Preliminary")
   label.SetTextFont(42)
   label.SetTextSize(0.7*c.GetTopMargin())
   label.DrawLatex(0.19,0.83,plottitle)
@@ -199,5 +199,6 @@ def makePlot1D(filepath,foutname,plottitle='',masstitle=''):
 
 plotsdir = plotConfig.plotDir
 
-makePlot1D(plotConfig.scansDir+'/res/nominal/higgsCombineres_*.root',plotsdir+'/res_obs_limit','#splitline{Resonant}{scalar production}','M_{#phi}')
+scansdir = '/data/t3home000/snarayan/store/panda/v_8026_0_4/fitting/scans_bkup/'
+makePlot1D(scansdir+'/res/nominal/higgsCombineres_*.root',plotsdir+'/res_obs_limit','#splitline{Resonant}{scalar production}','M_{#phi}')
 #makePlot1D(plotConfig.scansDir+'/higgsCombinefcnc_*_1.Asymptotic.mH120.root',plotsdir+'/fcnc_exp_limit','#splitline{Flavor-changing}{neutral current}','M_{V}')

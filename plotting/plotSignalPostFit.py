@@ -43,10 +43,10 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
 
   f_mlfit = TFile(basedir+'/datacards/mlfit.root','READ')
 
-  f_data = TFile(basedir+"/mono-x.root","READ")
-  f_data.cd(cat)
-  h_data = None
-  h_data = gDirectory.Get(region+"_data")
+#   f_data = TFile(basedir+"/mono-x.root","READ")
+#   f_data.cd(cat)
+#   h_data = None
+#   h_data = gDirectory.Get(region+"_data")
 #  if region=='signal':
 #    h_res = gDirectory.Get('signal_Mres1100_Mchi100'); h_res.SetLineColor(kGreen+3)
 #    h_fcnc = gDirectory.Get('signal_monotop_fcnc_mMed900'); h_fcnc.SetLineColor(kViolet+9)
@@ -64,10 +64,7 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
   else:
     blind = True
   '''
-  
-  h_postfit_sig = f_mlfit.Get("shapes_fit_b/"+combinecat+channel['signal']+"/total_background")
-  h_prefit_sig = f_mlfit.Get("shapes_prefit/"+combinecat+channel['signal']+"/total_background")
-  
+
   b_width = [50,50,50,100,500]
 
   processesNormal = [
@@ -79,64 +76,30 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
       'zvv',
       'zll',
       'gjets',
+      'signal',
   ]
 
-  processesZ = [
-      'qcd',
-      'dibosons',
-      'stop',
-      'wjets',
-      'ttbar',
-      'zvv',
-      'zll',
-      'gjets',
-  ]
 
-  processesT = [
-      'gjets',
-      'qcd',
-      'dibosons',
-      'stop',
-      'zvv',
-      'zll',
-      'wjets',
-      'ttbar',
-  ]
-
-  processesW = [
-      'qcd',
-      'dibosons',
-      'zll',
-      'stop',
-      'ttbar',
-      'wjets',
-  ]
-
-  if region=='singlemuonw' or region=='singleelectronw':
-    processes = processesW
-  elif region=='dimuon' or region=='dielectron':
-    processes = processesZ
-  elif 'top' in region:
-    processes = processesT
-  else:
-    processes = processesNormal
+  processes = processesNormal
   
   processNames = {'gjets':'#gamma+jets',
                   'qcd':'QCD',
                   'ttbar':'t#bar{t}',
-                  'stop':'Single t',
-                  'dibosons':'Diboson',
-                  'zvv':'Z+jets',
-                  'zll':'Z+jets',
-                  'wjets':'W+jets'
+                  'stop':'Single top',
+                  'dibosons':'VV',
+                  'zvv':'Z#rightarrow#nu#nu',
+                  'zll':'Z#rightarrowll',
+                  'wjets':'W#rightarrowl#nu',
+                  'signal':'m_{V}=1.1 TeV',
                   }
   
   order = [
-           'Z+jets',
-           'W+jets',
+           'Z#rightarrow#nu#nu',
+           'Z#rightarrowll',
+           'W#rightarrowl#nu',
            't#bar{t}',
-           'Single t',
-           'Diboson',
+           'Single top',
+           'VV',
            'QCD',
            '#gamma+jets',
            'Data',
@@ -151,7 +114,8 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
       'zvv':zcolor,
       'zll':zcolor,
       'wjets':kGreen-6,
-      'stop':kRed-5
+      'stop':kRed-5,
+      'signal':kBlack,
   }
 
   binLowE = []
@@ -180,25 +144,35 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
 
   # Post-Fit
   h_postfit = {}
-  h_postfit['total'] = f_mlfit.Get("shapes_fit_b/"+combinecat+channel[region]+"/total")
+  h_postfit['total'] = f_mlfit.Get("shapes_fit_s/"+combinecat+channel[region]+"/total")
   h_all_postfit = TH1F("h_all_postfit","h_all_postfit",len(binLowE)-1,array('d',binLowE))    
   h_other_postfit = TH1F("h_other_postfit","h_other_postfit",len(binLowE)-1,array('d',binLowE))    
   h_stack_postfit = THStack("h_stack_postfit","h_stack_postfit")    
   
-
-  h_postfit['totalv2'] = f_mlfit.Get("shapes_fit_b/"+combinecat+channel[region]+"/total_background")
-
-  for i in range(1, h_postfit['totalv2'].GetNbinsX()+1):
-    error = h_postfit['totalv2'].GetBinError(i)
-    content = h_postfit['totalv2'].GetBinContent(i)
+  h_postfit['totalv2'] = f_mlfit.Get("shapes_fit_s/"+combinecat+channel[region]+"/total")
+  
+  # Data
+  h_data = h_all_prefit.Clone('data')
+  nb = h_data.GetNbinsX()
+  for ib in xrange(1,nb+1): h_data.SetBinContent(ib,0)
+  g_data = f_mlfit.Get('shapes_prefit/'+combinecat+channel[region]+'/data')
+  ys = g_data.GetY()
+  yerrs = g_data.GetEYhigh()
+  for ib in xrange(1,nb+1):
+    width = h_data.GetBinWidth(ib)
+    width = 1
+    h_data.SetBinContent(ib,ys[ib-1]/width)
+    h_data.SetBinError(ib,yerrs[ib-1]/width)
 
   for process in processes:
-    h_postfit[process] = f_mlfit.Get("shapes_fit_b/"+combinecat+channel[region]+"/"+process)
+    h_postfit[process] = f_mlfit.Get("shapes_fit_s/"+combinecat+channel[region]+"/"+process)
     if (not h_postfit[process]): continue
     if (str(h_postfit[process].Integral())=="nan"): continue
 #    h_postfit[process].SetLineColor(colors[process])
     h_postfit[process].SetLineColor(kBlack)
     h_postfit[process].SetFillColor(colors[process])
+    if process=='signal':
+      h_postfit[process].SetFillStyle(3005)
     h_all_postfit.Add(h_postfit[process])
     if (not process==mainbkg[region]): h_other_postfit.Add(h_postfit[process])
     h_stack_postfit.Add(h_postfit[process])
@@ -254,7 +228,7 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
   if not blind:
     h_data.SetMarkerStyle(20)
     h_data.SetMarkerSize(1.2)
-    h_data.Scale(1,"width")
+#    h_data.Scale(1,"width")
     h_data.Draw("epsame")
 
 #  if region=='signal':
@@ -265,11 +239,11 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
   #legend.SetTextSize(0.04)
   yields = {}
   if not blind:
-    legend.AddEntry(h_data,"Data","elp")
+    legend.AddEntry(h_data,"Fake data [sig injected]","elp")
     yields['Data'] = getInt(h_data)
   legend.AddEntry(h_all_prefit, "SM backgrounds (pre-fit)", "l")
   legend.AddEntry(h_all_postfit, "SM backgrounds (post-fit)", "l") 
-  for process in reversed(processes):
+  for process in processes:
     try:
       hist = h_postfit[process]
       if (not h_postfit[process]): continue
@@ -288,17 +262,6 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
   legend.SetLineColor(0);
   legend.Draw("same")
 
-  l1=region+' & '
-  for o in order:
-    if o in yields:
-      y = yields[o]
-      if o=='Data':
-        l1 += ' $%i$ & '%(int(y))
-      else:
-        l1 += ' $%.3g$ & '%y
-    else:
-      l1 += ' $-$ & '
-  print l1
 
   latex2 = TLatex()
   latex2.SetNDC()
@@ -321,7 +284,7 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
   latex2.SetTextSize(0.5*c.GetTopMargin())
   latex2.SetTextFont(52)
   latex2.SetTextAlign(11)
-#  latex2.DrawLatex(0.21, 0.94, "Preliminary")          
+  latex2.DrawLatex(0.21, 0.94, "Preliminary")          
 
   gPad.RedrawAxis()
 
@@ -480,7 +443,7 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
   label += cat.replace('category_','')
 
   for ext in ['pdf','png','C']:
-    c.SaveAs(plotDir+"stackedPostfit%s_"%plotextralabel+label+"."+ext)
+    c.SaveAs(plotDir+"sbStackedPostfit%s_"%plotextralabel+label+"."+ext)
 
   #c.SaveAs("test.pdf")
 
@@ -490,22 +453,21 @@ def plotPreFitPostFit(region,cat='category_monotop',combinecat='',blind=False):
   #del h_prefit
 
 
-plotPreFitPostFit("singlemuonw",combinecat="tight_")
-plotPreFitPostFit("singlemuontop",combinecat="tight_")
-plotPreFitPostFit("dimuon",combinecat="tight_")
-plotPreFitPostFit("photon",combinecat="tight_")
-plotPreFitPostFit("singleelectronw",combinecat="tight_")
-plotPreFitPostFit("singleelectrontop",combinecat="tight_")
-plotPreFitPostFit("dielectron",combinecat="tight_")
+# plotPreFitPostFit("singlemuonw",combinecat="tight_")
+# plotPreFitPostFit("singlemuontop",combinecat="tight_")
+# plotPreFitPostFit("dimuon",combinecat="tight_")
+# plotPreFitPostFit("photon",combinecat="tight_")
+# plotPreFitPostFit("singleelectronw",combinecat="tight_")
+# plotPreFitPostFit("singleelectrontop",combinecat="tight_")
+# plotPreFitPostFit("dielectron",combinecat="tight_")
 plotPreFitPostFit("signal",combinecat="tight_",blind=False)
 
-plotPreFitPostFit("singlemuonw","category_monotop_loose",combinecat="loose_")
-plotPreFitPostFit("singlemuontop","category_monotop_loose",combinecat="loose_")
-plotPreFitPostFit("dimuon","category_monotop_loose",combinecat="loose_")
-plotPreFitPostFit("photon","category_monotop_loose",combinecat="loose_")
-plotPreFitPostFit("singleelectronw","category_monotop_loose",combinecat="loose_")
-plotPreFitPostFit("singleelectrontop","category_monotop_loose",combinecat="loose_")
-plotPreFitPostFit("dielectron","category_monotop_loose",combinecat="loose_")
+# plotPreFitPostFit("singlemuonw","category_monotop_loose",combinecat="loose_")
+# plotPreFitPostFit("singlemuontop","category_monotop_loose",combinecat="loose_")
+# plotPreFitPostFit("dimuon","category_monotop_loose",combinecat="loose_")
+# plotPreFitPostFit("photon","category_monotop_loose",combinecat="loose_")
+# plotPreFitPostFit("singleelectronw","category_monotop_loose",combinecat="loose_")
+# plotPreFitPostFit("singleelectrontop","category_monotop_loose",combinecat="loose_")
+# plotPreFitPostFit("dielectron","category_monotop_loose",combinecat="loose_")
 plotPreFitPostFit("signal","category_monotop_loose",combinecat="loose_",blind=False)
 
-#plotPreFitPostFit("signal") ### fitting to real data now!

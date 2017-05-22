@@ -3,19 +3,23 @@ from counting_experiment import *
 # Define how a control region(s) transfer is made by defining cmodel provide, the calling pattern must be unchanged!
 # First define simple string which will be used for the datacard 
 model = "ttbar"
+metname      = "met"    # Observable variable name 
 convertHistograms = []
 
 ### helper functions ###
 
-def makeTop(cid,_fOut,newName,targetmc,controlmc,systs=None,doSJ=False):
+def makeTop(cid,_fOut,newName,targetmc,controlmc,diag,wspace,systs=None,isW=False):
   TopScales = targetmc.Clone(); TopScales.SetName(newName+"_weights_%s"%cid)
   TopScales.Divide(controlmc)
   _fOut.WriteTObject(TopScales)
 
+  if isW:
+    uncerts = ['sjbtag', 'sjmistag']
+  else: 
+    uncerts = ['btag', 'mistag']
+
   if not(systs==None):
-    for uncert in ['btag','sjbtag']:
-      if not(doSJ) and 'sj' in uncert:
-        continue
+    for uncert in uncerts:
       TopScalesUp = systs['targetmc%sUp'%(uncert)].Clone(); TopScalesUp.SetName(newName+"_weights_%s_%s_Up"%(cid,uncert))
       TopScalesUp.Divide(systs['controlmc%sUp'%(uncert)])
 
@@ -25,14 +29,33 @@ def makeTop(cid,_fOut,newName,targetmc,controlmc,systs=None,doSJ=False):
       _fOut.WriteTObject(TopScalesUp)
       _fOut.WriteTObject(TopScalesDown)
 
+  ### met trig ###
+  ftrig = r.TFile.Open('files/unc/all_trig2.root')
+  h_trig_down = ftrig.Get('trig_sys_down')
+  h_trig_up = ftrig.Get('trig_sys_up')
+
+  ratio_trig_up = targetmc.Clone(); ratio_trig_up.SetName(newName+'_weights_%s_mettrig_Up'%cid)
+  for b in range(ratio_trig_up.GetNbinsX()): ratio_trig_up.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(ratio_trig_up,h_trig_up,metname,metname,wspace.data("signal_ttbar"))
+  ratio_trig_up.Divide(controlmc)
+  _fOut.WriteTObject(ratio_trig_up)
+
+  ratio_trig_down = targetmc.Clone(); ratio_trig_down.SetName(newName+'_weights_%s_mettrig_Down'%cid)
+  for b in range(ratio_trig_down.GetNbinsX()): ratio_trig_down.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(ratio_trig_down,h_trig_down,metname,metname,wspace.data("signal_ttbar"))
+  ratio_trig_down.Divide(controlmc)
+  _fOut.WriteTObject(ratio_trig_down)
+
   return TopScales
 
 
-def addTopErrors(TopScales,targetmc,newName,crName,_fOut,CRs,nCR,cid,doSJ=False):
+def addTopErrors(TopScales,targetmc,newName,crName,_fOut,CRs,nCR,cid,isW=False):
 
-  uncerts = ['btag']
-  if doSJ:
-    uncerts.append('sjbtag')
+  if isW:
+    uncerts = ['sjbtag', 'sjmistag']
+  else: 
+    uncerts = ['btag', 'mistag']
+  uncerts.append('mettrig')
   for uncert in uncerts:
     CRs[nCR].add_nuisance_shape(uncert,_fOut)
 
@@ -80,6 +103,19 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   systs['targetmcbtagDown']    = _fin.Get("signal_ttbar_btagDown");         systs_e['targetmcbtagDown']    = systs['targetmcbtagDown']
   systs['controlmcbtagUp']     = _fin.Get("singlemuontop_ttbar_btagUp");    systs_e['controlmcbtagUp']     = _fin.Get("singleelectrontop_ttbar_btagUp")
   systs['controlmcbtagDown']   = _fin.Get("singlemuontop_ttbar_btagDown");  systs_e['controlmcbtagDown']   = _fin.Get("singleelectrontop_ttbar_btagDown")
+  systs['targetmcsjbtagUp']      = _fin.Get("signal_ttbar_sjbtagUp");           systs_e['targetmcsjbtagUp']      = systs['targetmcsjbtagUp']
+  systs['targetmcsjbtagDown']    = _fin.Get("signal_ttbar_sjbtagDown");         systs_e['targetmcsjbtagDown']    = systs['targetmcsjbtagDown']
+  systs['controlmcsjbtagUp']     = _fin.Get("singlemuontop_ttbar_sjbtagUp");    systs_e['controlmcsjbtagUp']     = _fin.Get("singleelectrontop_ttbar_sjbtagUp")
+  systs['controlmcsjbtagDown']   = _fin.Get("singlemuontop_ttbar_sjbtagDown");  systs_e['controlmcsjbtagDown']   = _fin.Get("singleelectrontop_ttbar_sjbtagDown")
+  
+  systs['targetmcmistagUp']      = _fin.Get("signal_ttbar_mistagUp");           systs_e['targetmcmistagUp']      = systs['targetmcmistagUp']
+  systs['targetmcmistagDown']    = _fin.Get("signal_ttbar_mistagDown");         systs_e['targetmcmistagDown']    = systs['targetmcmistagDown']
+  systs['controlmcmistagUp']     = _fin.Get("singlemuontop_ttbar_mistagUp");    systs_e['controlmcmistagUp']     = _fin.Get("singleelectrontop_ttbar_mistagUp")
+  systs['controlmcmistagDown']   = _fin.Get("singlemuontop_ttbar_mistagDown");  systs_e['controlmcmistagDown']   = _fin.Get("singleelectrontop_ttbar_mistagDown")
+  systs['targetmcsjmistagUp']      = _fin.Get("signal_ttbar_sjmistagUp");           systs_e['targetmcsjmistagUp']      = systs['targetmcsjmistagUp']
+  systs['targetmcsjmistagDown']    = _fin.Get("signal_ttbar_sjmistagDown");         systs_e['targetmcsjmistagDown']    = systs['targetmcsjmistagDown']
+  systs['controlmcsjmistagUp']     = _fin.Get("singlemuontop_ttbar_sjmistagUp");    systs_e['controlmcsjmistagUp']     = _fin.Get("singleelectrontop_ttbar_sjmistagUp")
+  systs['controlmcsjmistagDown']   = _fin.Get("singlemuontop_ttbar_sjmistagDown");  systs_e['controlmcsjmistagDown']   = _fin.Get("singleelectrontop_ttbar_sjmistagDown")
   
   systs_w['targetmcbtagUp']      = _fin.Get("signal_ttbar_btagUp");           systs_w_e['targetmcbtagUp']      = systs_w['targetmcbtagUp']
   systs_w['targetmcbtagDown']    = _fin.Get("signal_ttbar_btagDown");         systs_w_e['targetmcbtagDown']    = systs_w['targetmcbtagDown']
@@ -90,6 +126,15 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   systs_w['controlmcsjbtagUp']   = _fin.Get("singlemuonw_ttbar_sjbtagUp");    systs_w_e['controlmcsjbtagUp']   = _fin.Get("singleelectronw_ttbar_sjbtagUp")
   systs_w['controlmcsjbtagDown'] = _fin.Get("singlemuonw_ttbar_sjbtagDown");  systs_w_e['controlmcsjbtagDown'] = _fin.Get("singleelectronw_ttbar_sjbtagDown")
 
+  systs_w['targetmcmistagUp']      = _fin.Get("signal_ttbar_mistagUp");           systs_w_e['targetmcmistagUp']      = systs_w['targetmcmistagUp']
+  systs_w['targetmcmistagDown']    = _fin.Get("signal_ttbar_mistagDown");         systs_w_e['targetmcmistagDown']    = systs_w['targetmcmistagDown']
+  systs_w['targetmcsjmistagUp']    = _fin.Get("signal_ttbar_sjmistagUp");         systs_w_e['targetmcsjmistagUp']    = systs_w['targetmcsjmistagUp']
+  systs_w['targetmcsjmistagDown']  = _fin.Get("signal_ttbar_sjmistagDown");       systs_w_e['targetmcsjmistagDown']  = systs_w['targetmcsjmistagDown']
+  systs_w['controlmcmistagUp']     = _fin.Get("singlemuonw_ttbar_mistagUp");      systs_w_e['controlmcmistagUp']     = _fin.Get("singleelectronw_ttbar_mistagUp")
+  systs_w['controlmcmistagDown']   = _fin.Get("singlemuonw_ttbar_mistagDown");    systs_w_e['controlmcmistagDown']   = _fin.Get("singleelectronw_ttbar_mistagDown")
+  systs_w['controlmcsjmistagUp']   = _fin.Get("singlemuonw_ttbar_sjmistagUp");    systs_w_e['controlmcsjmistagUp']   = _fin.Get("singleelectronw_ttbar_sjmistagUp")
+  systs_w['controlmcsjmistagDown'] = _fin.Get("singlemuonw_ttbar_sjmistagDown");  systs_w_e['controlmcsjmistagDown'] = _fin.Get("singleelectronw_ttbar_sjmistagDown")
+
   # systs['targetmcsjbtagUp'] = _fin.Get("signal_ttbar_sjbtagUp"); systs_e['targetmcsjbtagUp'] = systs['targetmcsjbtagUp']
   # systs['targetmcsjbtagDown'] = _fin.Get("signal_ttbar_sjbtagDown"); systs_e['targetmcsjbtagDown'] = systs['targetmcsjbtagDown']
   # systs['controlmcsjbtagUp'] = _fin.Get("singlemuontop_ttbar_sjbtagUp"); systs_e['controlmcsjbtagUp'] = _fin.Get("singleelectrontop_ttbar_sjbtagUp")
@@ -98,10 +143,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # Create the transfer factors and save them (not here you can also create systematic variations of these 
   # transfer factors (named with extention _sysname_Up/Down
 
-  TopScales      = makeTop(cid,_fOut,"topmn",targetmc,controlmc,systs,False)
-  TopScales_e    = makeTop(cid,_fOut,"topen",targetmc,controlmc_e,systs_e,False)
-  TopScales_w    = makeTop(cid,_fOut,"topwmn",targetmc,controlmc_w,systs_w,True)
-  TopScales_w_e  = makeTop(cid,_fOut,"topwen",targetmc,controlmc_w_e,systs_w_e,True)
+  TopScales      = makeTop(cid,_fOut,"topmn",targetmc,controlmc,diag,_wspace,systs,False)
+  TopScales_e    = makeTop(cid,_fOut,"topen",targetmc,controlmc_e,diag,_wspace,systs_e,False)
+  TopScales_w    = makeTop(cid,_fOut,"topwmn",targetmc,controlmc_w,diag,_wspace,systs_w,True)
+  TopScales_w_e  = makeTop(cid,_fOut,"topwen",targetmc,controlmc_w_e,diag,_wspace,systs_w_e,True)
 
 
   #######################################################################################################

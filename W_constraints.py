@@ -100,6 +100,37 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   WScalessjmistagDown_e = targetmcsjmistagDown.Clone(); WScalessjmistagDown_e.SetName("wen_weights_%s_sjmistag_Down"%cid)
   WScalessjmistagDown_e.Divide(controlmcsjmistagDown_e);  _fOut.WriteTObject(WScalessjmistagDown_e)  
 
+  ### met trig ###
+  ftrig = r.TFile.Open('files/unc/all_trig2.root')
+  h_trig_down = ftrig.Get('trig_sys_down')
+  h_trig_up = ftrig.Get('trig_sys_up')
+
+  wmn_ratio_trig_up = targetmc.Clone(); wmn_ratio_trig_up.SetName('wmn_weights_%s_mettrig_Up'%cid)
+  for b in range(wmn_ratio_trig_up.GetNbinsX()): wmn_ratio_trig_up.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(wmn_ratio_trig_up,h_trig_up,metname,metname,_wspace.data("signal_wjets"))
+  wmn_ratio_trig_up.Divide(controlmc)
+  _fOut.WriteTObject(wmn_ratio_trig_up)
+
+  wmn_ratio_trig_down = targetmc.Clone(); wmn_ratio_trig_down.SetName('wmn_weights_%s_mettrig_Down'%cid)
+  for b in range(wmn_ratio_trig_down.GetNbinsX()): wmn_ratio_trig_down.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(wmn_ratio_trig_down,h_trig_down,metname,metname,_wspace.data("signal_wjets"))
+  wmn_ratio_trig_down.Divide(controlmc)
+  _fOut.WriteTObject(wmn_ratio_trig_down)
+
+  wen_ratio_trig_up = targetmc.Clone(); wen_ratio_trig_up.SetName('wen_weights_%s_mettrig_Up'%cid)
+  for b in range(wen_ratio_trig_up.GetNbinsX()): wen_ratio_trig_up.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(wen_ratio_trig_up,h_trig_up,metname,metname,_wspace.data("signal_wjets"))
+  wen_ratio_trig_up.Divide(controlmc_e)
+  _fOut.WriteTObject(wen_ratio_trig_up)
+
+  wen_ratio_trig_down = targetmc.Clone(); wen_ratio_trig_down.SetName('wen_weights_%s_mettrig_Down'%cid)
+  for b in range(wen_ratio_trig_down.GetNbinsX()): wen_ratio_trig_down.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(wen_ratio_trig_down,h_trig_down,metname,metname,_wspace.data("signal_wjets"))
+  wen_ratio_trig_down.Divide(controlmc_e)
+  _fOut.WriteTObject(wen_ratio_trig_down)
+
+
+
   #######################################################################################################
 
   _bins = []  # take bins from some histogram, can choose anything but this is easy 
@@ -117,6 +148,9 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
    Channel("singleelectronwModel",_wspace,out_ws,cid+'_'+model,WScales_e),
   ]
 
+  for c in CRs:
+    c.add_nuisance_shape('mettrig',_fOut)
+
 
   # ############################ USER DEFINED ###########################################################
   # Add systematics in the following, for normalisations use name, relative size (0.01 --> 1%)
@@ -125,7 +159,8 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # these must be created and writted to the same dirctory as the nominal (fDir)
 
   for cr in [0,1]:
-    for uncert in ['btag','mistag','sjbtag','sjmistag']:
+    #for uncert in ['btag','mistag','sjbtag','sjmistag']:
+    for uncert in ['sjbtag','sjmistag']:
       CRs[cr].add_nuisance_shape(uncert,_fOut)
   
   def addStatErrs(hx,cr,crname1,crname2):

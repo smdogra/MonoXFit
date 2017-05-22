@@ -34,7 +34,7 @@ root.gStyle.SetLabelSize(0.035,"Z");
 
 setTDRStyle()
 
-XSECUNCERT=0.2
+XSECUNCERT=0.1
 VERBOSE=False
 
 drawLegend=True
@@ -219,7 +219,7 @@ def makePlot2D(filepath,foutname,gqcfg,gdmcfg,header,legend_pos=1):
   tex.SetLineWidth(2);
   tex.SetTextSize(0.040);
   tex.Draw();
-  tex.DrawLatex(0.62,0.94,"35.9 fb^{-1} (13 TeV)");
+  tex.DrawLatex(0.62,0.94,"35.8 fb^{-1} (13 TeV)");
   tex2 = root.TLatex();
   tex2.SetNDC();
   tex2.SetTextFont(42);

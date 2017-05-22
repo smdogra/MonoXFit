@@ -12,7 +12,7 @@ from xsecs import *
 
 setTDRStyle()
 
-XSECUNCERT=0.2
+XSECUNCERT=0.1
 VERBOSE=False
 
 BLIND=False

@@ -1,5 +1,6 @@
 import ROOT
 ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
+from math import sqrt
 
 def convertToCombineWorkspace(wsin_combine,f_simple_hists,categories,cmb_categories,controlregions_def,renameVariable=""):
 
@@ -36,6 +37,10 @@ def convertToCombineWorkspace(wsin_combine,f_simple_hists,categories,cmb_categor
     varl.SetName(varnameext)
 
    # Keys in the fdir 
+   h_fake_data = None
+   bgs = set(['signal_dibosons','signal_qcd','signal_zjets','signal_ttbar','signal_stop','signal_wjets','signal_zll'])
+   #signal = 'signal_res_3100_100'
+   signal = 'signal_nonres_1000_1'
    keys_local = fdir.GetListOfKeys() 
    for key in keys_local: 
     obj = key.ReadObj()
@@ -44,11 +49,25 @@ def convertToCombineWorkspace(wsin_combine,f_simple_hists,categories,cmb_categor
     title = obj.GetTitle()
     if title != "base": continue # Forget all of the histos which aren't the observable variable
     name = obj.GetName()
+    if name==signal or name in bgs:
+      if not h_fake_data:
+        h_fake_data = obj.Clone()
+        h_fake_data.SetName('hfakedata')
+      else:
+        h_fake_data.Add(obj)  
     if not obj.Integral() > 0 : obj.SetBinContent(1,0.0001) # otherwise Combine will complain!
     print "Creating Data Hist for ", name 
     dhist = ROOT.RooDataHist(cat+"_"+name,"DataSet - %s, %s"%(cat,name),ROOT.RooArgList(varl),obj)
     #dhist.Print("v")
     wsin_combine._import(dhist)
+
+   for ib in xrange(1,h_fake_data.GetNbinsX()+1):
+     h_fake_data.SetBinError(ib,sqrt(h_fake_data.GetBinContent(ib)))
+   fakename = 'signal_fakedata'
+   fakedatahist = ROOT.RooDataHist(cat+'_'+fakename,'DataSet - %s, %s'%(cat,fakename),
+                                   ROOT.RooArgList(varl), h_fake_data)
+   h_fake_data.Print('v')
+   wsin_combine._import(fakedatahist)
 
    # next Add in the V-jets backgrounds MODELS
    for crd,crn in enumerate(controlregions_def):
@@ -81,22 +100,22 @@ def convertToCombineWorkspace(wsin_combine,f_simple_hists,categories,cmb_categor
 
      # now loop through the "control regions" for this guy 
      for cid,cn in enumerate(cmb_categories):
-	print "CHECK", cn.catid,cn.cname
-       	if cn.catid != cat+'_'+x.model : continue
-	if cn.cname  != crn: continue
-	for cr in cn.ret_control_regions():
-         chid = cr.chid
-         cr_expectations = ROOT.RooArgList()
-         for b in range(nbins):
-          cr_expectations.add(wsin_combine.function("pmu_cat_%s_ch_%s_bin_%d"%(cat+'_'+x.model,cr.chid,b)))
-         print "%s_%s_%s_model"%(cat,cr.crname,x.model)
-         cr_expectations.Print()
-         print "Look here", samplehist.GetNbinsX(), cr_expectations.getSize()
-         p_phist = ROOT.RooParametricHist("%s_%s_%s_model"%(cat,cr.crname,x.model),"Expected Shape for %s in control region in Category %s"%(cr.crname,cat),varl,cr_expectations,samplehist)
-         p_phist_norm = ROOT.RooAddition("%s_norm"%p_phist.GetName(),"Total number of expected events in %s"%p_phist.GetName(),cr_expectations);
-         wsin_combine._import(p_phist)
-         wsin_combine._import(p_phist_norm)
-
+       print "CHECK", cn.catid,cn.cname
+       if cn.catid != cat+'_'+x.model : continue
+       if cn.cname  != crn: continue
+       for cr in cn.ret_control_regions():
+              chid = cr.chid
+              cr_expectations = ROOT.RooArgList()
+              for b in range(nbins):
+               cr_expectations.add(wsin_combine.function("pmu_cat_%s_ch_%s_bin_%d"%(cat+'_'+x.model,cr.chid,b)))
+              print "%s_%s_%s_model"%(cat,cr.crname,x.model)
+              cr_expectations.Print()
+              print "Look here", samplehist.GetNbinsX(), cr_expectations.getSize()
+              p_phist = ROOT.RooParametricHist("%s_%s_%s_model"%(cat,cr.crname,x.model),"Expected Shape for %s in control region in Category %s"%(cr.crname,cat),varl,cr_expectations,samplehist)
+              p_phist_norm = ROOT.RooAddition("%s_norm"%p_phist.GetName(),"Total number of expected events in %s"%p_phist.GetName(),cr_expectations);
+              wsin_combine._import(p_phist)
+              wsin_combine._import(p_phist_norm)
+     
   allparams = ROOT.RooArgList(wsin_combine.allVars())
   for pi in range(allparams.getSize()):
   #for par in allparams:

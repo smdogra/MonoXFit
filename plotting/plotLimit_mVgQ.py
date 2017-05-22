@@ -34,7 +34,7 @@ root.gStyle.SetLabelSize(0.035,"Z");
 
 setTDRStyle()
 
-XSECUNCERT=0.2
+XSECUNCERT=0.1
 VERBOSE=False
 
 drawLegend=True
@@ -66,10 +66,12 @@ def parseLimitFiles2D(filepath):
     gdma = float(ff[3].replace('p','.'))
     gqv = float(ff[5].replace('p','.'))
     gqa = float(ff[7].replace('p','.'))
-    l = Limit(mMed,max(gqv,gqa))
+    l = Limit(mMed/1000.,max(gqv,gqa))
     try:
       fin = TFile(f)
       t = fin.Get('limit')
+      if not t:
+        continue
       nL = t.GetEntries()
       limitNames = ['down2','down1','cent','up1','up2','obs']
       for iL in xrange(nL):
@@ -77,7 +79,7 @@ def parseLimitFiles2D(filepath):
         val = t.limit
         val = val / 0.68
         setattr(l,limitNames[iL],val)
-      lp = LimitPoint(mMed,mChi,gdmv,gdma,gqv,gqa,l)
+      lp = LimitPoint(mMed/1000.,mChi,gdmv,gdma,gqv,gqa,l)
       limits.append(lp)
     except Exception as e:
       pass
@@ -148,7 +150,7 @@ def makePlot2D(filepath,foutname,medcfg,gqcfg,header):
 
   frame.GetYaxis().CenterTitle();
   frame.GetYaxis().SetTitle(gqcfg[3]);
-  frame.GetXaxis().SetTitle("m_{V} [GeV]");
+  frame.GetXaxis().SetTitle("m_{V} [TeV]");
   frame.GetXaxis().SetTitleOffset(1.15);
   frame.GetYaxis().SetTitleOffset(1.15);
 
@@ -173,12 +175,12 @@ def makePlot2D(filepath,foutname,medcfg,gqcfg,header):
   canvas.cd()
 
   hs['obsup'].SetLineStyle(2)
-  hs['obsup'].SetLineWidth(2)
+  hs['obsup'].SetLineWidth(1)
   hs['obsup'].SetLineColor(2)
   hs['obsup'].Draw('CONT3 SAME')
 
   hs['obsdown'].SetLineStyle(2)
-  hs['obsdown'].SetLineWidth(2)
+  hs['obsdown'].SetLineWidth(1)
   hs['obsdown'].SetLineColor(2)
   hs['obsdown'].Draw('CONT3 SAME')
 
@@ -188,12 +190,12 @@ def makePlot2D(filepath,foutname,medcfg,gqcfg,header):
   hs['exp'].Draw('CONT3 SAME')
 
   hs['expup'].SetLineStyle(2)
-  hs['expup'].SetLineWidth(2)
+  hs['expup'].SetLineWidth(1)
   hs['expup'].SetLineColor(1)
   hs['expup'].Draw('CONT3 SAME')
 
   hs['expdown'].SetLineStyle(2)
-  hs['expdown'].SetLineWidth(2)
+  hs['expdown'].SetLineWidth(1)
   hs['expdown'].SetLineColor(1)
   hs['expdown'].Draw('CONT3 SAME')
 
@@ -216,7 +218,7 @@ def makePlot2D(filepath,foutname,medcfg,gqcfg,header):
   tex.SetLineWidth(2);
   tex.SetTextSize(0.040);
   tex.Draw();
-  tex.DrawLatex(0.62,0.94,"35.9 fb^{-1} (13 TeV)");
+  tex.DrawLatex(0.6,0.94,"35.8 fb^{-1} (13 TeV)");
   tex2 = root.TLatex();
   tex2.SetNDC();
   tex2.SetTextFont(42);
@@ -231,11 +233,11 @@ def makePlot2D(filepath,foutname,medcfg,gqcfg,header):
   texCMS.SetLineWidth(2);
   texCMS.SetTextSize(0.05); texCMS.Draw();
 
-  texPrelim = root.TLatex(0.2,0.94,"#it{Preliminary}");
-  texPrelim.SetNDC();
-  texPrelim.SetTextFont(42);
-  texPrelim.SetLineWidth(2);
-  texPrelim.SetTextSize(0.04); texPrelim.Draw();
+#  texPrelim = root.TLatex(0.2,0.94,"#it{Preliminary}");
+#  texPrelim.SetNDC();
+#  texPrelim.SetTextFont(42);
+#  texPrelim.SetLineWidth(2);
+#  texPrelim.SetTextSize(0.04); texPrelim.Draw();
 
   root.gPad.SetRightMargin(0.15);
   root.gPad.SetTopMargin(0.07);
@@ -255,14 +257,14 @@ def makePlot2D(filepath,foutname,medcfg,gqcfg,header):
 
 plotsdir = plotConfig.plotDir
 
-makePlot2D(plotConfig.scansDir+'fcnc/gdmv_1p0_gdma_0_gv_*_ga_0/higgsCombinefcnc_*_1.Asymptotic.mH120.root',
+makePlot2D(plotConfig.scansDir+'vector/gdmv_1p0_gdma_0_gv_*_ga_0/higgsCombinefcnc_*_1.Asymptotic.mH120.root',
            plotsdir+'fcnc2d_obs_gqv_mV',
-           (100,300.,2200.),
-           (40,0.01,1.,'g_{q}^{V}'),
+           (100,0.3,2.2),
+           (100,0.01,1.,'g_{q}^{V}'),
            'm_{#chi} = 1 GeV, g_{DM}^{V} = 1 [FCNC]')
 
-makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_1p0_gv_0_ga_*/higgsCombinefcnc_*_1.Asymptotic.mH120.root',
-           plotsdir+'fcnc2d_obs_gqa_mV',
-           (100,300.,2200.),
-           (40,0.01,1.,'g_{q}^{A}'),
-           'm_{#chi} = 1 GeV, g_{DM}^{A} = 1 [FCNC]')
+# makePlot2D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_1p0_gv_0_ga_*/higgsCombinefcnc_*_1.Asymptotic.mH120.root',
+#            plotsdir+'fcnc2d_obs_gqa_mV',
+#            (100,300.,2200.),
+#            (40,0.01,1.,'g_{q}^{A}'),
+#            'm_{#chi} = 1 GeV, g_{DM}^{A} = 1 [FCNC]')

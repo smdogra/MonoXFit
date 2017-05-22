@@ -4,7 +4,7 @@ from counting_experiment import *
 # First define simple string which will be used for the datacard 
 model = "zjets"
 correlate_ewk = True 
-new_ewk = False 
+new_ewk = True 
 
 def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   
@@ -99,6 +99,36 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 
   ### done btag ###
 
+  ### met trig ###
+  ftrig = r.TFile.Open('files/unc/all_trig2.root')
+  h_trig_down = ftrig.Get('trig_sys_down')
+  h_trig_up = ftrig.Get('trig_sys_up')
+
+  zmm_ratio_trig_up = target.Clone(); zmm_ratio_trig_up.SetName('zmm_weights_%s_mettrig_Up'%cid)
+  for b in range(zmm_ratio_trig_up.GetNbinsX()): zmm_ratio_trig_up.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(zmm_ratio_trig_up,h_trig_up,metname,metname,_wspace.data("signal_zjets"))
+  zmm_ratio_trig_up.Divide(controlmc)
+  _fOut.WriteTObject(zmm_ratio_trig_up)
+
+  zmm_ratio_trig_down = target.Clone(); zmm_ratio_trig_down.SetName('zmm_weights_%s_mettrig_Down'%cid)
+  for b in range(zmm_ratio_trig_down.GetNbinsX()): zmm_ratio_trig_down.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(zmm_ratio_trig_down,h_trig_down,metname,metname,_wspace.data("signal_zjets"))
+  zmm_ratio_trig_down.Divide(controlmc)
+  _fOut.WriteTObject(zmm_ratio_trig_down)
+
+  zee_ratio_trig_up = target.Clone(); zee_ratio_trig_up.SetName('zee_weights_%s_mettrig_Up'%cid)
+  for b in range(zee_ratio_trig_up.GetNbinsX()): zee_ratio_trig_up.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(zee_ratio_trig_up,h_trig_up,metname,metname,_wspace.data("signal_zjets"))
+  zee_ratio_trig_up.Divide(controlmc_e)
+  _fOut.WriteTObject(zee_ratio_trig_up)
+
+  zee_ratio_trig_down = target.Clone(); zee_ratio_trig_down.SetName('zee_weights_%s_mettrig_Down'%cid)
+  for b in range(zee_ratio_trig_down.GetNbinsX()): zee_ratio_trig_down.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(zee_ratio_trig_down,h_trig_down,metname,metname,_wspace.data("signal_zjets"))
+  zee_ratio_trig_down.Divide(controlmc_e)
+  _fOut.WriteTObject(zee_ratio_trig_down)
+
+
   ### PHOTONS ###
   my_function(_wspace,_fin,_fOut,cid,diag)
   PhotonScales = _fOut.Get("photon_weights_%s"%cid)
@@ -157,6 +187,9 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 
 
   #######################################################################################################
+
+  for i in [0,1,2]:
+    CRs[i].add_nuisance_shape("mettrig",_fOut)
   
   CRs[0].add_nuisance_shape("renscale",_fOut) 
   CRs[0].add_nuisance_shape("facscale",_fOut) 
@@ -172,8 +205,20 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   CRs[3].add_nuisance_shape('wpdf',_fOut)
   
   if correlate_ewk:
-    CRs[0].add_nuisance_shape("ewk",_fOut)
-    CRs[3].add_nuisance_shape("w_ewk",_fOut)
+    if new_ewk:
+      CRs[0].add_nuisance_shape("ewk",_fOut)
+      CRs[0].add_nuisance_shape("ewk_missZ",_fOut)
+      CRs[0].add_nuisance_shape("ewk_missA",_fOut)
+      CRs[0].add_nuisance_shape("ewk_sudZ",_fOut)
+      CRs[0].add_nuisance_shape("ewk_sudA",_fOut)
+      CRs[3].add_nuisance_shape("ewkWZ",_fOut)
+      CRs[3].add_nuisance_shape("ewk_missZ",_fOut)
+      CRs[3].add_nuisance_shape("ewk_missW",_fOut)
+      CRs[3].add_nuisance_shape("ewk_sudZ",_fOut)
+      CRs[3].add_nuisance_shape("ewk_sudW",_fOut)
+    else:
+      CRs[0].add_nuisance_shape("ewk",_fOut)
+      CRs[3].add_nuisance_shape("w_ewk",_fOut)
   else:
     for b in range(target.GetNbinsX()):
       CRs[0].add_nuisance_shape("ewk_%s_bin%d"%(cid,b),_fOut)
@@ -294,18 +339,57 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   _fOut.WriteTObject(ratio_pdf_down)
 
 
-  Zvv.Divide(Pho); Zvv.SetName("photon_weights_%s"%nam)
+  # met trigger
+  ftrig = r.TFile.Open('files/unc/all_trig2.root')
+  h_trig_down = ftrig.Get('trig_sys_down')
+  h_trig_up = ftrig.Get('trig_sys_up')
 
-  PhotonScales = Zvv.Clone()
-  _fOut.WriteTObject(PhotonScales)
-  
+  ratio_trig_up = Zvv.Clone(); ratio_trig_up.SetName('photon_weights_%s_mettrig_Up'%nam)
+  for b in range(ratio_trig_up.GetNbinsX()): ratio_trig_up.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(ratio_trig_up,h_trig_up,metname,metname,_wspace.data("signal_zjets"))
+  ratio_trig_up.Divide(Pho)
+  _fOut.WriteTObject(ratio_trig_up)
+
+  ratio_trig_down = Zvv.Clone(); ratio_trig_down.SetName('photon_weights_%s_mettrig_Down'%nam)
+  for b in range(ratio_trig_down.GetNbinsX()): ratio_trig_down.SetBinContent(b+1,0)  
+  diag.generateWeightedTemplate(ratio_trig_down,h_trig_down,metname,metname,_wspace.data("signal_zjets"))
+  ratio_trig_down.Divide(Pho)
+  _fOut.WriteTObject(ratio_trig_down)
 
   # fztoaewk = fztoa
+  ewk_uncs = None
   if new_ewk:
     fztoaewk = r.TFile.Open('files/unc/gz_unc_v6.root')
     ztoa_ewk_up   = fztoaewk.Get("ZG_NNLOEWK_met")
     ztoa_ewk_down   = fztoaewk.Get("ZG_NNLOEWK_met_Down")
 
+    def build_ewk(in_hist_name, unc_name):
+      ratio = Zvv.Clone();
+      ratio.SetName('photon_weights_%s_%s'%(nam,unc_name))
+      for b in xrange(ratio.GetNbinsX()): ratio.SetBinContent(b+1,0)
+      in_hist = fztoaewk.Get(in_hist_name)
+      diag.generateWeightedTemplate(ratio,in_hist,metname,metname,_wspace.data('signal_zjets'))
+      ratio.Divide(Pho)
+      return ratio
+
+    ratio_ewk_up = build_ewk('ZG_NNLOEWK_met', 'ewk_Up')
+    ratio_ewk_down = build_ewk('ZG_NNLOEWK_met_Down', 'ewk_Down')
+    ratio_missZ_up = build_ewk('ZG_NNLOMiss1_met', 'ewk_missZ_Up')
+    ratio_missZ_down = build_ewk('ZG_NNLOMiss1_met_Down', 'ewk_missZ_Down')
+    ratio_missA_up = build_ewk('ZG_NNLOMiss2_met', 'ewk_missA_Up')
+    ratio_missA_down = build_ewk('ZG_NNLOMiss2_met_Down', 'ewk_missA_Down')
+    ratio_sudZ_up = build_ewk('ZG_Sudakov1_met', 'ewk_sudZ_Up')
+    ratio_sudZ_down = build_ewk('ZG_Sudakov1_met_Down', 'ewk_sudZ_Down')
+    ratio_sudA_up = build_ewk('ZG_Sudakov2_met', 'ewk_sudA_Up')
+    ratio_sudA_down = build_ewk('ZG_Sudakov2_met_Down', 'ewk_sudA_Down')
+
+    ewk_uncs = [ratio_ewk_up, ratio_ewk_down,
+                ratio_missZ_up, ratio_missZ_down,
+                ratio_missA_up, ratio_missA_down,
+                ratio_sudZ_up, ratio_sudZ_down,
+                ratio_sudA_up, ratio_sudA_down]
+
+    '''
     ratio_ewk_up = Zvv.Clone();  ratio_ewk_up.SetName("photon_weights_%s_ewk_Up"%(nam));
     for b in range(ratio_ewk_up.GetNbinsX()): ratio_ewk_up.SetBinContent(b+1,0)  
     diag.generateWeightedTemplate(ratio_ewk_up,ztoa_ewk_up,metname,metname,_wspace.data("signal_zjets"))
@@ -315,6 +399,7 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
     for b in range(ratio_ewk_down.GetNbinsX()): ratio_ewk_down.SetBinContent(b+1,0)  
     diag.generateWeightedTemplate(ratio_ewk_down,ztoa_ewk_down,metname,metname,_wspace.data("signal_zjets"))
     ratio_ewk_down.Divide(Pho)
+    '''
   else:
     fztoaewk = r.TFile.Open('files/atoz_unc.root')
     ztoa_ewk_up   = fztoaewk.Get("a_ewkcorr_overz_Upcommon")
@@ -330,9 +415,11 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
     diag.generateWeightedTemplate(ratio_ewk_down,ztoa_ewk_down,gvptname,metname,_wspace.data("signal_zjets"))
     ratio_ewk_down.Divide(Pho)
 
+    ewk_uncs = [ratio_ewk_up, ratio_ewk_down]
+
   if correlate_ewk:
-    _fOut.WriteTObject(ratio_ewk_up)
-    _fOut.WriteTObject(ratio_ewk_down)
+    for u in ewk_uncs:
+      _fOut.WriteTObject(u)
   else:
     for b in range(target.GetNbinsX()):
       ewk_up = Zvv.Clone(); ewk_up.SetName("photon_weights_%s_ewk_%s_bin%d_Up"%(nam,nam,b))
@@ -347,6 +434,13 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
       _fOut.WriteTObject(ewk_up)
       _fOut.WriteTObject(ewk_down)
 
+
+  # done with systematics
+  Zvv.Divide(Pho); Zvv.SetName("photon_weights_%s"%nam)
+
+  PhotonScales = Zvv.Clone()
+  _fOut.WriteTObject(PhotonScales)
+  
 
 
   #################################################################################################################                                                                   
@@ -417,11 +511,41 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
   wratio_pdf_down.Divide(Wsig)
   _fOut.WriteTObject(wratio_pdf_down)
 
+
+  ewk_uncs = None
   if new_ewk:
     fztowewk = r.TFile.Open("files/unc/wz_unc_v6.root")
     ztow_ewk_up   = fztowewk.Get("ZW_NNLOEWK_met")
     ztow_ewk_down = fztowewk.Get("ZW_NNLOEWK_met_Down")
 
+    def build_ewk(in_hist_name, unc_name):
+      ratio = Zvv.Clone();
+      ratio.SetName('w_weights_%s_%s'%(nam,unc_name))
+      for b in xrange(ratio.GetNbinsX()): ratio.SetBinContent(b+1,0)
+      in_hist = fztowewk.Get(in_hist_name)
+      diag.generateWeightedTemplate(ratio,in_hist,metname,metname,_wspace.data('signal_zjets'))
+      ratio.Divide(Wsig)
+      return ratio
+
+    w_ratio_ewk_up = build_ewk('ZW_NNLOEWK_met', 'ewkWZ_Up')
+    w_ratio_ewk_down = build_ewk('ZW_NNLOEWK_met_Down', 'ewkWZ_Down')
+    w_ratio_missZ_up = build_ewk('ZW_NNLOMiss1_met', 'ewk_missZ_Up')
+    w_ratio_missZ_down = build_ewk('ZW_NNLOMiss1_met_Down', 'ewk_missZ_Down')
+    w_ratio_missW_up = build_ewk('ZW_NNLOMiss2_met', 'ewk_missW_Up')
+    w_ratio_missW_down = build_ewk('ZW_NNLOMiss2_met_Down', 'ewk_missW_Down')
+    w_ratio_sudZ_up = build_ewk('ZW_Sudakov1_met', 'ewk_sudZ_Up')
+    w_ratio_sudZ_down = build_ewk('ZW_Sudakov1_met_Down', 'ewk_sudZ_Down')
+    w_ratio_sudW_up = build_ewk('ZW_Sudakov2_met', 'ewk_sudW_Up')
+    w_ratio_sudW_down = build_ewk('ZW_Sudakov2_met_Down', 'ewk_sudW_Down')
+
+    w_ewk_uncs = [w_ratio_ewk_up, w_ratio_ewk_down,
+                w_ratio_missZ_up, w_ratio_missZ_down,
+                w_ratio_missW_up, w_ratio_missW_down,
+                w_ratio_sudZ_up, w_ratio_sudZ_down,
+                w_ratio_sudW_up, w_ratio_sudW_down]
+
+
+    '''
     wratio_ewk_up = Zvv_w.Clone();  wratio_ewk_up.SetName("w_weights_%s_w_ewk_Up"%(nam));
     for b in range(wratio_ewk_up.GetNbinsX()): wratio_ewk_up.SetBinContent(b+1,0)  
     diag.generateWeightedTemplate(wratio_ewk_up,ztow_ewk_up,metname,metname,_wspace.data("signal_zjets"))
@@ -431,6 +555,7 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
     for b in range(wratio_ewk_down.GetNbinsX()): wratio_ewk_down.SetBinContent(b+1,0)  
     diag.generateWeightedTemplate(wratio_ewk_down,ztow_ewk_down,metname,metname,_wspace.data("signal_zjets"))
     wratio_ewk_down.Divide(Wsig)
+    '''
   else:
     fztowewk = r.TFile.Open("files/wtoz_unc.root")
     ztow_ewk_up   = fztowewk.Get("w_ewkcorr_overz_Upcommon")
@@ -446,13 +571,19 @@ def my_function(_wspace,_fin,_fOut,nam,diag):
     diag.generateWeightedTemplate(wratio_ewk_down,ztow_ewk_down,gvptname,metname,_wspace.data("signal_zjets"))
     wratio_ewk_down.Divide(Wsig)
 
+    w_ewk_uncs = [wratio_ewk_up, wratio_ewk_down]
+
 
   ############### GET SOMETHING CENTRAL PLEASE ############################
   Zvv_w.Divide(Wsig)
 
   if correlate_ewk:
+    for u in w_ewk_uncs:
+      _fOut.WriteTObject(u)
+    '''
     _fOut.WriteTObject(wratio_ewk_up)
     _fOut.WriteTObject(wratio_ewk_down)
+    '''
   else:
     #Now lets uncorrelate the bins:
     for b in range(target.GetNbinsX()):

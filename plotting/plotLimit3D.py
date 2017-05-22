@@ -40,7 +40,7 @@ root.gStyle.SetLabelSize(0.035,"Z");
 
 setTDRStyle()
 
-XSECUNCERT=0.2
+XSECUNCERT=0.1
 VERBOSE=False
 
 drawLegend=True
@@ -104,7 +104,7 @@ def parseLimitFiles2D(filepath):
       lp = LimitPoint(mMed,mChi,gdmv,gdma,gqv,gqa,l)
       limits.append(lp)
     except Exception as e:
-      print e
+#      print e
       pass
     fin.Close()
   return limits
@@ -180,8 +180,8 @@ def makePlot3D(filepath,foutname,gqcfg,gdmcfg,medcfg):
 plotsdir = plotConfig.plotDir
 
 
-makePlot3D(plotConfig.scansDir+'fcnc/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_*_1.Asymptotic.mH120.root',
+makePlot3D(plotConfig.scansDir+'vector/gdmv_*_gdma_0_gv_*_ga_0/higgsCombinefcnc_*_1.Asymptotic.mH120.root',
            plotsdir+'fcnc3d_obs_gdmv_gQ_mV',
            (20,0.01,1.,'g_{q}^{V}'),
-           (20,0.01,2,'g_{DM}^{V}'),
-           (300,2500))
+           (20,0.05,2,'g_{DM}^{V}'),
+           (300,3000))

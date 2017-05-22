@@ -3,12 +3,15 @@ imax * number of bins
 jmax * number of processes minus 1
 kmax * number of nuisance parameters
 ----------------------------------------------------------------------------------------------------------------------------------
+shapes signal     loose_sig  ../combined_model.root combinedws:monotop_loose_signal_nonres_1000_1 combinedws:monotop_loose_signal_nonres_1000_1_$SYSTEMATIC
+shapes signal     tight_sig  ../combined_model.root combinedws:monotop_signal_nonres_1000_1 combinedws:monotop_signal_nonres_1000_1_$SYSTEMATIC
+#shapes signal     loose_sig  ../combined_model.root combinedws:monotop_loose_signal_stdm_300 combinedws:monotop_loose_signal_stdm_300_$SYSTEMATIC
+#shapes signal     tight_sig  ../combined_model.root combinedws:monotop_signal_stdm_300 combinedws:monotop_signal_stdm_300_$SYSTEMATIC
 shapes *          loose_pho  ../combined_model.root combinedws:monotop_loose_photon_$PROCESS combinedws:monotop_loose_photon_$PROCESS_$SYSTEMATIC
 shapes data_obs   loose_pho  ../combined_model.root combinedws:monotop_loose_photon_data
 shapes gjets      loose_pho  ../combined_model.root combinedws:monotop_loose_photonModel_zjets_model
 shapes *          loose_sig  ../combined_model.root combinedws:monotop_loose_signal_$PROCESS combinedws:monotop_loose_signal_$PROCESS_$SYSTEMATIC
-shapes data_obs   loose_sig  ../combined_model.root combinedws:monotop_loose_signal_data
-shapes signal     loose_sig  signal_model.root signalws:monotop_loose_signal_XXXX signalws:monotop_loose_signal_XXXX_$SYSTEMATIC
+shapes data_obs   loose_sig  ../combined_model.root combinedws:monotop_loose_signal_fakedata
 shapes ttbar      loose_sig  ../combined_model.root combinedws:monotop_loose_signal_ttbar_model
 shapes wjets      loose_sig  ../combined_model.root combinedws:monotop_loose_wzModel_zjets_model
 shapes zvv        loose_sig  ../combined_model.root combinedws:monotop_loose_signal_zjets_model
@@ -36,8 +39,7 @@ shapes *          tight_pho  ../combined_model.root combinedws:monotop_photon_$P
 shapes data_obs   tight_pho  ../combined_model.root combinedws:monotop_photon_data
 shapes gjets      tight_pho  ../combined_model.root combinedws:monotop_photonModel_zjets_model
 shapes *          tight_sig  ../combined_model.root combinedws:monotop_signal_$PROCESS combinedws:monotop_signal_$PROCESS_$SYSTEMATIC
-shapes data_obs   tight_sig  ../combined_model.root combinedws:monotop_signal_data
-shapes signal     tight_sig  signal_model.root signalws:monotop_signal_XXXX signalws:monotop_signal_XXXX_$SYSTEMATIC
+shapes data_obs   tight_sig  ../combined_model.root combinedws:monotop_signal_fakedata
 shapes ttbar      tight_sig  ../combined_model.root combinedws:monotop_signal_ttbar_model
 shapes wjets      tight_sig  ../combined_model.root combinedws:monotop_wzModel_zjets_model
 shapes zvv        tight_sig  ../combined_model.root combinedws:monotop_signal_zjets_model
@@ -131,8 +133,6 @@ renscale param 0.0 1
 facscale param 0.0 1
 pdf param 0.0 1
 PhotonEff param 0.0 1
-btag param 0.0 1
-mistag param 0.0 1
 sjbtag param 0.0 1
 sjmistag param 0.0 1
 wrenscale param 0.0 1
@@ -168,6 +168,8 @@ monotop_loose_stat_error_wzModelCR_bin4 param 0.0 1
 monotop_loose_stat_error_wzModelCR_bin5 param 0.0 1
 monotop_loose_stat_error_wzModelCR_bin6 param 0.0 1
 monotop_loose_stat_error_wzModelCR_bin7 param 0.0 1
+btag param 0.0 1
+mistag param 0.0 1
 monotop_stat_error_singlemuonwModel_bin1 param 0.0 1
 monotop_stat_error_singlemuonwModel_bin2 param 0.0 1
 monotop_stat_error_singlemuonwModel_bin3 param 0.0 1
@@ -252,5 +254,4 @@ monotop_loose_stat_error_singleelectronwtopModelCR_bin3 param 0.0 1
 monotop_loose_stat_error_singleelectronwtopModelCR_bin4 param 0.0 1
 monotop_loose_stat_error_singleelectronwtopModelCR_bin5 param 0.0 1
 monotop_loose_stat_error_singleelectronwtopModelCR_bin6 param 0.0 1
-
 

@@ -31,7 +31,7 @@ root.gStyle.SetLabelSize(0.035,"Z");
 
 setTDRStyle()
 
-XSECUNCERT=0.2
+XSECUNCERT=0.1
 VERBOSE=False
 
 drawLegend=True
