@@ -8,14 +8,14 @@ cmsrel CMSSW_7_1_5
 cd CMSSW_7_1_5/src
 cmsenv
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
-git clone https://gitlab.com/sidnarayanan/MonoXFit MonoX
+git clone https://github.com/smdogra/MonoXFit.git MonoX
 scram b -j16
 ```
 
 ## Produce fitting trees
 
-1. Modify `configs/categories_config.py` to point to the correct input root file
-2. Call `python buildModel.py categories_config` to create `mono-x.root`
+1. Modify `configs/moriond18.py` to point to the correct input root file
+2. Call `python buildModel.py moriond18` to create `mono-x.root`
 3. Call `python runModel.py` to create `combined-model.root`
 
 ## Running a single fit
