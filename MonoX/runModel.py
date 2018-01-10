@@ -1,7 +1,7 @@
 #########################################################################################
 # Setup the basics ----> USER DEFINED SECTION HERE ------------------------------------//
 fOutName = "combined_model.root"  # --> Output file
-fName    = "mono_x_bjet0.root"  # --> input file (i.e output from previous)
+fName    = "mono-x.root"  # --> input file (i.e output from previous)
 #fName    = "mono-x-smoothed.root"  # --> input file (i.e output from previous)
 #categories = ["monotop",'monotop_loose'] # --> Should be labeled as in original config 
 categories = ["monotop",'monotop_category'] # --> Should be labeled as in original config 
