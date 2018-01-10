@@ -97,8 +97,8 @@ monotop_category = {
         "Elec2016E_bjet1"                        :['signal', 'Data', 0,0],
         "Elec2016F_bjet1"                        :['signal', 'Data', 0,0],
         "Elec2016G_bjet1"                        :['signal', 'Data', 0,0],
-        #        "Elec2016H2_bjet1"                       :['signal', 'Data', 0,0],
-        #        "Elec2016H3_bjet1"                       :['signal', 'Data', 0,0],
+        "Elec2016H2_bjet1"                       :['signal', 'Data', 0,0],
+        "Elec2016H3_bjet1"                       :['signal', 'Data', 0,0],
 
         "Muon2016B_bjet1"                        :['signal', 'Data', 0,0],
         "Muon2016C_bjet1"                        :['signal', 'Data', 0,0],
@@ -106,9 +106,11 @@ monotop_category = {
         "Muon2016E_bjet1"                        :['signal', 'Data', 0,0],
         "Muon2016F_bjet1"                        :['signal', 'Data', 0,0],
         "Muon2016G_bjet1"                        :['signal', 'Data', 0,0],
-#        "Muon2016H2_bjet1"                       :['signal', 'Data', 0,0],
-#        "Muon2016H3_bjet1"                       :['signal', 'Data', 0,0],
-
+        "Muon2016H2_bjet1"                       :['signal', 'Data', 0,0],
+        "Muon2016H3_bjet1"                       :['signal', 'Data', 0,0],
+        'Mphi_300_Mchi_200_gSM_0p25_gDM_1p0_bjet1;1'    :['signal','Mphi_300_Mchi_200_gSM_0p25_gDM_1p0',1,1],
+        'Mphi_1000_Mchi_200_gSM_0p25_gDM_1p0_bjet1'     :['signal','Mphi_1000_Mchi_200_gSM_0p25_gDM_1p0',1,1],
+        'Mphi_2500_Mchi_200_gSM_0p25_gDM_1p0_bjet1'     :['signal','Mphi_2500_Mchi_200_gSM_0p25_gDM_1p0',1,1],
 
         # Control Region bjet2
         "TTbar_DiLep_bjet2"             :['bjet2', 'TTbar_dilep',1,0],
@@ -161,8 +163,8 @@ monotop_category = {
         "Elec2016E_bjet2"                        :['bjet2', 'Data', 0,0],
         "Elec2016F_bjet2"                        :['bjet2', 'Data', 0,0],
         "Elec2016G_bjet2"                        :['bjet2', 'Data', 0,0],
-#        "Elec2016H2_bjet2"                       :['bjet2', 'Data', 0,0],
-#        "Elec2016H3_bjet2"                       :['bjet2', 'Data', 0,0],
+        "Elec2016H2_bjet2"                       :['bjet2', 'Data', 0,0],
+        "Elec2016H3_bjet2"                       :['bjet2', 'Data', 0,0],
 
         "Muon2016B_bjet2"                        :['bjet2', 'Data', 0,0],
         "Muon2016C_bjet2"                        :['bjet2', 'Data', 0,0],
@@ -170,8 +172,8 @@ monotop_category = {
         "Muon2016E_bjet2"                        :['bjet2', 'Data', 0,0],
         "Muon2016F_bjet2"                        :['bjet2', 'Data', 0,0],
         "Muon2016G_bjet2"                        :['bjet2', 'Data', 0,0],
-#        "Muon2016H2_bjet2"                       :['bjet2', 'Data', 0,0],
-#        "Muon2016H3_bjet2"                       :['bjet2', 'Data', 0,0],
+        "Muon2016H2_bjet2"                       :['bjet2', 'Data', 0,0],
+        "Muon2016H3_bjet2"                       :['bjet2', 'Data', 0,0],
 
 
         # Control Region bjet0
@@ -234,8 +236,8 @@ monotop_category = {
         "Muon2016E_bjet0"                        :['bjet0', 'Data', 0,0],
         "Muon2016F_bjet0"                        :['bjet0', 'Data', 0,0],
         "Muon2016G_bjet0"                        :['bjet0', 'Data', 0,0],
-#        "Muon2016H2_bjet0"                       :['bjet0', 'Data', 0,0],
-#        "Muon2016H3_bjet0"                       :['bjet0', 'Data', 0,0],
+        "Muon2016H2_bjet0"                       :['bjet0', 'Data', 0,0],
+        "Muon2016H3_bjet0"                       :['bjet0', 'Data', 0,0],
 
         }
     }
