@@ -3,49 +3,52 @@ from counting_experiment import *
 # Define how a control region(s) transfer is made by defining cmodel provide, the calling pattern must be unchanged!
 # First define simple string which will be used for the datacard 
 model = "ttbar"
-metname      = "met"    # Observable variable name 
+#metname      = "met"    # Observable variable name 
+metname      = "mTw"    # Observable variable name 
 convertHistograms = []
 
 ### helper functions ###
 
 def makeTop(cid,_fOut,newName,targetmc,controlmc,diag,wspace,systs=None,isW=False):
   TopScales = targetmc.Clone(); TopScales.SetName(newName+"_weights_%s"%cid)
+  print "===> ",type(TopScales),type(targetmc)
   TopScales.Divide(controlmc)
   _fOut.WriteTObject(TopScales)
 
-  if isW:
-    uncerts = ['sjbtag', 'sjmistag']
-  else: 
-    uncerts = ['btag', 'mistag']
+#  if isW:
+#    uncerts = ['sjbtag', 'sjmistag']
+#  else: 
+#    uncerts = ['btag', 'mistag']
 
-  if not(systs==None):
-    for uncert in uncerts:
-      TopScalesUp = systs['targetmc%sUp'%(uncert)].Clone(); TopScalesUp.SetName(newName+"_weights_%s_%s_Up"%(cid,uncert))
-      TopScalesUp.Divide(systs['controlmc%sUp'%(uncert)])
+#  if not(systs==None):
+#    for uncert in uncerts:
+#      TopScalesUp = systs['targetmc%sUp'%(uncert)].Clone(); TopScalesUp.SetName(newName+"_weights_%s_%s_Up"%(cid,uncert))
+#      TopScalesUp.Divide(systs['controlmc%sUp'%(uncert)])
 
-      TopScalesDown = systs['targetmc%sDown'%(uncert)].Clone(); TopScalesDown.SetName(newName+"_weights_%s_%s_Down"%(cid,uncert))
-      TopScalesDown.Divide(systs['controlmc%sDown'%(uncert)])
+#      TopScalesDown = systs['targetmc%sDown'%(uncert)].Clone(); TopScalesDown.SetName(newName+"_weights_%s_%s_Down"%(cid,uncert))
+#      TopScalesDown.Divide(systs['controlmc%sDown'%(uncert)])
 
-      _fOut.WriteTObject(TopScalesUp)
-      _fOut.WriteTObject(TopScalesDown)
+#      _fOut.WriteTObject(TopScalesUp)
+#      _fOut.WriteTObject(TopScalesDown)
 
   ### met trig ###
-  ftrig = r.TFile.Open('files/unc/all_trig2.root')
-  h_trig_down = ftrig.Get('trig_sys_down')
-  h_trig_up = ftrig.Get('trig_sys_up')
+  #Sunil From 
+  #ftrig = r.TFile.Open('files/unc/all_trig2.root')
+  #h_trig_down = ftrig.Get('trig_sys_down')
+  #h_trig_up = ftrig.Get('trig_sys_up')
 
-  ratio_trig_up = targetmc.Clone(); ratio_trig_up.SetName(newName+'_weights_%s_mettrig_Up'%cid)
-  for b in range(ratio_trig_up.GetNbinsX()): ratio_trig_up.SetBinContent(b+1,0)  
-  diag.generateWeightedTemplate(ratio_trig_up,h_trig_up,metname,metname,wspace.data("signal_ttbar"))
-  ratio_trig_up.Divide(controlmc)
-  _fOut.WriteTObject(ratio_trig_up)
+  #ratio_trig_up = targetmc.Clone(); ratio_trig_up.SetName(newName+'_weights_%s_mettrig_Up'%cid)
+  #for b in range(ratio_trig_up.GetNbinsX()): ratio_trig_up.SetBinContent(b+1,0)  
+  #diag.generateWeightedTemplate(ratio_trig_up,h_trig_up,metname,metname,wspace.data("signal_ttbar"))
+  #ratio_trig_up.Divide(controlmc)
+  #_fOut.WriteTObject(ratio_trig_up)
 
-  ratio_trig_down = targetmc.Clone(); ratio_trig_down.SetName(newName+'_weights_%s_mettrig_Down'%cid)
-  for b in range(ratio_trig_down.GetNbinsX()): ratio_trig_down.SetBinContent(b+1,0)  
-  diag.generateWeightedTemplate(ratio_trig_down,h_trig_down,metname,metname,wspace.data("signal_ttbar"))
-  ratio_trig_down.Divide(controlmc)
-  _fOut.WriteTObject(ratio_trig_down)
-
+  #ratio_trig_down = targetmc.Clone(); ratio_trig_down.SetName(newName+'_weights_%s_mettrig_Down'%cid)
+  #for b in range(ratio_trig_down.GetNbinsX()): ratio_trig_down.SetBinContent(b+1,0)  
+  #diag.generateWeightedTemplate(ratio_trig_down,h_trig_down,metname,metname,wspace.data("signal_ttbar"))
+  #ratio_trig_down.Divide(controlmc)
+  #_fOut.WriteTObject(ratio_trig_down)
+  #Sunil To
   return TopScales
 
 
@@ -56,6 +59,7 @@ def addTopErrors(TopScales,targetmc,newName,crName,_fOut,CRs,nCR,cid,isW=False):
   else: 
     uncerts = ['btag', 'mistag']
   uncerts.append('mettrig')
+  """
   for uncert in uncerts:
     CRs[nCR].add_nuisance_shape(uncert,_fOut)
 
@@ -73,12 +77,14 @@ def addTopErrors(TopScales,targetmc,newName,crName,_fOut,CRs,nCR,cid,isW=False):
     _fOut.WriteTObject(byb_u)
     _fOut.WriteTObject(byb_d)
     CRs[nCR].add_nuisance_shape("%s_stat_error_%sCR_bin%d"%(cid,crName,b),_fOut)
+  """
 
 
 def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # Some setup
   _fin = _f.Get("category_%s"%cid)
   _wspace = _fin.Get("wspace_%s"%cid)
+#  _wspace = ""
 
   # ############################ USER DEFINED ###########################################################
   # First define the nominal transfer factors (histograms of signal/control, usually MC 
@@ -86,13 +92,51 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # special datasets/histograms representing these and systematic effects 
   # but for now this is just kept simple 
   processName = "TTbar" # Give a name of the process being modelled
-  metname = "met"    # Observable variable name 
+  #  metname = "met"    # Observable variable name 
+  metname = "mTw"    # Observable variable name 
+  
+  h_bjet2_TTbar_dilep                 =  _fin.Get("bjet2_TTbar_dilep")      # define monimal (MC) of which process this config will model
+  h_bjet2_DYJetsToLL                  =  _fin.Get("bjet2_DYJetsToLL") 
+  h_bjet2_QCD                         =  _fin.Get("bjet2_QCD") 
+  h_bjet2_TBar_tWch                   =  _fin.Get("bjet2_TBar_tWch") 
+  h_bjet2_TBar_tch                    =  _fin.Get("bjet2_TBar_tch") 
+  h_bjet2_TTJets_SingleLeptonFromT    =  _fin.Get("bjet2_TTJets_SingleLeptonFromT") 
+  h_bjet2_TTJets_SingleLeptonFromTbar =  _fin.Get("bjet2_TTJets_SingleLeptonFromTbar") 
+  h_bjet2_TTWToLNu                    =  _fin.Get("bjet2_TTWToLNu") 
+  h_bjet2_TToLeptons_sch              =  _fin.Get("bjet2_TToLeptons_sch") 
+  h_bjet2_T_tWch                      =  _fin.Get("bjet2_T_tWch") 
+  h_bjet2_T_tch                       =  _fin.Get("bjet2_T_tch") 
+  h_bjet2_WJets                       =  _fin.Get("bjet2_WJets") 
+  h_bjet2_WWTo2L2Nu                   =  _fin.Get("bjet2_WWTo2L2Nu") 
+  h_bjet2_WWToLNuQQ                   =  _fin.Get("bjet2_WWToLNuQQ") 
+  h_bjet2_WZTo1L3Nu                   =  _fin.Get("bjet2_WZTo1L3Nu") 
+  h_bjet2_ZZTo2L2Nu                   =  _fin.Get("bjet2_ZZTo2L2Nu") 
+  h_bjet2_ZZTo2L2Q                    =  _fin.Get("bjet2_ZZTo2L2Q") 
 
-  targetmc     = _fin.Get("signal_ttbar")      # define monimal (MC) of which process this config will model
-  controlmc    = _fin.Get("singlemuontop_ttbar")
-  controlmc_e  = _fin.Get("singleelectrontop_ttbar")
-  controlmc_w    = _fin.Get("singlemuonw_ttbar")
-  controlmc_w_e  = _fin.Get("singleelectronw_ttbar")
+ 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_DYJetsToLL)
+  h_bjet2_TTbar_dilep.Add(h_bjet2_TBar_tWch) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_TBar_tch) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_TTJets_SingleLeptonFromT) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_TTJets_SingleLeptonFromTbar) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_TTWToLNu) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_TToLeptons_sch) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_T_tWch) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_T_tch) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_WJets) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_WWTo2L2Nu) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_WWToLNuQQ) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_WZTo1L3Nu) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_ZZTo2L2Nu) 
+  h_bjet2_TTbar_dilep.Add(h_bjet2_ZZTo2L2Q) 
+  
+  
+  targetmc     = h_bjet2_TTbar_dilep      # define monimal (MC) of which process this config will model
+  controlmc    = _fin.Get("bjet2_Data")
+  
+  #  controlmc_e  = _fin.Get("singleelectrontop_ttbar")
+  #  controlmc_w    = _fin.Get("singlemuonw_ttbar")
+  #  controlmc_w_e  = _fin.Get("singleelectronw_ttbar")
  
 
   systs = {}; systs_e = {}
@@ -144,9 +188,9 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # transfer factors (named with extention _sysname_Up/Down
 
   TopScales      = makeTop(cid,_fOut,"topmn",targetmc,controlmc,diag,_wspace,systs,False)
-  TopScales_e    = makeTop(cid,_fOut,"topen",targetmc,controlmc_e,diag,_wspace,systs_e,False)
-  TopScales_w    = makeTop(cid,_fOut,"topwmn",targetmc,controlmc_w,diag,_wspace,systs_w,True)
-  TopScales_w_e  = makeTop(cid,_fOut,"topwen",targetmc,controlmc_w_e,diag,_wspace,systs_w_e,True)
+#  TopScales_e    = makeTop(cid,_fOut,"topen",targetmc,controlmc_e,diag,_wspace,systs_e,False)
+#  TopScales_w    = makeTop(cid,_fOut,"topwmn",targetmc,controlmc_w,diag,_wspace,systs_w,True)
+#  TopScales_w_e  = makeTop(cid,_fOut,"topwen",targetmc,controlmc_w_e,diag,_wspace,systs_w_e,True)
 
 
   #######################################################################################################
@@ -163,10 +207,11 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 
   CRs = [
    Channel("singlemuontopModel",      _wspace,out_ws,cid+'_'+model,TopScales),
-   Channel("singleelectrontopModel",  _wspace,out_ws,cid+'_'+model,TopScales_e),
-   Channel("singlemuonwtopModel",     _wspace,out_ws,cid+'_'+model,TopScales_w),
-   Channel("singleelectronwtopModel", _wspace,out_ws,cid+'_'+model,TopScales_w_e),
-  ]
+#   Channel("singleelectrontopModel",  _wspace,out_ws,cid+'_'+model,TopScales_e),
+
+   #   Channel("singlemuonwtopModel",     _wspace,out_ws,cid+'_'+model,TopScales_w),
+   #   Channel("singleelectronwtopModel", _wspace,out_ws,cid+'_'+model,TopScales_w_e),
+   ]
 
 
   # ############################ USER DEFINED ###########################################################
@@ -175,10 +220,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # note, the code will LOOK for something called NOMINAL_name_Up and NOMINAL_name_Down, where NOMINAL=TopScales.GetName()
   # these must be created and writted to the same dirctory as the nominal (fDir)
   
-  addTopErrors(TopScales,    targetmc,"topmn", "singlemuontopModel",     _fOut,CRs,0,cid)
-  addTopErrors(TopScales_e,  targetmc,"topen", "singleelectrontopModel", _fOut,CRs,1,cid)
-  addTopErrors(TopScales_w,  targetmc,"topwmn","singlemuonwtopModel",    _fOut,CRs,2,cid,True)
-  addTopErrors(TopScales_w_e,targetmc,"topwen","singleelectronwtopModel",_fOut,CRs,3,cid,True)
+#  addTopErrors(TopScales,    targetmc,"topmn", "singlemuontopModel",     _fOut,CRs,0,cid)
+#  addTopErrors(TopScales_e,  targetmc,"topen", "singleelectrontopModel", _fOut,CRs,1,cid)
+#  addTopErrors(TopScales_w,  targetmc,"topwmn","singlemuonwtopModel",    _fOut,CRs,2,cid,True)
+#  addTopErrors(TopScales_w_e,targetmc,"topwen","singleelectronwtopModel",_fOut,CRs,3,cid,True)
 
   #######################################################################################################
 

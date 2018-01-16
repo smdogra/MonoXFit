@@ -16,10 +16,46 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # special datasets/histograms representing these and systematic effects 
   # but for now this is just kept simple 
   processName  = "WJets" # Give a name of the process being modelled
-  metname      = "met"    # Observable variable name 
-  targetmc     = _fin.Get("signal_wjets")      # define monimal (MC) of which process this config will model
-  controlmc    = _fin.Get("singlemuonw_wjets")  # defines in / out acceptance
-  controlmc_e  = _fin.Get("singleelectronw_wjets")  # defines in / out acceptance
+  metname      = "mTw"    # Observable variable name 
+
+  h_bjet0_TTbar_dilep                 =  _fin.Get("bjet0_TTbar_dilep")      # define monimal (MC) of which process this config will model
+  h_bjet0_DYJetsToLL                  =  _fin.Get("bjet0_DYJetsToLL")
+  h_bjet0_QCD                         =  _fin.Get("bjet0_QCD")
+  h_bjet0_TBar_tWch                   =  _fin.Get("bjet0_TBar_tWch")
+  h_bjet0_TBar_tch                    =  _fin.Get("bjet0_TBar_tch")
+  h_bjet0_TTJets_SingleLeptonFromT    =  _fin.Get("bjet0_TTJets_SingleLeptonFromT")
+  h_bjet0_TTJets_SingleLeptonFromTbar =  _fin.Get("bjet0_TTJets_SingleLeptonFromTbar")
+  h_bjet0_TTWToLNu                    =  _fin.Get("bjet0_TTWToLNu")
+  h_bjet0_TToLeptons_sch              =  _fin.Get("bjet0_TToLeptons_sch")
+  h_bjet0_T_tWch                      =  _fin.Get("bjet0_T_tWch")
+  h_bjet0_T_tch                       =  _fin.Get("bjet0_T_tch")
+  h_bjet0_WJets                       =  _fin.Get("bjet0_WJets")
+  h_bjet0_WWTo2L2Nu                   =  _fin.Get("bjet0_WWTo2L2Nu")
+  h_bjet0_WWToLNuQQ                   =  _fin.Get("bjet0_WWToLNuQQ")
+  h_bjet0_WZTo1L3Nu                   =  _fin.Get("bjet0_WZTo1L3Nu")
+  h_bjet0_ZZTo2L2Nu                   =  _fin.Get("bjet0_ZZTo2L2Nu")
+  h_bjet0_ZZTo2L2Q                    =  _fin.Get("bjet0_ZZTo2L2Q")
+
+
+  h_bjet0_TTbar_dilep.Add(h_bjet0_DYJetsToLL)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_TBar_tWch)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_TBar_tch)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_TTJets_SingleLeptonFromT)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_TTJets_SingleLeptonFromTbar)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_TTWToLNu)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_TToLeptons_sch)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_T_tWch)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_T_tch)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_WJets)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_WWTo2L2Nu)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_WWToLNuQQ)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_WZTo1L3Nu)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_ZZTo2L2Nu)
+  h_bjet0_TTbar_dilep.Add(h_bjet0_ZZTo2L2Q)
+
+  targetmc       = h_bjet0_TTbar_dilep      # define monimal (MC) of which process this config will model
+  controlmc      = _fin.Get("bjet0_Data")  # defines in / out acceptance
+ # controlmc_e    = _fin.Get("singleelectronw_wjets")  # defines in / out acceptance
 
   # btag systs
   targetmcbtagUp = _fin.Get("signal_wjets_btagUp")
@@ -47,87 +83,87 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   WScales = targetmc.Clone(); WScales.SetName("wmn_weights_%s"%cid)
   WScales.Divide(controlmc);  _fOut.WriteTObject(WScales)  
 
-  WScales_e = targetmc.Clone(); WScales_e.SetName("wen_weights_%s"%cid)
-  WScales_e.Divide(controlmc_e);  _fOut.WriteTObject(WScales_e)  
+#  WScales_e = targetmc.Clone(); WScales_e.SetName("wen_weights_%s"%cid)
+#  WScales_e.Divide(controlmc_e);  _fOut.WriteTObject(WScales_e)  
 
   ### BTAG ###  
-  WScalesbtagUp = targetmcbtagUp.Clone(); WScalesbtagUp.SetName("wmn_weights_%s_btag_Up"%cid)
-  WScalesbtagUp.Divide(controlmcbtagUp);  _fOut.WriteTObject(WScalesbtagUp)  
+#  WScalesbtagUp = targetmcbtagUp.Clone(); WScalesbtagUp.SetName("wmn_weights_%s_btag_Up"%cid)
+#  WScalesbtagUp.Divide(controlmcbtagUp);  _fOut.WriteTObject(WScalesbtagUp)  
 
-  WScalesbtagDown = targetmcbtagDown.Clone(); WScalesbtagDown.SetName("wmn_weights_%s_btag_Down"%cid)
-  WScalesbtagDown.Divide(controlmcbtagDown);  _fOut.WriteTObject(WScalesbtagDown)
+#  WScalesbtagDown = targetmcbtagDown.Clone(); WScalesbtagDown.SetName("wmn_weights_%s_btag_Down"%cid)
+  #WScalesbtagDown.Divide(controlmcbtagDown);  _fOut.WriteTObject(WScalesbtagDown)
 
-  WScalesbtagUp_e = targetmcbtagUp.Clone(); WScalesbtagUp_e.SetName("wen_weights_%s_btag_Up"%cid)
-  WScalesbtagUp_e.Divide(controlmcbtagUp_e);  _fOut.WriteTObject(WScalesbtagUp_e)  
+#  WScalesbtagUp_e = targetmcbtagUp.Clone(); WScalesbtagUp_e.SetName("wen_weights_%s_btag_Up"%cid)
+#  WScalesbtagUp_e.Divide(controlmcbtagUp_e);  _fOut.WriteTObject(WScalesbtagUp_e)  
 
-  WScalesbtagDown_e = targetmcbtagDown.Clone(); WScalesbtagDown_e.SetName("wen_weights_%s_btag_Down"%cid)
-  WScalesbtagDown_e.Divide(controlmcbtagDown_e);  _fOut.WriteTObject(WScalesbtagDown_e)  
+#  WScalesbtagDown_e = targetmcbtagDown.Clone(); WScalesbtagDown_e.SetName("wen_weights_%s_btag_Down"%cid)
+#  WScalesbtagDown_e.Divide(controlmcbtagDown_e);  _fOut.WriteTObject(WScalesbtagDown_e)  
 
-  WScalessjbtagUp = targetmcsjbtagUp.Clone(); WScalessjbtagUp.SetName("wmn_weights_%s_sjbtag_Up"%cid)
-  WScalessjbtagUp.Divide(controlmcsjbtagUp);  _fOut.WriteTObject(WScalessjbtagUp)  
+#  WScalessjbtagUp = targetmcsjbtagUp.Clone(); WScalessjbtagUp.SetName("wmn_weights_%s_sjbtag_Up"%cid)
+#  WScalessjbtagUp.Divide(controlmcsjbtagUp);  _fOut.WriteTObject(WScalessjbtagUp)  
 
-  WScalessjbtagDown = targetmcsjbtagDown.Clone(); WScalessjbtagDown.SetName("wmn_weights_%s_sjbtag_Down"%cid)
-  WScalessjbtagDown.Divide(controlmcsjbtagDown);  _fOut.WriteTObject(WScalessjbtagDown)
+#  WScalessjbtagDown = targetmcsjbtagDown.Clone(); WScalessjbtagDown.SetName("wmn_weights_%s_sjbtag_Down"%cid)
+#  WScalessjbtagDown.Divide(controlmcsjbtagDown);  _fOut.WriteTObject(WScalessjbtagDown)
 
-  WScalessjbtagUp_e = targetmcsjbtagUp.Clone(); WScalessjbtagUp_e.SetName("wen_weights_%s_sjbtag_Up"%cid)
-  WScalessjbtagUp_e.Divide(controlmcsjbtagUp_e);  _fOut.WriteTObject(WScalessjbtagUp_e)  
+#  WScalessjbtagUp_e = targetmcsjbtagUp.Clone(); WScalessjbtagUp_e.SetName("wen_weights_%s_sjbtag_Up"%cid)
+#  WScalessjbtagUp_e.Divide(controlmcsjbtagUp_e);  _fOut.WriteTObject(WScalessjbtagUp_e)  
 
-  WScalessjbtagDown_e = targetmcsjbtagDown.Clone(); WScalessjbtagDown_e.SetName("wen_weights_%s_sjbtag_Down"%cid)
-  WScalessjbtagDown_e.Divide(controlmcsjbtagDown_e);  _fOut.WriteTObject(WScalessjbtagDown_e)  
+#  WScalessjbtagDown_e = targetmcsjbtagDown.Clone(); WScalessjbtagDown_e.SetName("wen_weights_%s_sjbtag_Down"%cid)
+#  WScalessjbtagDown_e.Divide(controlmcsjbtagDown_e);  _fOut.WriteTObject(WScalessjbtagDown_e)  
 
   ### MISTAG ###  
-  WScalesmistagUp = targetmcmistagUp.Clone(); WScalesmistagUp.SetName("wmn_weights_%s_mistag_Up"%cid)
-  WScalesmistagUp.Divide(controlmcmistagUp);  _fOut.WriteTObject(WScalesmistagUp)  
+#  WScalesmistagUp = targetmcmistagUp.Clone(); WScalesmistagUp.SetName("wmn_weights_%s_mistag_Up"%cid)
+#  WScalesmistagUp.Divide(controlmcmistagUp);  _fOut.WriteTObject(WScalesmistagUp)  
 
-  WScalesmistagDown = targetmcmistagDown.Clone(); WScalesmistagDown.SetName("wmn_weights_%s_mistag_Down"%cid)
-  WScalesmistagDown.Divide(controlmcmistagDown);  _fOut.WriteTObject(WScalesmistagDown)
+#  WScalesmistagDown = targetmcmistagDown.Clone(); WScalesmistagDown.SetName("wmn_weights_%s_mistag_Down"%cid)
+#  WScalesmistagDown.Divide(controlmcmistagDown);  _fOut.WriteTObject(WScalesmistagDown)
 
-  WScalesmistagUp_e = targetmcmistagUp.Clone(); WScalesmistagUp_e.SetName("wen_weights_%s_mistag_Up"%cid)
-  WScalesmistagUp_e.Divide(controlmcmistagUp_e);  _fOut.WriteTObject(WScalesmistagUp_e)  
+#  WScalesmistagUp_e = targetmcmistagUp.Clone(); WScalesmistagUp_e.SetName("wen_weights_%s_mistag_Up"%cid)
+#  WScalesmistagUp_e.Divide(controlmcmistagUp_e);  _fOut.WriteTObject(WScalesmistagUp_e)  
 
-  WScalesmistagDown_e = targetmcmistagDown.Clone(); WScalesmistagDown_e.SetName("wen_weights_%s_mistag_Down"%cid)
-  WScalesmistagDown_e.Divide(controlmcmistagDown_e);  _fOut.WriteTObject(WScalesmistagDown_e)  
+#  WScalesmistagDown_e = targetmcmistagDown.Clone(); WScalesmistagDown_e.SetName("wen_weights_%s_mistag_Down"%cid)
+#  WScalesmistagDown_e.Divide(controlmcmistagDown_e);  _fOut.WriteTObject(WScalesmistagDown_e)  
 
-  WScalessjmistagUp = targetmcsjmistagUp.Clone(); WScalessjmistagUp.SetName("wmn_weights_%s_sjmistag_Up"%cid)
-  WScalessjmistagUp.Divide(controlmcsjmistagUp);  _fOut.WriteTObject(WScalessjmistagUp)  
+#  WScalessjmistagUp = targetmcsjmistagUp.Clone(); WScalessjmistagUp.SetName("wmn_weights_%s_sjmistag_Up"%cid)
+#  WScalessjmistagUp.Divide(controlmcsjmistagUp);  _fOut.WriteTObject(WScalessjmistagUp)  
 
-  WScalessjmistagDown = targetmcsjmistagDown.Clone(); WScalessjmistagDown.SetName("wmn_weights_%s_sjmistag_Down"%cid)
-  WScalessjmistagDown.Divide(controlmcsjmistagDown);  _fOut.WriteTObject(WScalessjmistagDown)
+#  WScalessjmistagDown = targetmcsjmistagDown.Clone(); WScalessjmistagDown.SetName("wmn_weights_%s_sjmistag_Down"%cid)
+#  WScalessjmistagDown.Divide(controlmcsjmistagDown);  _fOut.WriteTObject(WScalessjmistagDown)
 
-  WScalessjmistagUp_e = targetmcsjmistagUp.Clone(); WScalessjmistagUp_e.SetName("wen_weights_%s_sjmistag_Up"%cid)
-  WScalessjmistagUp_e.Divide(controlmcsjmistagUp_e);  _fOut.WriteTObject(WScalessjmistagUp_e)  
+#  WScalessjmistagUp_e = targetmcsjmistagUp.Clone(); WScalessjmistagUp_e.SetName("wen_weights_%s_sjmistag_Up"%cid)
+#  WScalessjmistagUp_e.Divide(controlmcsjmistagUp_e);  _fOut.WriteTObject(WScalessjmistagUp_e)  
 
-  WScalessjmistagDown_e = targetmcsjmistagDown.Clone(); WScalessjmistagDown_e.SetName("wen_weights_%s_sjmistag_Down"%cid)
-  WScalessjmistagDown_e.Divide(controlmcsjmistagDown_e);  _fOut.WriteTObject(WScalessjmistagDown_e)  
+#  WScalessjmistagDown_e = targetmcsjmistagDown.Clone(); WScalessjmistagDown_e.SetName("wen_weights_%s_sjmistag_Down"%cid)
+#  WScalessjmistagDown_e.Divide(controlmcsjmistagDown_e);  _fOut.WriteTObject(WScalessjmistagDown_e)  
 
   ### met trig ###
-  ftrig = r.TFile.Open('files/unc/all_trig2.root')
-  h_trig_down = ftrig.Get('trig_sys_down')
-  h_trig_up = ftrig.Get('trig_sys_up')
+ # ftrig = r.TFile.Open('files/unc/all_trig2.root')
+ # h_trig_down = ftrig.Get('trig_sys_down')
+ # h_trig_up = ftrig.Get('trig_sys_up')
 
-  wmn_ratio_trig_up = targetmc.Clone(); wmn_ratio_trig_up.SetName('wmn_weights_%s_mettrig_Up'%cid)
-  for b in range(wmn_ratio_trig_up.GetNbinsX()): wmn_ratio_trig_up.SetBinContent(b+1,0)  
-  diag.generateWeightedTemplate(wmn_ratio_trig_up,h_trig_up,metname,metname,_wspace.data("signal_wjets"))
-  wmn_ratio_trig_up.Divide(controlmc)
-  _fOut.WriteTObject(wmn_ratio_trig_up)
+#  wmn_ratio_trig_up = targetmc.Clone(); wmn_ratio_trig_up.SetName('wmn_weights_%s_mettrig_Up'%cid)
+#  for b in range(wmn_ratio_trig_up.GetNbinsX()): wmn_ratio_trig_up.SetBinContent(b+1,0)  
+#  diag.generateWeightedTemplate(wmn_ratio_trig_up,h_trig_up,metname,metname,_wspace.data("signal_wjets"))
+#  wmn_ratio_trig_up.Divide(controlmc)
+#  _fOut.WriteTObject(wmn_ratio_trig_up)
 
-  wmn_ratio_trig_down = targetmc.Clone(); wmn_ratio_trig_down.SetName('wmn_weights_%s_mettrig_Down'%cid)
-  for b in range(wmn_ratio_trig_down.GetNbinsX()): wmn_ratio_trig_down.SetBinContent(b+1,0)  
-  diag.generateWeightedTemplate(wmn_ratio_trig_down,h_trig_down,metname,metname,_wspace.data("signal_wjets"))
-  wmn_ratio_trig_down.Divide(controlmc)
-  _fOut.WriteTObject(wmn_ratio_trig_down)
+#  wmn_ratio_trig_down = targetmc.Clone(); wmn_ratio_trig_down.SetName('wmn_weights_%s_mettrig_Down'%cid)
+#  for b in range(wmn_ratio_trig_down.GetNbinsX()): wmn_ratio_trig_down.SetBinContent(b+1,0)  
+#  diag.generateWeightedTemplate(wmn_ratio_trig_down,h_trig_down,metname,metname,_wspace.data("signal_wjets"))
+#  wmn_ratio_trig_down.Divide(controlmc)
+#  _fOut.WriteTObject(wmn_ratio_trig_down)
 
-  wen_ratio_trig_up = targetmc.Clone(); wen_ratio_trig_up.SetName('wen_weights_%s_mettrig_Up'%cid)
-  for b in range(wen_ratio_trig_up.GetNbinsX()): wen_ratio_trig_up.SetBinContent(b+1,0)  
-  diag.generateWeightedTemplate(wen_ratio_trig_up,h_trig_up,metname,metname,_wspace.data("signal_wjets"))
-  wen_ratio_trig_up.Divide(controlmc_e)
-  _fOut.WriteTObject(wen_ratio_trig_up)
+#  wen_ratio_trig_up = targetmc.Clone(); wen_ratio_trig_up.SetName('wen_weights_%s_mettrig_Up'%cid)
+#  for b in range(wen_ratio_trig_up.GetNbinsX()): wen_ratio_trig_up.SetBinContent(b+1,0)  
+#  diag.generateWeightedTemplate(wen_ratio_trig_up,h_trig_up,metname,metname,_wspace.data("signal_wjets"))
+#  wen_ratio_trig_up.Divide(controlmc_e)
+#  _fOut.WriteTObject(wen_ratio_trig_up)
 
-  wen_ratio_trig_down = targetmc.Clone(); wen_ratio_trig_down.SetName('wen_weights_%s_mettrig_Down'%cid)
-  for b in range(wen_ratio_trig_down.GetNbinsX()): wen_ratio_trig_down.SetBinContent(b+1,0)  
-  diag.generateWeightedTemplate(wen_ratio_trig_down,h_trig_down,metname,metname,_wspace.data("signal_wjets"))
-  wen_ratio_trig_down.Divide(controlmc_e)
-  _fOut.WriteTObject(wen_ratio_trig_down)
+#  wen_ratio_trig_down = targetmc.Clone(); wen_ratio_trig_down.SetName('wen_weights_%s_mettrig_Down'%cid)
+#  for b in range(wen_ratio_trig_down.GetNbinsX()): wen_ratio_trig_down.SetBinContent(b+1,0)  
+#  diag.generateWeightedTemplate(wen_ratio_trig_down,h_trig_down,metname,metname,_wspace.data("signal_wjets"))
+#  wen_ratio_trig_down.Divide(controlmc_e)
+#  _fOut.WriteTObject(wen_ratio_trig_down)
 
 
 
@@ -145,9 +181,9 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
 
   CRs = [
    Channel("singlemuonwModel",_wspace,out_ws,cid+'_'+model,WScales),
-   Channel("singleelectronwModel",_wspace,out_ws,cid+'_'+model,WScales_e),
+#   Channel("singleelectronwModel",_wspace,out_ws,cid+'_'+model,WScales_e),
   ]
-
+  """
   for c in CRs:
     c.add_nuisance_shape('mettrig',_fOut)
 
@@ -158,10 +194,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
   # note, the code will LOOK for something called NOMINAL_name_Up and NOMINAL_name_Down, where NOMINAL=WScales.GetName()
   # these must be created and writted to the same dirctory as the nominal (fDir)
 
-  for cr in [0,1]:
-    #for uncert in ['btag','mistag','sjbtag','sjmistag']:
-    for uncert in ['sjbtag','sjmistag']:
-      CRs[cr].add_nuisance_shape(uncert,_fOut)
+  #for cr in [0,1]:
+  #  #for uncert in ['btag','mistag','sjbtag','sjmistag']:
+  #  for uncert in ['sjbtag','sjmistag']:
+  #    CRs[cr].add_nuisance_shape(uncert,_fOut)
   
   def addStatErrs(hx,cr,crname1,crname2):
     for b in range(1,targetmc.GetNbinsX()+1):
@@ -181,9 +217,10 @@ def cmodel(cid,nam,_f,_fOut, out_ws, diag):
       _fOut.WriteTObject(byb_u)
       _fOut.WriteTObject(byb_d)
       cr.add_nuisance_shape('%s_stat_error_%s_bin%d'%(cid,crname2,b),_fOut)
+  """
 
-  addStatErrs(WScales,CRs[0],'wmn','singlemuonwModel')
-  addStatErrs(WScales_e,CRs[1],'wen','singleelectronwModel')
+  #addStatErrs(WScales,CRs[0],'wmn','singlemuonwModel')
+  #addStatErrs(WScales_e,CRs[1],'wen','singleelectronwModel')
 
   # # Statistical uncertainties too!, one per bin 
   # for b in range(targetmc.GetNbinsX()):

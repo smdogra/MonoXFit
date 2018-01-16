@@ -331,7 +331,7 @@ class Channel:
      sysdn.GetName()
     except ReferenceError: 
      print "Missing one of ", sfup, sfdn, " in ", file.GetName()
-     print "Following is in directory "
+     print "DEBUG: 3: Following is in directory "
      file.ls()
      sys.exit()
     # Now we loop through each bin and construct a polynomial function per bin 

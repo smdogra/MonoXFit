@@ -4,8 +4,11 @@ fOutName = "combined_model.root"  # --> Output file
 fName    = "mono-x.root"  # --> input file (i.e output from previous)
 #fName    = "mono-x-smoothed.root"  # --> input file (i.e output from previous)
 #categories = ["monotop",'monotop_loose'] # --> Should be labeled as in original config 
-categories = ["monotop",'monotop_category'] # --> Should be labeled as in original config 
-controlregions_def = ["Z_constraints","W_constraints","Top_constraints"] # --> configuration configs for control region fits. 
+#categories = ["monotop",'monotop_category'] # --> Should be labeled as in original config 
+categories = ['monotop'] # --> Should be labeled as in original config 
+#controlregions_def = ["Z_constraints","W_constraints","Top_constraints"] # --> configuration configs for control region fits. 
+controlregions_def = ["W_constraints","Top_constraints"] # --> configuration configs for control region fits.  SUNIL
+#controlregions_def = ["Top_constraints"] # --> configuration configs for control region fits.  SUNIL
 # Note if one conrol region def depends on another (i,e if setDependant() is called) it must come AFTER its 
 # the one it depends on in this list!
 #--------------------------------------------------------------------------------------//
@@ -50,12 +53,16 @@ diag_combined = diagonalizer(out_ws)
 obsargset   = r.RooArgSet(out_ws.var("observed"),out_ws.cat("bin_number"))
 
 cmb_categories = []
+for x in controlregions_def:
+	print "DEBUG: 1 = ",x
 
 for crd,crn in enumerate(controlregions_def):
 	x = __import__(crn)
+	print "=============================: ",crn
         for cid,cn in enumerate(categories): 
 		_fDir = _fOut.mkdir("%s_category_%s"%(crn,cn))
 		cmb_categories.append(x.cmodel(cn,crn,_f,_fDir,out_ws,diag_combined))
+		print 'DEBUG: 2'
 
 for cid,cn in enumerate(cmb_categories):
 	cn.init_channels()
@@ -64,7 +71,7 @@ for cid,cn in enumerate(cmb_categories):
 # Save a Pre-fit snapshot
 out_ws.saveSnapshot("PRE_EXT_FIT_Clean",out_ws.allVars()) 
 # Now convert workspace to combine friendly workspace
-convertToCombineWorkspace(out_ws,_f,categories,cmb_categories,controlregions_def)
+#convertToCombineWorkspace(out_ws,_f,categories,cmb_categories,controlregions_def)
 _fOut.WriteTObject(out_ws)
 
 print "Produced constraints model in --> ", _fOut.GetName()
